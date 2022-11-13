@@ -24,6 +24,7 @@ Nov, 13
 + Added Generic Fishing Game
 + Added Synesthesia
 ^ Updated changlog for a mistake
+^ Updated Cookie Clicker to v2.048
 ------------------------------------------------------------
 Nov, 12
 Thank you so much to Alex for getting 1v1.lol to work!
