@@ -9,6 +9,8 @@ Welcome to 3kh0.github.io, your best option for unblocked games on the internet.
 
 [![Vulnerability](https://github.com/3kh0/3kh0.github.io/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/3kh0/3kh0.github.io/actions/workflows/codeql-analysis.yml) [![pages-build-deployment](https://github.com/3kh0/3kh0.github.io/actions/workflows/pages/pages-build-deployment/badge.svg?branch=main)](https://github.com/3kh0/3kh0.github.io/actions/workflows/pages/pages-build-deployment)
 
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/3kh0/3kh0.github.io?color=gree&label=Latest%20version&logo=github&logoColor=white)
+
 ## Features
 
 - Site-wide tab cloaking
