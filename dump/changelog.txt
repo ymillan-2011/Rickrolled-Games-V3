@@ -17,6 +17,9 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Nov, 14
+^ Added more reviews
+------------------------------------------------------------
 Nov, 13
 + Added Bad Ice Cream
 + Added Bad Ice Cream 2
