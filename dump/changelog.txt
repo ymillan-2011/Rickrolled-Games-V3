@@ -24,6 +24,7 @@ Nov, 16
 + Added Contact page
 ^ Fixed Bad Ice Cream 1, 2, and 3
 ^ Added more reviews
+^ Fix mobile redirects for 1v1.lol
 ------------------------------------------------------------
 Nov, 14
 ^ Added more reviews
