@@ -17,6 +17,10 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Nov, 15
++ Added Crossy Road, Friday Night Funkin', and Vex 7
+^ Fixed Bad Ice Cream 1-3
+------------------------------------------------------------
 Nov, 14
 ^ Added more reviews
 ------------------------------------------------------------
