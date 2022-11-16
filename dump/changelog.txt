@@ -21,6 +21,7 @@ Nov, 16
 + Added Crossy Road
 + Added Friday Night Funkin
 + Added Vex 7
++ Added Contact page
 ^ Fixed Bad Ice Cream 1, 2, and 3
 ^ Added more reviews
 ------------------------------------------------------------
