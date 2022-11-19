@@ -17,6 +17,9 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Nov, 19
++ Added Cluster Rush
+------------------------------------------------------------
 Nov, 18
 + Added ways on how to verify that I am real (the fact that this is needed is bonkers)
 ------------------------------------------------------------
