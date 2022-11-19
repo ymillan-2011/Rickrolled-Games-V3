@@ -9,7 +9,6 @@ body {
   background-size: cover;
 }
 a {
-  text-decoration: none;
   color: #ffffff;
 }
 a:link {
@@ -17,7 +16,6 @@ a:link {
 }
 a:visited {
   color: #ffffff;
-  text-decoration: none;
 }
 a:hover {
   color: #d8d8d8;
