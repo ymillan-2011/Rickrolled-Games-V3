@@ -18,6 +18,9 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Nov, 20
++ Added discord invite widget to the main readme file
+------------------------------------------------------------
+Nov, 20
 + Added workflow so that forks automatically update!
 ------------------------------------------------------------
 Nov, 19
