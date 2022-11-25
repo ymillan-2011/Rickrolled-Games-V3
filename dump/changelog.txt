@@ -17,10 +17,12 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
-Nov, 20
-+ Added discord invite widget to the main readme file
+Nov, 25
+Sorry for the lack of updates, turkey day happened!
+^ Added more reviews
 ------------------------------------------------------------
 Nov, 20
++ Added discord invite widget to the main readme file
 + Added workflow so that forks automatically update!
 ------------------------------------------------------------
 Nov, 19
