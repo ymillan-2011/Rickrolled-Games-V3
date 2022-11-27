@@ -21,6 +21,7 @@ Nov, 26
 + Added Stickman Boost
 + Added Resent Client
 ^ Added more reviews
+^ Updated Chrome Dino Game
 ------------------------------------------------------------
 Nov, 25
 Sorry for the lack of updates, turkey day happened!
