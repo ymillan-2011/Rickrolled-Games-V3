@@ -17,6 +17,17 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Nov, 27
++ Added Just Fall
++ Added Baldi's Basics
++ Added Burger & Frights
+------------------------------------------------------------
+Nov, 26
++ Added Stickman Boost
++ Added Resent Client
+^ Added more reviews
+^ Updated Chrome Dino Game
+------------------------------------------------------------
 Nov, 25
 Sorry for the lack of updates, turkey day happened!
 + Added a note to learn to fly 2
