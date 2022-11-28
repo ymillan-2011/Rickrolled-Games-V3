@@ -17,6 +17,9 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Nov, 28
+^ Added Main.js To Some Games
+------------------------------------------------------------
 Nov, 27
 + Added Soccer Random
 + Added Just Fall
