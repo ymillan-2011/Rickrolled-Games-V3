@@ -357,6 +357,23 @@ say[357] = "use abnumality.github.io";
 say[358] = "Graphic design is my passion.";
 say[359] = "YOU'RE CRINGE!";
 say[360] = "Spongebob, Spongebob, Patrick, Patrick, Squidward, Squidward, Sandy, Sandy";
+say[361] = "Come join us, we murder and kidnapp people";
+say[362] = "Save 50% off pizza when ordering online at dominos!!!";
+say[363] = "There is no one in the basement!";
+say[364] = "3kh0... 3kh0...   3kh0...   I think there's an echo in here";
+say[365] = "No Introduction Needed";
+say[366] = "I pledge allegiance, to the logo of the server of the communist states of 3kh0, into the communism, for which it stands, one nation, under 3kh0, indivisible, with communism and justice for some";
+say[367] = "What's this do?";
+say[368] = "E";
+say[369] = "3kh0.github.io:  The best place for illegal activities";
+say[370] = "Your voice sounds good when your not talking";
+say[371] = "peanut";
+say[372] = "Think fast chuckle nuts!";
+say[373] = "its too late";
+say[373] = "IIIII got the feeling in my bones";
+say[374] = "Yugi: I destroy the moon";
+say[375] = "Splash texts brought to you by the EchoDev Discord!";
+say[376] = "Flippy flop flips go flip flop; floppy flip flops go flop flip";
 
 // pick a random greeting
 var howmany = say.length;
