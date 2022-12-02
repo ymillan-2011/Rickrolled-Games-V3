@@ -20,6 +20,9 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 Dec, 2
 + Added more splash texts
 ------------------------------------------------------------
+Dec, 1
+^ Updated Photos
+------------------------------------------------------------
 Nov, 30
 + Added Ruffle Emulator
 ^ Added more reviews
