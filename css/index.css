@@ -151,7 +151,7 @@ a {
 /* Float four columns side by side */
 .column {
   float: none;
-  width: 25%;
+  width: 20%;
   padding: 0 5px;
   padding-bottom: 30px;
   padding-left: 10px;
