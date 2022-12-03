@@ -374,6 +374,22 @@ say[373] = "IIIII got the feeling in my bones";
 say[374] = "Yugi: I destroy the moon";
 say[375] = "Splash texts brought to you by the EchoDev Discord!";
 say[376] = "Flippy flop flips go flip flop; floppy flip flops go flop flip";
+say[377] = "Josh is the bean man";
+say[378] = "Internet enabled!";
+say[379] = "90% bug free!";
+say[380] = "Technically good!";
+say[381] = "5x more bugs!";
+say[382] = "James, you are not the real echo";
+say[383] = "Mike is murderous";
+say[384] = "we will rule the world!";
+say[385] = "your local gamestop";
+say[386] = "bruh moment";
+say[387] = "can you help me find my son?";
+say[388] = "why.. just why?";
+say[389] = "The Duolingo Owl is coming for you!";
+say[390] = "I like your outfit";
+say[391] = "Baby Shark doo doo doo";
+say[392] = "YEAHHHHHHHHHHH!!!";
 
 // pick a random greeting
 var howmany = say.length;

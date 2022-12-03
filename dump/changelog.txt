@@ -19,6 +19,8 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ------------------------------------------------------------
 Dec, 3
 + Added Eaglercraft 1.8
++ Added My Rusty Submarine
++ Added more splash texts
 ------------------------------------------------------------
 Dec, 2
 + Added Sushi unRoll
