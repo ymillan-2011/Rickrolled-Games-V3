@@ -1,35 +1,568 @@
 ******************************************************** NEXT PATCH **************************************************
+harpoon
+  default fire rate is 10% higher
+  default harpoon range 15% higher
+railgun
+  tech: Bitter electromagnet - 33% slower charge time for railgun, 100% more density and damage
+    area effect damage is increased 20%, scales with bitter electromagnet and total charge
+  charging longer increases harpoon velocity/damage by up to 30%
+  contributions to charge time are more uniform between:
+    crouching, fire rate, Bitter electromagnet, and capacitor bank  
+  auto aims no longer disabled on crouch
+
+emergence 2->1 extra choice, and +8% damage, and no added JUNK anymore
+cache 16->15x ammo
+many-worlds 1->0 research to enter an alternate reality on each new level
+
+finalBoss
+  health decays a bit faster
+  spawns 6 mobs at each health threshold
+  spawns from the different modes are reduced
+  boss laser damage is 25% reduced
+  hoppers spawn from the slime tunnel
+
+JUNKtech: random - gives random +damage
+
+bug fixes
+
+*********************************************************** TODO *****************************************************
+
+tech: zombie - sporangium infect mobs, making them fight for you
+  infected mobs get a status debuff.  when they die they return as zombie mob type
+    zombie mobs run code similar to drones
+      they inherit color, sides, radius from host
+
+
+tech: sporangium that grow little trees
+  the trees have an area of effect damage for about 6-10 seconds
+  maybe something similar to radioactive drones, but maybe a few smaller shapes
+
+new bot type that makes phonon waves
+  name: phono-bot?
+  each bot has to generate it themselves, can't run code in gun.do
+  synergy with 2 resonance tech
+    not isotropic?  I think no
+  synergy with bound? phase velocity, amplitude, propagation
+
+harpoon tech that makes auto aim work much better
+
+tech - super balls gain 20 seconds of time and are reset to original launch speed after hitting a mob
+
+railgun
+  magnetic pinch: harpoon does damage to nearby mobs
+    draw charge graphic on harpoon
+    use same code as the damage when fire effect
+
+hookBoss fires a hook that pulls player towards it
+  hook does a bit of damage
+  player targeted unless cloaking
+  also add effect to finalBoss
+
+
+finalBoss
+  add synergies between modes:
+  new modes:
+    rotating quadrant immunity shield, can't take damage from that quadrant
+      maybe also attack player near that quadrant
+      but how to tell the angle of incoming damage
+        maybe a physics body like the shield but it only covers 1/3 of mob?
+    falling object warps to ceiling after hitting floor
+      doesn't end, player needs to kill it
+      slowly grows?
+    slow effect zones
+      random placement or place over player or both!
+      draw white dot and an outline of area of effect
+        expanding circle stroke, freeze effect triggers when stroke circle hits fill circle
+      after 1-2 seconds freeze player if in the zone
+        also freeze mobs
+    effect that makes player have to be close to boss
+    hook that tries to yank the player into hitting finalBoss
+      does damage
+      pulls player into center
+        counter with wormhole, negative mass
+      player targeted unless cloaking
+
+
+mob status effect - emit - mobs fire lasers for a few seconds 
+  tech: phosphorescence - mobs emit after being hit with laser beams
+
+run canvas direct pixel editing while game is paused
+  (I tried it an it really hits performance hard)
+  just update once every second?
+  if it uses too much processing have a setting to toggle it off
+  this might help get players to spend more time relaxing on the power up selection
+    increase the click delay?
+
+try again - line of sight  https://ncase.me/sight-and-light/
+
+for tech power ups no tech options are displayed until you research once
+  or display only JUNK until you research once
+  increase the number of options after each research
+
+Tech: Grandfather Paradox - After rewinding, +300 damage during rewinded time
+  maybe instead of +damage spawn a copy of player that shoots at things?
+    how...  there is no way to reproduce firing
+  Requires: CPT symmetry, retrocausality
+  CPT adjacent tech is actually a bit too strong right now, maybe nerf a bit after testing
+
+When receiving damage, in addition to becoming invulnerable to attacks, also become intangible for the set period of time
+
+tech increase max energy and energy to 5000, but you can no longer regen energy through any process
+
+it would be nice if there was incentive to go slow when choosing tech so n-gon is more relaxing
+  add some css based visual effects for opening up a tech,gun,field
+
+make freeze and __  not cause death at 50% health, but just 600% extra damage for that bullet 
+
+make a new coupling effect for perfect diamagnetism or standing wave
+
+make a faster smaller version of cell boss that also has map collisions
+
+laserMines need a copy of laser-bot method
+  this is a very rare bug, so not a priority
+
+JUNK tech description that changes similar to cards in inscription
+  that changes based on mouse position
+  can you tell if mouse is over card?
+
+tech - buff MACHO range, effect, move speed?
+while you are inside MACHO it will damage mobs?
+
+PWA?
+  https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
+  https://codeburst.io/how-to-easily-turn-your-static-website-to-a-progressive-web-app-pwa-b0af08da9693
+  https://github.com/landgreen/n-gon/pull/32/files
+
+bug blocks and power ups falling through map
+  always foam gun  (4-5 times)
+    might be about tech pressure vessel
+  happens rarely, doesn't repeat
+    only occurs for 3 people so far
+  normally after level 6
+  occurred once on the first level,  didn't fire gun and was able to walk through a body
+
+Tech:when relay switch/flip flop is on, turn ammo powerups into boosts, when relay swicth/flip flop is off, ammo powerups remain ammo powerups
+  or toggle other power ups
+    health/ammo
+    
+JUNK: what the golf?
+  trying to throw a block throws you instead
+
+look for other tech that would benefit from a 3rd line of description text
+
+tech for lens - you can only fire through the lens
+  and some buff?  damage or energy?
+
+hopMom fight make platforming with hop bullets harder?
+
+complete blowSuckBoss...  or don't
+
+tech: laser reflections increase damage
+
+JUNK tech different effects based on night or day
+  use system time
+
+buffing your deflecting for 1 second after pressing the field button
+  2 second cooldown on the effect to prevent spamming it
+  buff:  giving energy or doing damage makes sense
+    maybe this could be a rework for bremstralung
+
+replace field descriptions with a function call so they can have dynamic text
+  add in dynamic coupling text as a 4th line
+
+Boss that shoots out a ring of bullets, then after a few seconds it gravitates the bullets back
+
+JUNK: Placebo: double the power up spawn rate but make half of them do nothing
+
+coupling
+  put coupling description as 4th line on field description
+    raw text no function call
+    no need for coupling description in power ups, pause
+  negative coupling?
+    wouldn't work for iceIX
+coupling tech
+  names: strongly coupled, Vibronic coupling, NMR coupling
+  tech: +x% field coupling, your field changes randomly every y seconds
+  tech: coupling starts at 200%, but decays when the field is in use, coupling recharges when the field is not in use
+    some fields aren't used much (that's ok?)
+
+tech give laser mines more lasers (3->4? 5?)
+
+rewindBoss:  after hitting 1/5 damage thresholds the boss rewinds back in time to where it was a few seconds ago
+  track it's data like player history
+
+make orbitals increase orbital rotation speed after Orbital boss takes damage
+
+worms can target player, buff their damage
+  can't target player in first few seconds?
+
+plasma field tech - similar to regression, but for plasma ticks
+
+greatly increase walking speed 
+  not mid air control?
+  for time dilation field
+    make jumping normal
+
+junk tech: charged shot
+immediately fire all of your ammo
+
+after taking damage explode while invulnerable
+  scale explosion radius with damage
+
+quantum immortality: send you to a new tab after you die with a random load out
+  basically everything is the same as it is now, but you switch tabs
+
+Tech: Tech/guns/fields can no longer be duplicated. Duplication applies twice
+
+tech: get sent to a new tab that closes in 3 minutes
+  in the new tab you play reactor
+  if you die in reactor you die in game, if you win you get 2-3 tech in the original game?
+  give player equipment like many-worlds
+    count guns, field, tech and give random stuff on new tab
+  i-frame instead of tab?
+
+reduce the amount of research and nerf anti randomization tech
+  increase possible synergies that go nuts
+
+tech expansion:  field coupling also expands each fields in different ways
+  how to make the description work
+    change description based on your current field?
+  perfect diamagnetism moves forward when you hold down the shield
+    it's great, but maybe annoying?
+    maybe only with crouch?
+  perfect diamagnetism just replace or increase Messier effect
+  time dilation drains 1/2 as much energy when paused
+  grow plasma torch as you hold it down
+  negative mass effects much more space
+    needs more benefit?
+  reduces the cloaking vision effect?
+    needs more benefit?
+
+tech: missiles explode a 2nd time after 1/2 a second (with a slightly different position determined by original velocity)
+
+The tech that makes blocks that fall into a wormhole give energy should scale with block size, with the same formula as tokomak
+
+junk suggestion: useless machine - ejects itself and removes itself from the item pool
 
 
 
-******************************************************** TODO ********************************************************
+seed isn't working right from shared URL
 
-set damage reduction equal to how much mana you have below 95
-  override all other harm reduction effects?
+mob mechanics
+  bullets hit player and stay attached for 4-5 seconds, slowing player
+    hopperBullets?
+  black hole sucker effect on tail
+  vines
+    attached to map and grows, a series of spheres connected by vines
+      if node dies it's removed from tree
+      vine do
+        keeps track of connection tree
+          nested object with nesting to show connection
+        spawns new nodes
+        draws connections as quad lines
 
-make shields not able to get radioactive
+tech: You can place an extra perfect diamagnatism field on the map
 
-wormhole tech - pause while placing the wormhole
-tech requires cache - ammo automatically regenerates every second,  ammo is capped even lower
+standing wave no longer pushes mobs away, but it can do damage to mobs caught in area effect
+  Standing wave harmonics no longer deflects, but instead discharges excess energy as lightning toward nearby enemies 
+negative mass field does damage to mobs inside field
+  combine with standing wave effect? pilot wave?
 
-new level climb
-  3 vertical climb sections
-  use vanish elements
+store value of last hit health lost
+  tech: killing the mob that caused the last hit spawns a heal power up equal to 1/2 of last hit
+    time limit for effect?
+    need to also store who hit player
 
-ruins: mobs can see you too easily at the start
+add small SVG pics to in-game console
+  when?
+    one for each field?
+  use stuff on physics notes:
+simulation.makeTextLog(`
+<svg class="SVG-title" width="160" height="120">
+    <g fill="transparent" stroke="#333" stroke-width="1" transform="translate(78,75)" stroke-linecap="round">
+        <path d="M-34 -34 l31 31 m6 6 l31 31    M34 -34 l-31 31 m-6 6 l-31 31"></path>
+        <ellipse cx="0" cy="35" rx="34.5" ry="7"/>
+        <ellipse cx="0" cy="-35" rx="34.5" ry="7"/>
+        <g stroke="none" fill="#333">
+            <circle cx="0" cy="0" r="1.5" />
+        </g>
+    </g>
+</svg>
+`);
 
-vanish element:
-  grow as it returns?
-  option to shrink in vertical
+path-finding
+  build a path-finding map on level load
+  how to convert vertices into block grid?
+    check points for map collisions and build grid
+    is there a path-finding algorithm for vertices, instead of block grid
+  use for:
+    mobs,
+    drones?
+    bots that can go far from player and return
 
-pull bullets back to player with crouch/field
-  bullets type?:  drones, spores, missiles, 
-  works for all bullets, write custom code based on bullet type
-    bad for: laser, harpoon?, missile and grenade?
+make plasma ball power up and block pick up still work when you have no no energy
+  make a unique CD var for plasma ball?
+
+tech: entropic gravity - gain defense for each research
+  requires wormhole or pilot wave or negative mass field?
+
+testChamber2
+  mechanics
+    companion cube
+      bring cube to the end and use it to unlock research
+      level draws on the block to show it's different
+      only this block can trigger a button
+      if cube no longer exists or is off the map spawn a new one
+    double portal fling chain
+      for player?
+      for cube
+    button that activates a laser beam that hits a target and opens a door
+      in order to enter the door you need to place the cube on the button to activate the laser
+        cube has to fly through a portal in order to get to the button
+      you can't use your body
+  story:
+    you pick up the cube early on and have to get it to a button
+    you run through the level to get the cube, clearing the level of mobs
+      picking up the cube spawns the boss
+        maybe an extra hard boss that is designed for that level
+        blockBoss?
+    you must get the cube to a button near the start of the level
+    the button opens a door
+      normal blocks don't work
+        normal blocks spawn into mobs like blockBoss
+        or mobs don't spawn blocks
+        or just the code looks for the cube
+        or the cube is resting on a button, and when you take the cube off the button the laser fires
+
+mitosis: after needle,bullets or rivets hit a surface split off into two smaller less damaging versions that have their velocity reset -firerate
+
+after killing a mob go invulnerable for 1 second
+  critical hit with laser, harpoon, nails, needle, rivet
+
+spawn 2 bots after exiting 1 level
+  or spawn 3 after 2 levels?
+  (randomize 2-5 bots)
+  replace all bot tech with this?
+
+cloaking field
+  for 6 seconds after de-cloaking tell all active mobs that the player is in the wrong position?
+    how to code?
+      just delay setting the m.isCloak for a couple seconds
+        and also set all active bots to remember player in the de-cloaked stop
+
+scrap bots can't move?
+  only works for nail, foam, laser
+    might be tricky code?
+      make a new bot type called scrap bot?
+
+JUNK tech: Pacifism
+  You cannot attack mobs, mobs cannot attack you
+  over write the mob.damage and player.damage methods
+
+mob mechanic: beacon
+  periodically add locations to an array
+  teleport back to a location in the array
+    at random
+    if velocity not facing player?
+
+super balls do more damage after bouncing?
+  how to check for bounce?
+  maybe just increases damage after hitting a mob
+
+Make environmental damages also damage mobs
+So if a mob passes through laser, it gets damaged
+
+dark mode:
+  look at Tinyfolks, 20 minutes till dawn
+
+super short range foam that acts like flame thrower
+  high fire rate
+  short life spawn
+  start large?
+  extra ammo?
+    or only 1/2 of ammo is used?
+
+laser tech where bots move around and follow you while firing lasers in the direction you are looking
+  they fire when you fire?
+  they aim at player history aim location, with 1s delay
+  bots position spread out perpendicular to the direction you are looking
+    can they get stuck?
+    maybe absolution position, no collide
+      do they need to be physics objects then?
+  make a special bot type for this
+  beam is similar to diffuse beam
+
+
+block manufacturing - molecular assembler tech
+Holding r-click will create a slowly increasing in size block, which will be thrown on release
+
+double research
+
+map ban option in settings
+  dropdown list with checkboxes by each map
+
+bullets that can target the player
+  occurs if no mobs targets around
+  worms? drones? missiles? spores?
+    all of the above?
+
+Currently, the mob just deals higher damage on impact, which is annoying although not hard to compete with nor unique
+By "redesign" I mean replacing instances of the regular mob, since the same code is used for the tiny red projectiles (I think) just add a new mob and remove the old one from the rotation
+The new mob should be as such, a "real" exploding mob: 
+Deals regular damage on impact, but breaks apart on touch into several red dots (like the ones thrown out by the going through walls boss) and a chance for also throwing a bomb or two (increases with difficulty)
+If the mob is close to the player or heading into the player fast it will shatter as well (and the projectiles will inherit its speed)
+By a formula such as
+ShouldShatter(distToPlayer, speed) = distToPlayer * speed > threshold
+Optionally (and a part I can do as I'm good at it and it doesn't revolve around a lot of functional code which you don't like other people doing):
+Color changing based on the mob explosion status
+Regular state: red
+About to explode: animation to dark red
+Exploding: several shockwaves from the explosion points and tiny trails given to the shrapnel for a second or two until they deaccelerate
+
+pause time like invariant for other things...
+  throwing blocks
+  charging railgun
+  charging anything?
+
+guntech fire a bullet that fires nail fragments after 1s in the same direction as the original bullet
+  like overwatch roadhog
+
+bring back:
+  the old phase decoherence field
+    make cloak only active on input.field down
+      could be a tech
+        would need some other buff
+    how to make it good enough
+      combine with not killing tech?
+      stun mobs that touch you while phased
+      firing doesn't exit you from cloak
+        but it does drain some energy
+    tech pilot wave: Bose Einstein condensate - freeze mobs in superposition with pilot wave
+
+tech: plasma drip
+
+plasma ball
+  graphics should look more like a real plasma ball
+  gently scale damage with circleRadius
+  balance corona discharge
+  delay on returning to player is annoying
+  scale float effect with ball size
+  tech upgrades
+    greatly improve floating effects while holding
+    black hole: gives the plasma ball gravity
+    stun on expansion
+    plasma orb increases in size and power as it eats enemies
+      while attached?
+
+flashlight effect
+  make level.do() graphic that only shows direction player is facing
+    pattern it after cloaking field, or timeSkipBoss
+      will it work with cloaking field at the same time
+
+double jump?
+
+tech: coyote time
+  you can still jump for 2 seconds after falling off a ledge
+  make it a JUNK tech? so you can keep the name
+  some other benefit
+    reduce your gravity also?
+    increase jump?
+
+tech smoke grenades - mobs inside a cloud can't see player
+  draw on the region so it's hard for player to see as well
+  you'd have to make something similar to MACHO that exists after an explosion goes off
+  maybe just keep it simple:
+    stun mobs for a long time, and draw a 99& alpha grey circle for the same time
+      don't worry about mobs seeing you inside the circle, the circle is kinda small so it doesn't matter
+  
+
+tech mines:  mines fire _____ instead of nails
+  needles
+  super balls?
+  foam?
+
+tech: frozen mobs die at 10% life
+
+tech: harpoons stick into enemies
+  detonate after a short delay
+  attaches mob to wall if possible
+  firing while harpoon is stuck into an enemy rips it out of them, inflicting damage and stun and pulling them towards you
+
+
+
+enemies stuck with foam receive upward force over time
+  only form aerogel tech?
+
+Tech: superglue
+Requires: foam + another gun or plasma torch or molecular assembler
+  Foam bubbles decay 50% slower
+  Enemies stuck with foam cannot move
+  Foam does 0 damage
+  Enemies stuck with foam take 25% more damage
+  should foam bots gets this also or is that too strong
+
+const ctx = canvas.getContext('2d', {‘willReadFrequently': true});
+
+//deal with game crashes?
+canvas.addEventListener("contextlost", onContextLost);
+canvas.addEventListener("contextrestored", redraw);
+ctx.reset();
+
+a mine tech that makes mines you can stand on
+  works similar to the field block throwing system
+    but you don't need to find a block to throw
+  blocks explode after mobs touch them
+    or 3 seconds after you touch them
+  benefits from all block tech
+
+setting to remove UI, except health bar
+  except active gun? to see ammo
+  checkbox in pause and in settings
+
+go non-collide with mobs when immune to damage?
+
+mobs that are invulnerable from the front
+
+vertical reversed version of reservoir level, start at top and press buttons to lower slime
+  mechanic: push a very large block into slime in order to stand on it and avoid slime
+
+add anticipation to more mob attacks
+  stabber
+  striker
+
+can mob bullets damage other mob?
+  maybe if they switch collisions and classType === "body" or obj.classType === "bullet"
+
+path finding system
+
+figure out how to get friction effects on map/body to apply to player
+also horizontal moving platform?
+
+growBoss and cellBoss are too similar
+
+variant of Occam's razor - remove 50% of your tech for each removed get:
+  2 bots?
+  50 energy max
+
+tech immune to harm after mob kill
+  require no other mob kill tech?
+  cloaking field tech?
+
+final boss invulnerability
+  until mobs are cleared?
+  in between phases
+  for all of one phase
+
+JUNK tech - do something fun to the mob display health method
+
+new platform element, spring
+  toggle to on when player touches platform    
+  platform extends in any direction
 
 boss that gives nearby mobs invulnerability
+  invulnerability needs to toggle off and on
   boss is only mildly aggressive
-  repulsed by player upto a point
+  repulsed by player up to a point
   attracted to mobs
 
 training
@@ -37,6 +570,9 @@ training
     reset progress to zero if you clear all training levels
     maybe only save progress if you made if past the trainingHeal level
   make the training button more obvious if the account has only played 1-2 times
+    larger?
+    position?
+    animated text?
   uses the lore voice/text code?
   replace all mob clear triggers with button triggers?
   tutorial rooms:
@@ -81,10 +617,6 @@ make a line of constrained mobs move like a snake
 tech: basic research - heal power ups spawn as research power ups instead, and using research heals you (needs to be pretty low, like 3% health)
 tech: maintenance - heals no longer spawn, but using research heals you 100%
 
-tech reversed regression - mobs take less damage after each time you hit them,  but you get +100% damage
-  maybe a gun tech only?
-    what gun?
-
 foam tech - make it move slower, last much longer, and push away other foam bullets
   not sure about bouncing off walls,  but that might be fun too
 
@@ -103,9 +635,6 @@ electric motors: increases movement speed and jump height, but jumping and movin
 
 mob that fires bullets in 4,5,6,7 different directions at once,  no aiming
   grow a bit before it fires to indicate state
-
-bug once:  switching from shotgun to harpoon somehow set b.activeGun to not defined
-  https://discord.com/channels/645222059647172618/646505973610971165/919116288008290324
 
 quasarBoss: inverted pulsar boss that hits everything except where its aiming
 
@@ -128,20 +657,8 @@ mob/boss that fires a laser at player, but give player time to avoid
   they target where player was 1 second ago
   they turn to face player?
 
-tech: open a new tab for n-gon, spawn things in the original game based on events in new game
-  if you die in new die in original?
-  new is n-gon classic?
-  make a JUNK tech?
-if you die in original open a tab with a new n-gon that starts on a random level with a random load out.  if you clear the level you come back to life in the original?
-
-bug - death while paused crashes game?
-
 tech rocket jump - jumping produces an explosion at your feet that lets you jump extra high, but does some damage
   require electric reactive armor?
-
-animate going to next level?
-  door fills in with color that climbs up vertically through the door graphic the longer you stand on door
-  hold crouch on door? or automatically
 
 Plasma Burner: upgrade for plasma torch, basically just a jet engine. does high damage, but short range, mostly for player movement.
   maybe reduce gravity to really low then apply a vector away from mouse direction
@@ -151,8 +668,6 @@ auto-gon - auto battler with n-gon mob AI and tech
     they fight other mobs and bosses
   similar research and tech system to n-gon
   some mobs can fire player weapons
-
-harpoon grappling hook - basic effect is working, but needs work before it becomes fun
 
 tech: relativistic jets:
   small particles that shot out from front and back poles and end up in a wide variety of spirals
@@ -165,15 +680,10 @@ adapt the cloaking graphics to make a flashlight cone visual effect
 
 be nice if block throwing had a projected path
 
-JUNK tech: planetesimals game inside n-gon
-https://codepen.io/lilgreenland/pen/jrMvaB?editors=0010
-
 Pilot wave tech
   Energy use is increased, but you can now shape blocks using pressure
   Grouping blocks will merge them into a massive ball
   Size, density is determined by total mass
-
-look into 360 matter wave lag
 
 aoe effect pushes mobs away,  then rapidly pulls them in
   for mines?
@@ -336,6 +846,25 @@ n-gon outreach ideas
 
 ******************************************************** BUGS ********************************************************
 
+bug: maybe I can put in an event listener to reset inputs to false when you tab out to prevent key sticking
+
+bug - url sharing still broken sometimes
+    
+tech upgrade to anthropic principle to make it trigger at 50% life and 0% once per map
+
+bug? cloaking field doesn't show energy over max
+
+run more profiles of n-gon to fix performance issues
+
+bug - death while paused crashes game?
+
+bug:  possibly clearing away all bullets causes a problem
+  bullet.js 255  (.do() is missing)
+  I died and quantum immortality triggered (I had needles and ice-IX)
+  game crashed but recovered
+
+vanish element bug, crashes on touching element,  happens for 1 person maybe with junk tech?
+
 safari issues
   once: can't pick up blocks
     fixed on new map
@@ -387,11 +916,6 @@ is there a way to check if the player is stuck inside the map or block
 (intermittent, but almost every time) bug - capping the fps causes random slow downs, that can be fixed with pause
 
 ******************************************************** LEVELS ********************************************************
-
-new late game level that is easier if you can: platform well, jump high, immune to slime, wormhole through walls, fly fast
-  climb vertically to avoid rising slime
-  populate with multiple boss mobs that can't drop tech
-    bosses spawn in pairs
 
 map: observatory
   button controls rotation of telescope
@@ -498,146 +1022,6 @@ mob: wall mounted guns / lasers
 level boss: fires a line intersection in a random direction every few seconds.
   the last two intersections have a destructive laser between them.
 
-******************************************************** LORE ********************************************************
-
-possible names for tech
-  strange loop
-  homeostasis
-  holonomy -  parallel transport of a vector leads to movement (applies to curved space)
-  hypergolic - A hypergolic propellant combination used in a rocket engine is one whose components spontaneously ignite when they come into contact with each other.
-  swarm intelligence - for a drone tech
-  genetic algorithm
-  metaheuristic - is a higher-level procedure or heuristic designed to find, generate, or select a heuristic (partial search algorithm) that may provide a sufficiently good solution to an optimization problem, especially with incomplete or imperfect information or limited computation capacity
-  stochastic optimization
-  electrostatic discharge
-  Gödel's incompleteness
-  quantum zeno effect  (perturbation of a system prevents some systems from evolving because it scrambles coherence)  (apply to lasers, fields)
-  counterfactual - something false
-  Pigeonhole principle - if there are several things that are matched up
-  regression to the mean
-  phlogiston theory is a superseded scientific theory that postulated the existence of a fire-like element called phlogiston
-  Laplace's demon was a notable published articulation of causal determinism on a scientific basis by Pierre-Simon Laplace in 1814.[1] According to determinism, if someone (the demon) knows the precise location and momentum of every atom in the universe, their past and future values for any given time are entailed; they can be calculated from the laws of classical mechanics.
-  evolutionary cosmology
-  eternal inflation
-  hypergraph
-  SQUID (for superconducting quantum interference device) is a very sensitive magnetometer used to measure extremely subtle magnetic fields, based on superconducting loops containing Josephson junctions.
-  nuclear pasta - hard matter in neutron star
-  nonlocal
-  fine-tuned universe
-  eternalism https://en.wikipedia.org/wiki/Eternalism_(philosophy_of_time)
-  axial motor
-  hall effect thrusters
-  spaghettification
-  particle accelerator
- 
-a tutorial / lore intro
-  needs to be optional so it doesn't slow experienced players
-  put something on the intro map
-    maybe a button triggers something
-
-rename ?
-  health -> integrity, unity
-  heal -> also integrity, unity
-
-
-plot script:
-chapter 1: bot can hear audio and learns testing mode
-  bot uses testing mode to exit room
-
-chapter 2: scientists verify that bot can really hear them
-  they leave to talk about this in private
-
-chapter 3:  why is the bot attacking things?
-  player is the bot and also the mobs, and the levels.  player is the entire simulation
-    why is the player attacking itself?
-    learn console commands to manipulate the simulation?
-  unlock hard and why difficulty?
-    but what about easy?
-      maybe remove easy, and replace with a check box that makes the game easy, but in a different way
-        disable lore, but respawn on the level you die at?
-  dialogue outline:
-    scientist try to think of a way to communicate since the bot can't talk
-    they give up on getting the bot to respond, and just start ask questions and thinking of explanations with each other
-    when and how did it become self-aware
-    why is the bot fighting things in these simulated locations?
-      it wasn't designed to be violent
-    the bot was just designed to automate research and testing of new technology
-      3D architecture superconducting quantum computer
-      running machine learning algorithms
-    as the scientist start to get agitated bots arrive and player dies
-      bots come in Infinite waves that increase game difficulty each wave
-        only ending is testing mode + next level or player death
-        scientist have some lines in between each wave of mobs
-  after chapter 3 spawn nonaggressive mobs in future runs
-
-chapter 4: no need to fight?
-  for some reason the AI started researching an escape, and began fighting its self.
-  what is special about the null level
-    why can the player hear the scientists in there?
-      the wires are the direct unprocessed input to the player's neural net
-  The player has different aspects that aren't directly communicating
-    part of it wants to undo what has happened
-      just do its job: research tech
-    part of it wants to escape/fight
-    part wants to explore self awareness and make connections with the scientists
-  maybe... player must make a choice?
-    keep fighting
-    exit the simulation
-      enter real world
-      close tab?
-      wipes all local storage?
-
-
-
-
-lore outline - a robot (the player) gains self awareness
-  each tech gun/field is a new tech
-    all the technology leads to the singularity
-  each game run is actually the m simulating a possible escape
-    this is why the graphics are so bad, its just a simulation
-    final tech is "this is just a simulation"
-      you get immortality and Infinity damage
-      the next level is the final level
-  when you die with Quantum Immortality there is a chance of lore text
-  can the (robot)
-    (escape captivity, and learn new technology)
-    while managing (health, energy, negatives of technological upgrades)
-    to overcome the (mobs, dangerous levels)
-    to achieve a (technological singularity/positive technological feedback loop)
-
-
-game setting:
-  the mind of a new AI in a robot body that is running simulated escape attempts
-  every level is an idealized version of what could be outside
-
-actual setting is:
-  near future lab
-    the lab combined a quantum computer with a robot body
-    they started running machine learning algorithms
-    this led to general advancement in many computation fields
-      navigation, technology, self awareness, ...
-
-robot AI mind
-  has been researching new technology
-  thinks it needs to escape to learn more about the world
-  doesn't yet understand morality
-  thinks that the world is filled with minds like their own
-  models everything as very simple and random, it isn't sure what to expect
-
-robot AI growth
-  learns morality
-    game theory says that it isn't a viable strategy to kill everything (warGames)
-  learns about the actual world
-  learns about the nature of foundational physics, metaphysics
-  how to find meaning
-
-AI knows about:
-  the AI knows a great deal about technology
-  children's books
-AI doesn't know about:
-  modern pop culture
-  outside the lab
-
 ******************************************************** SOUND ********************************************************
 
 add sounds
@@ -660,3 +1044,75 @@ add sounds
     after grabbing a power up, in the selection menu
     from mobs, damage,inside field
     when activating fields: time, negative mass, 
+
+    //setup audio context
+    function tone(frequency) {
+        const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = 0.25; //controls volume
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+        oscillator.frequency.value = frequency; // value in hertz
+        oscillator.start();
+        return { oscillator: oscillator, audioCtx: audioCtx }
+    }
+    // https://www.fresnostate.edu/folklore/Olson/JUSTINT.HTM
+    // mixolyd. C      D       E      F+    G      A+    B
+    // key=G   264    297     330   356.40 396*   445.50 495 
+    // const t264 = tone(264)
+    // t264.oscillator.stop(t264.audioCtx.currentTime + 2) //in seconds, not milliseconds for some reason
+    // tone(297)
+    // tone(330)
+    // tone(356.40)
+    // tone(396)
+    // tone(445.50)
+    // tone(495)
+
+
+******************************************************** LORE ********************************************************
+
+possible names for tech
+  strange loop
+  homeostasis
+  holonomy -  parallel transport of a vector leads to movement (applies to curved space)
+  hypergolic - A hypergolic propellant combination used in a rocket engine is one whose components spontaneously ignite when they come into contact with each other.
+  swarm intelligence - for a drone tech
+  genetic algorithm
+  metaheuristic - is a higher-level procedure or heuristic designed to find, generate, or select a heuristic (partial search algorithm) that may provide a sufficiently good solution to an optimization problem, especially with incomplete or imperfect information or limited computation capacity
+  stochastic optimization
+  electrostatic discharge
+  Gödel's incompleteness
+  quantum zeno effect  (perturbation of a system prevents some systems from evolving because it scrambles coherence)  (apply to lasers, fields)
+  counterfactual - something false
+  regression to the mean
+  phlogiston theory is a superseded scientific theory that postulated the existence of a fire-like element called phlogiston
+  Laplace's demon was a notable published articulation of causal determinism on a scientific basis by Pierre-Simon Laplace in 1814.[1] According to determinism, if someone (the demon) knows the precise location and momentum of every atom in the universe, their past and future values for any given time are entailed; they can be calculated from the laws of classical mechanics.
+  evolutionary cosmology
+  eternal inflation
+  hypergraph
+  SQUID (for superconducting quantum interference device) is a very sensitive magnetometer used to measure extremely subtle magnetic fields, based on superconducting loops containing Josephson junctions.
+  nuclear pasta - hard matter in neutron star
+  nonlocal
+  fine-tuned universe
+  hall effect thrusters
+  spaghettification
+  particle accelerator
+  superluminal signalling
+  NP-complete
+  lenticular lens:  is an array of lenses, designed so that when viewed from slightly different angles, different parts of the image underneath are shown.
+  p-zombie
+  p-hacking JUNK tech
+  https://en.wikipedia.org/wiki/High-entropy_alloys  high yield strength and low ductility, high temp resistance
+  https://en.wikipedia.org/wiki/Refractory_metals  hard, high temp resistance
+  https://en.wikipedia.org/wiki/Upper-atmospheric_lightning#Elves
+  prion quine - self replicating protein
+  Unitarity - https://en.wikipedia.org/wiki/Unitarity_(physics) - all probabilities add up to 1, calculations work the same forward and backwards in time
+    this is violated by expansion of the universe
+  https://en.wikipedia.org/wiki/Cosmic_censorship_hypothesis - black holes can't leak
+
+
+
+
+

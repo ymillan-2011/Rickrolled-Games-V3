@@ -1,1 +1,11038 @@
-const tech={totalCount:null,setupAllTech(){for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].count=0,tech.tech[e].isLost=!1,tech.tech[e].remove(),tech.tech[e].isJunk?tech.tech[e].frequency=0:tech.tech[e].frequencyDefault?tech.tech[e].frequency=tech.tech[e].frequencyDefault:tech.tech[e].frequency=2;if(lore.techCount=0,simulation.isCheating||localSettings.runCount<1)for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isLore&&(tech.tech[e].frequency=0,tech.tech[e].count=0);tech.extraMaxHealth=0,tech.totalCount=0,simulation.updateTechHUD()},removeTech(e="random"){if("random"===e){const t=[];for(let e=0;e<tech.tech.length;e++)tech.tech[e].count>0&&!tech.tech[e].isNonRefundable&&t.push(e);if(!t.length)return 0;e=t[Math.floor(Math.random()*t.length)]}else if(isNaN(e)){let t=!1;for(let o=0;o<tech.tech.length;o++)if(e===tech.tech[o].name){e=o,t=!0;break}if(!t)return 0}if(0===tech.tech[e].count)return 0;const t=tech.tech[e].count;return simulation.makeTextLog(`<span class='color-var'>tech</span>.removeTech("<span class='color-text'>${tech.tech[e].name}</span>")`),tech.tech[e].remove(),tech.tech[e].count=0,simulation.updateTechHUD(),tech.tech[e].isLost=!0,simulation.updateTechHUD(),t},addJunkTechToPool(e){let t=0;for(let e=0,o=tech.tech.length;e<o;e++)tech.tech[e].count<tech.tech[e].maxCount&&tech.tech[e].allowed()&&!tech.tech[e].isJunk&&(t+=tech.tech[e].frequency);let o=[];for(let e=0;e<tech.tech.length;e++)tech.tech[e].count<tech.tech[e].maxCount&&tech.tech[e].isJunk&&o.push(e);if(o.length){const n=e*t;for(let e=0;e<n;e++)tech.tech[o[Math.floor(Math.random()*o.length)]].frequency++;return simulation.makeTextLog(`<span class='color-var'>tech</span>.tech.push(${n.toFixed(0)} <span class='color-text'>JUNK</span>)`),n}return 0},removeJunkTechFromPool(e=1){for(let t=0;t<e;t++)for(let e=0;e<tech.tech.length;e++)if(tech.tech[e].isJunk&&tech.tech[e].frequency>0&&tech.tech[e].count<tech.tech[e].maxCount){tech.tech[e].frequency--;break}},giveTech(e="random"){if("random"===e){let e=[];for(let t=0;t<tech.tech.length;t++)tech.tech[t].count<tech.tech[t].maxCount&&tech.tech[t].allowed()&&!tech.tech[t].isJunk&&!tech.tech[t].isLore&&!tech.tech[t].isBadRandomOption&&e.push(t);if(e.length>0){let t=e[Math.floor(Math.random()*e.length)];tech.giveTech(t),simulation.makeTextLog(`<span class='color-var'>tech</span>.giveTech("<span class='color-text'>${tech.tech[t].name}</span>")<em> //random tech</em>`)}}else{if(isNaN(e)){let t=!1;for(let o=0;o<tech.tech.length;o++)if(e===tech.tech[o].name){e=o,t=!0;break}if(!t)return}if(tech.isMetaAnalysis&&tech.tech[e].isJunk){simulation.makeTextLog("//tech: meta-analysis replaced junk tech with random tech"),tech.giveTech("random");for(let e=0;e<3;e++)powerUps.spawn(m.pos.x+40*Math.random(),m.pos.y+40*Math.random(),"research");return}tech.tech[e].isLost&&(tech.tech[e].isLost=!1),tech.tech[e].effect(),tech.tech[e].count++,tech.totalCount++,simulation.updateTechHUD()}},setCheating(){if(!simulation.isCheating){simulation.isCheating=!0,level.levelAnnounce(),lore.techCount=0;for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isLore&&(tech.tech[e].frequency=0,tech.tech[e].count=0);console.log("cheating"),sound.tone(250),sound.tone(300),sound.tone(375)}},haveGunCheck(e,t=!0){if(build.isExperimentSelection||!t){for(i=0,len=b.inventory.length;i<len;i++)if(b.guns[b.inventory[i]].name===e)return!0;return!1}return b.inventory.length>0&&b.guns[b.activeGun].name===e},hasExplosiveDamageCheck:()=>tech.haveGunCheck("missiles")||tech.isMissileField||tech.missileBotCount>0||tech.boomBotCount>1||tech.isIncendiary||tech.isPulseLaser||tech.isTokamak||tech.haveGunCheck("grenades")&&!tech.isNeutronBomb,damageFromTech(){let e=1;return tech.isAxion&&tech.isHarmMACHO&&(e*=1+.75*(1-m.harmReduction())),tech.OccamDamage&&(e*=tech.OccamDamage),tech.isCloakingDamage&&(e*=1.35),tech.isFlipFlopDamage&&tech.isFlipFlopOn&&(e*=1.5),tech.isAnthropicDamage&&tech.isDeathAvoidedThisLevel&&(e*=2.3703599),m.isSneakAttack&&m.cycle>m.lastKillCycle+240&&(e*=tech.sneakAttackDmg),tech.isTechDamage&&(e*=1.9),tech.isDupDamage&&(e*=1+Math.min(1,tech.duplicationChance())),tech.isLowEnergyDamage&&(e*=1+.7*Math.max(0,1-m.energy)),tech.isMaxEnergyTech&&(e*=1.5),tech.isEnergyNoAmmo&&(e*=1.66),tech.isDamageForGuns&&(e*=1+.12*b.inventory.length),tech.isLowHealthDmg&&(e*=1+.5*Math.max(0,1-m.health)),tech.isHarmDamage&&m.lastHarmCycle+600>m.cycle&&(e*=3),tech.isEnergyLoss&&(e*=1.55),tech.isAcidDmg&&m.health>1&&(e*=1.35),tech.restDamage>1&&player.speed<1&&(e*=tech.restDamage),tech.isEnergyDamage&&(e*=1+.11*m.energy),tech.isDamageFromBulletCount&&(e*=1+.007*bullet.length),tech.isRerollDamage&&(e*=1+.037*powerUps.research.count),tech.isOneGun&&b.inventory.length<2&&(e*=1.25),tech.isNoFireDamage&&m.cycle>m.fireCDcycle+120&&(e*=2),tech.isSpeedDamage&&(e*=1+Math.min(.66,.0165*player.speed)),tech.isBotDamage&&(e*=1+.07*b.totalBots()),tech.isDamageAfterKillNoRegen&&m.lastKillCycle+300>m.cycle&&(e*=1.5),e*tech.slowFire*tech.aimDamage},duplicationChance:()=>Math.max(0,(tech.isPowerUpsVanish?.12:0)+(tech.isStimulatedEmission?.15:0)+.043*tech.cancelCount+tech.duplicateChance+m.duplicateChance+tech.wormDuplicate+tech.cloakDuplication+(tech.isAnthropicTech&&tech.isDeathAvoidedThisLevel?.5:0)),isScaleMobsWithDuplication:!1,maxDuplicationEvent(){if(tech.is111Duplicate&&tech.duplicationChance()>1.11){tech.is111Duplicate=!1;const e=1300;tech.isScaleMobsWithDuplication=!0;for(let t=0,o=9;t<o;t++){const n=2*Math.PI*t/o;spawn.randomLevelBoss(m.pos.x+e*Math.cos(n),m.pos.y+e*Math.sin(n),spawn.nonCollideBossList)}spawn.historyBoss(0,0),spawn.pulsarBoss(level.exit.x,level.exit.y,70,!0),spawn.blockBoss(level.enter.x,level.enter.y),tech.isScaleMobsWithDuplication=!1}},setTechFrequency(e,t){for(let o=0,n=tech.tech.length;o<n;o++)tech.tech[o].name===e&&(tech.tech[o].frequency=t)},setBotTechFrequency(e=0){for(let t=0,o=tech.tech.length;t<o;t++)if(tech.tech[t].isBotTech)switch(tech.tech[t].name){case"dynamo-bot":case"orbital-bot":case"laser-bot":case"boom-bot":case"foam-bot":case"nail-bot":tech.tech[t].frequency=e}},tech:[{name:"gun sciences",description:"</strong>triple</strong> the <strong class='flicker'>frequency</strong> of finding <strong class='color-g'>gun</strong><strong class='color-m'>tech</strong><br>spawn a <strong class='color-g'>gun</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>!tech.isSuperDeterminism,requires:"NOT EXPERIMENT MODE, not superdeterminism",effect(){powerUps.spawn(m.pos.x,m.pos.y,"gun");for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isGunTech&&(tech.tech[e].frequency*=3)},remove(){}},{name:"ad hoc",description:`spawn a ${powerUps.orb.heal()}, ${powerUps.orb.research(1)}, <strong class='color-f'>field</strong>, ${powerUps.orb.ammo(1)}, or <strong class='color-m'>tech</strong><br>for every <strong class='color-g'>gun</strong> in your inventory`,maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,allowed:()=>b.inventory.length>1,requires:"NOT EXPERIMENT MODE, at least 2 guns",effect(){for(let e=0;e<b.inventory.length;e++)Math.random()<.2?powerUps.spawn(m.pos.x+10*Math.random(),m.pos.y+10*Math.random(),"tech"):Math.random()<.25?powerUps.spawn(m.pos.x+10*Math.random(),m.pos.y+10*Math.random(),"field"):Math.random()<.33?powerUps.spawn(m.pos.x+10*Math.random(),m.pos.y+10*Math.random(),"heal"):Math.random()<.5?powerUps.spawn(m.pos.x+10*Math.random(),m.pos.y+10*Math.random(),"ammo"):powerUps.spawn(m.pos.x+10*Math.random(),m.pos.y+10*Math.random(),"research")},remove(){}},{name:"applied science",description:"get a random <strong class='color-g'>gun</strong><strong class='color-m'>tech</strong><br>for each <strong class='color-g'>gun</strong> in your inventory",maxCount:9,count:0,isNonRefundable:!0,frequency:2,frequencyDefault:2,allowed:()=>b.inventory.length>1,requires:"NOT EXPERIMENT MODE, at least 2 guns",effect(){for(let e=b.inventory.length-1;e>-1;e--){const t=[];for(let o=0,n=tech.tech.length;o<n;o++){const n=b.activeGun;if(b.activeGun=b.inventory[e],tech.tech[o].isGunTech&&tech.tech[o].allowed()&&!tech.tech[o].isJunk&&!tech.tech[o].isBadRandomOption&&tech.tech[o].count<tech.tech[o].maxCount){const n=tech.tech[o].requires.search(b.guns[b.inventory[e]].name),r=tech.tech[o].requires.search(" not ");-1!==n&&(-1===r||r>n)&&t.push(o)}b.activeGun=n}if(t.length){const e=Math.floor(Math.random()*t.length);tech.giveTech(t[e]),simulation.makeTextLog(`<span class='color-var'>tech</span>.giveTech("<span class='color-text'>${tech.tech[t[e]].name}</span>")`)}}simulation.boldActiveGunHUD()},remove(){}},{name:"integrated armament",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Weapon\' class="link">integrated armament</a>',description:"<span style = 'font-size:95%;'>increase <strong class='color-d'>damage</strong> by <strong>25%</strong>, but new <strong class='color-g'>guns</strong><br>replace your current <strong class='color-g'>gun</strong> and convert <strong class='color-g'>gun</strong><strong class='color-m'>tech</strong></span>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>1===b.inventory.length,requires:"only 1 gun",effect(){tech.isOneGun=!0},remove(){tech.isOneGun=!1}},{name:"entanglement",nameInfo:"<span id = 'tech-entanglement'></span>",addNameInfo(){setTimeout((function(){simulation.boldActiveGunHUD()}),1e3)},description:"while your <strong>first</strong> <strong class='color-g'>gun</strong> is equipped<br>reduce <strong class='color-harm'>harm</strong> by <strong>13%</strong> for each of your <strong class='color-g'>guns</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isEntanglement=!0,setTimeout((function(){simulation.boldActiveGunHUD()}),1e3)},remove(){tech.isEntanglement=!1}},{name:"generalist",description:"spawn <strong>8</strong> <strong class='color-g'>guns</strong>, but you can't <strong>switch</strong> <strong class='color-g'>guns</strong><br><strong class='color-g'>guns</strong> cycle automatically with each new level",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>b.inventory.length<b.guns.length-5,requires:"less than 7 guns",effect(){tech.isGunCycle=!0;for(let e=0;e<8;e++)powerUps.spawn(m.pos.x+10*Math.random(),m.pos.y+10*Math.random(),"gun")},remove(){if(tech.isGunCycle){for(let e=0;e<8;e++)b.inventory.length&&b.removeGun(b.guns[b.inventory[b.inventory.length-1]].name);tech.isGunCycle=!1}}},{name:"arsenal",description:"increase <strong class='color-d'>damage</strong> by <strong>12%</strong><br>for each <strong class='color-g'>gun</strong> in your inventory",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isDamageForGuns=!0},remove(){tech.isDamageForGuns=!1}},{name:"active cooling",description:"<strong>18%</strong> decreased <strong><em>delay</em></strong> after firing<br>for each <strong class='color-g'>gun</strong> in your inventory",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isFireRateForGuns=!0,b.setFireCD()},remove(){tech.isFireRateForGuns=!1,b.setFireCD()}},{name:"supply chain",junk:.05,descriptionFunction(){return`double your current <strong class='color-ammo'>ammo</strong> for all <strong class='color-g'>guns</strong><br><strong>+${100*this.junk}%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool`},maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){for(let e=0;e<b.guns.length;e++)b.guns[e].have&&(b.guns[e].ammo=Math.floor(2*b.guns[e].ammo));simulation.makeGunHUD(),this.refundAmount+=tech.addJunkTechToPool(this.junk)},refundAmount:0,remove(){for(let e=0;e<this.count;e++)for(let e=0;e<b.guns.length;e++)b.guns[e].have&&(b.guns[e].ammo=Math.floor(.5*b.guns[e].ammo));simulation.makeGunHUD(),this.count>0&&this.refundAmount>0&&(tech.removeJunkTechFromPool(this.refundAmount),this.refundAmount=0)}},{name:"logistics",description:`${powerUps.orb.ammo()} give <strong>80%</strong> more <strong class='color-ammo'>ammo</strong>, but<br>it's only added to your current <strong class='color-g'>gun</strong>`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyNoAmmo,requires:"not exciton",effect(){tech.isAmmoForGun=!0},remove(){tech.isAmmoForGun=!1}},{name:"cache",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Cache_(computing)\' class="link">cache</a>',description:`${powerUps.orb.ammo()} give <strong>13x</strong> more <strong class='color-ammo'>ammo</strong>, but<br>you can't <strong>store</strong> any more <strong class='color-ammo'>ammo</strong> than that`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyNoAmmo,requires:"not exciton",effect(){tech.ammoCap=13,powerUps.ammo.effect()},remove(){tech.ammoCap=0}},{name:"catabolism",description:`firing while <strong>out</strong> of <strong class='color-ammo'>ammo</strong> spawns ${powerUps.orb.ammo(4)}<br>but it reduces your <strong>maximum</strong> <strong class='color-h'>health</strong> by <strong>1</strong>`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyNoAmmo&&!tech.isEnergyHealth,requires:"not exciton, mass-energy",effect:()=>{tech.isAmmoFromHealth=!0},remove(){tech.isAmmoFromHealth=!1}},{name:"exciton",description:`increase <strong class='color-d'>damage</strong> by <strong>66%</strong>, but<br>${powerUps.orb.ammo()} will no longer <strong>spawn</strong>`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isAmmoFromHealth,requires:"not catabolism",effect(){tech.isEnergyNoAmmo=!0},remove(){tech.isEnergyNoAmmo=!1}},{name:"desublimated ammunition",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Deposition_(phase_transition)\' class="link">desublimated ammunition</a>',description:"every other shot uses no <strong class='color-ammo'>ammo</strong> when <strong>crouching</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>build.isExperimentSelection,requires:"",effect(){tech.isCrouchAmmo=!0},remove(){tech.isCrouchAmmo=!1}},{name:"gun turret",description:"reduce <strong class='color-harm'>harm</strong> by <strong>66%</strong> when <strong>crouching</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isTurret=!0},remove(){tech.isTurret=!1}},{name:"dead reckoning",description:"increase <strong class='color-d'>damage</strong> by <strong>36%</strong> when at <strong>rest</strong>",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect:()=>{tech.restDamage+=.36},remove(){tech.restDamage=1}},{name:"Higgs mechanism",description:"while <strong>firing</strong> your <strong>position</strong> is locked<br><strong>50%</strong> decreased <strong><em>delay</em></strong> after firing",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!m.isShipMode&&!tech.isAlwaysFire,requires:"not ship mode, not automatic",effect:()=>{tech.isFireMoveLock=!0,b.setFireCD(),b.setFireMethod()},remove(){tech.isFireMoveLock&&(tech.isFireMoveLock=!1,b.setFireCD(),b.setFireMethod())}},{name:"squirrel-cage rotor",description:"<strong>move</strong> and <strong>jump</strong> <strong>30%</strong> faster<br>take <strong>5%</strong> more <strong class='color-harm'>harm</strong>",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.squirrelFx+=.25,tech.squirrelJump+=.1,m.setMovement()},remove(){tech.squirrelFx=1,tech.squirrelJump=1,m.setMovement()}},{name:"Newton's 1st law",description:"moving at high <strong>speeds</strong><br>reduces <strong class='color-harm'>harm</strong> by up to <strong>66%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy equivalence",effect(){tech.isSpeedHarm=!0},remove(){tech.isSpeedHarm=!1}},{name:"Newton's 2nd law",description:"moving at high <strong>speeds</strong><br>increases <strong class='color-d'>damage</strong> by up to <strong>66%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isSpeedDamage=!0},remove(){tech.isSpeedDamage=!1}},{name:"kinetic bombardment",description:"increase <strong class='color-d'>damage</strong> by up to <strong>33%</strong> at a <strong>distance</strong><br>of up to 50 player widths from the target",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isFarAwayDmg=!0},remove(){tech.isFarAwayDmg=!1}},{name:"regression",description:"bullet <strong>collisions</strong> increase <strong>vulnerability</strong> to<br><strong class='color-d'>damage</strong> by <strong>6%</strong> for mobs <em>(1% for bosses)</em>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isLessDamageReduction=!0},remove(){tech.isLessDamageReduction=!1}},{name:"microstates",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Microstate_(statistical_mechanics)\' class="link">microstates</a>',description:"increase <strong class='color-d'>damage</strong> by <strong>7%</strong><br>for every <strong>10</strong> active <strong>projectiles</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isDamageFromBulletCount=!0},remove(){tech.isDamageFromBulletCount=!1}},{name:"simulated annealing",description:"increase <strong class='color-d'>damage</strong> by <strong>20%</strong><br><strong>20%</strong> increased <strong><em>delay</em></strong> after firing",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,effect(){tech.slowFire=1.2,b.setFireCD()},remove(){tech.slowFire=1,b.setFireCD()}},{name:"heuristics",description:"<strong>30%</strong> decreased <strong><em>delay</em></strong> after firing",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.fireRate*=.7,b.setFireCD()},remove(){tech.fireRate=1,b.setFireCD()}},{name:"fracture analysis",description:"bullet impacts do <strong>400%</strong> <strong class='color-d'>damage</strong><br>to <strong>stunned</strong> mobs",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isStunField||tech.oneSuperBall||tech.isCloakStun||tech.orbitBotCount>1||tech.isExplosionStun||tech.isMineStun,requires:"a stun effect",effect(){tech.isCrit=!0},remove(){tech.isCrit=!1}},{name:"thermal runaway",description:"mobs <strong class='color-e'>explode</strong> when they <strong>die</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!(tech.sporesOnDeath||tech.nailsDeathMob||tech.botSpawner||tech.isMobBlockFling||tech.iceIXOnDeath),requires:"no other mob death tech",effect:()=>{tech.isExplodeMob=!0},remove(){tech.isExplodeMob=!1}},{name:"shear stress",description:"mobs release a <strong>nail</strong> when they <strong>die</strong><br><em>nails target nearby mobs</em>",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!(tech.sporesOnDeath||tech.isExplodeMob||tech.botSpawner||tech.isMobBlockFling||tech.iceIXOnDeath),requires:"no other mob death tech",effect:()=>{tech.nailsDeathMob++},remove(){tech.nailsDeathMob=0}},{name:"zoospore vector",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Disease_vector\' class="link">zoospore vector</a>',description:"mobs produce <strong class='color-p' style='letter-spacing: 2px;'>spores</strong> when they <strong>die</strong><br><strong>11%</strong> chance",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!(tech.nailsDeathMob||tech.isExplodeMob||tech.botSpawner||tech.isMobBlockFling||tech.iceIXOnDeath),requires:"no other mob death tech",effect(){tech.sporesOnDeath+=.11},remove(){tech.sporesOnDeath=0}},{name:"reaction inhibitor",description:"mobs spawn with <strong>11%</strong> less <strong>health</strong>",maxCount:3,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect:()=>{tech.mobSpawnWithHealth*=.89;for(let e=0;e<mob.length;e++)mob.health>tech.mobSpawnWithHealth&&(mob.health=tech.mobSpawnWithHealth)},remove(){tech.mobSpawnWithHealth=1}},{name:"decorrelation",description:"reduce <strong class='color-harm'>harm</strong> by <strong>70%</strong> after not <strong>activating</strong><br>your <strong class='color-g'>gun</strong> or <strong class='color-f'>field</strong> for <strong>2</strong> seconds",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isNoFireDefense=!0},remove(){tech.isNoFireDefense=!1}},{name:"anticorrelation",description:"increase <strong class='color-d'>damage</strong> by <strong>100%</strong><br>after not using your <strong class='color-g'>gun</strong> or <strong class='color-f'>field</strong> for <strong>2</strong> seconds",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isNoFireDamage=!0},remove(){tech.isNoFireDamage=!1}},{name:"scrap bots",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Scrap\' class="link">scrap bots</a>',description:"<strong>33%</strong> chance after killing a mob to build<br>a scrap <strong class='color-bot'>bot</strong> that operates for <strong>14</strong> seconds",maxCount:3,count:0,frequency:1,frequencyDefault:1,isBotTech:!0,allowed:()=>!(tech.sporesOnDeath||tech.nailsDeathMob||tech.isExplodeMob||tech.isMobBlockFling||tech.iceIXOnDeath),requires:"no other mob death tech",effect(){tech.botSpawner+=.33},remove(){tech.botSpawner=0}},{name:"scrap refit",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Scrap\' class="link">scrap refit</a>',description:"killing a mob resets your functional scrap <strong class='color-bot'>bots</strong><br>to <strong>14</strong> seconds of operation",maxCount:1,count:0,frequency:3,frequencyDefault:3,isBotTech:!0,allowed:()=>tech.botSpawner,requires:"scrap bots",effect(){tech.isBotSpawnerReset=!0},remove(){tech.isBotSpawnerReset=!1}},{name:"nail-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">nail-bot</a>',description:"a <strong class='color-bot'>bot</strong> fires <strong>nails</strong> at mobs in line of sight",maxCount:9,count:0,frequency:1,frequencyDefault:1,isBot:!0,isBotTech:!0,allowed:()=>!0,requires:"",effect(){tech.nailBotCount++,b.nailBot()},remove(){this.count&&(tech.nailBotCount-=this.count,b.clearPermanentBots(),b.respawnBots())}},{name:"nail-bot upgrade",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">nail-bot upgrade</a>',description:"<strong>convert</strong> your current bots to <strong>nail-bots</strong><br><strong>+500%</strong> <strong>fire rate</strong> and <strong>+40%</strong> nail <strong>velocity</strong>",maxCount:1,count:0,frequency:3,frequencyDefault:3,isBotTech:!0,allowed:()=>tech.nailBotCount>1&&!b.hasBotUpgrade(),requires:"2 or more nail bots and no other bot upgrade",effect(){tech.isNailBotUpgrade=!0,b.convertBotsTo("nail-bot");for(let e=0;e<bullet.length;e++)"nail"===bullet[e].botType&&(bullet[e].isUpgraded=!0);tech.setBotTechFrequency(),tech.setTechFrequency("nail-bot",5)},remove(){if(this.count){for(let e=0;e<bullet.length;e++)"nail"===bullet[e].botType&&(bullet[e].isUpgraded=!1);tech.setBotTechFrequency(1)}tech.isNailBotUpgrade=!1}},{name:"foam-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">foam-bot</a>',description:"a <strong class='color-bot'>bot</strong> fires <strong>foam</strong> at nearby mobs",maxCount:9,count:0,frequency:1,frequencyDefault:1,isBot:!0,isBotTech:!0,allowed:()=>!0,requires:"",effect(){tech.foamBotCount++,b.foamBot()},remove(){this.count&&(tech.foamBotCount-=this.count,b.clearPermanentBots(),b.respawnBots())}},{name:"foam-bot upgrade",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">foam-bot upgrade</a>',description:"<strong>convert</strong> your current bots to <strong>foam-bots</strong><br><strong>300%</strong> increased foam <strong>size</strong> and <strong>fire rate</strong>",maxCount:1,count:0,frequency:3,frequencyDefault:3,isBotTech:!0,allowed:()=>tech.foamBotCount>1&&!b.hasBotUpgrade(),requires:"2 or more foam bots and no other bot upgrade",effect(){tech.isFoamBotUpgrade=!0,b.convertBotsTo("foam-bot");for(let e=0;e<bullet.length;e++)"foam"===bullet[e].botType&&(bullet[e].isUpgraded=!0);tech.setBotTechFrequency(),tech.setTechFrequency("foam-bot",5)},remove(){if(this.count){for(let e=0;e<bullet.length;e++)"foam"===bullet[e].botType&&(bullet[e].isUpgraded=!1);tech.setBotTechFrequency(1)}tech.isFoamBotUpgrade=!1}},{name:"boom-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">boom-bot</a>',description:"a <strong class='color-bot'>bot</strong> <strong>defends</strong> the space around you<br>ignites an <strong class='color-e'>explosion</strong> after hitting a mob",maxCount:9,count:0,frequency:1,frequencyDefault:1,isBot:!0,isBotTech:!0,allowed:()=>!0,requires:"",effect(){tech.boomBotCount++,b.boomBot()},remove(){this.count&&(tech.boomBotCount-=this.count,b.clearPermanentBots(),b.respawnBots())}},{name:"boom-bot upgrade",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">boom-bot upgrade</a>',description:"<strong>convert</strong> your current bots to <strong>boom-bots</strong><br><strong>300%</strong> increased <strong class='color-e'>explosion</strong> <strong class='color-d'>damage</strong> and size",maxCount:1,count:0,frequency:3,frequencyDefault:3,isBotTech:!0,allowed:()=>tech.boomBotCount>1&&!b.hasBotUpgrade(),requires:"2 or more boom bots and no other bot upgrade",effect(){tech.isBoomBotUpgrade=!0,b.convertBotsTo("boom-bot");for(let e=0;e<bullet.length;e++)"boom"===bullet[e].botType&&(bullet[e].isUpgraded=!0);tech.setBotTechFrequency(),tech.setTechFrequency("boom-bot",5)},remove(){if(this.count){for(let e=0;e<bullet.length;e++)"boom"===bullet[e].botType&&(bullet[e].isUpgraded=!1);tech.setBotTechFrequency(1)}tech.isBoomBotUpgrade=!1}},{name:"laser-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">laser-bot</a>',description:"a <strong class='color-bot'>bot</strong> uses <strong class='color-f'>energy</strong> to emit a <strong class='color-laser'>laser</strong> beam<br>that targets nearby mobs",maxCount:9,count:0,frequency:1,frequencyDefault:1,isBot:!0,isBotTech:!0,allowed:()=>m.maxEnergy>.5,requires:"maximum energy above 50",effect(){tech.laserBotCount++,b.laserBot()},remove(){this.count&&(tech.laserBotCount-=this.count,b.clearPermanentBots(),b.respawnBots())}},{name:"laser-bot upgrade",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">laser-bot upgrade</a>',description:"<strong>convert</strong> your current bots to <strong>laser-bots</strong><br><strong>100%</strong> improved <strong class='color-d'>damage</strong>, efficiency, and range",maxCount:1,count:0,frequency:3,frequencyDefault:3,isBotTech:!0,allowed:()=>tech.laserBotCount>1&&!b.hasBotUpgrade(),requires:"2 or more laser bots and no other bot upgrade",effect(){tech.isLaserBotUpgrade=!0,b.convertBotsTo("laser-bot");for(let e=0;e<bullet.length;e++)"laser"===bullet[e].botType&&(bullet[e].isUpgraded=!0);tech.setBotTechFrequency(),tech.setTechFrequency("laser-bot",5)},remove(){if(this.count){for(let e=0;e<bullet.length;e++)"laser"===bullet[e].botType&&(bullet[e].isUpgraded=!1);tech.setBotTechFrequency(1)}tech.isLaserBotUpgrade=!1}},{name:"orbital-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">orbital-bot</a>',description:"a <strong class='color-bot'>bot</strong> is locked in <strong>orbit</strong> around you<br><strong>stuns</strong> and <strong class='color-d'>damages</strong> mobs on <strong>contact</strong>",maxCount:9,count:0,frequency:1,frequencyDefault:1,isBot:!0,isBotTech:!0,allowed:()=>!0,requires:"",effect(){b.orbitBot(),tech.orbitBotCount++},remove(){this.count&&(tech.orbitBotCount-=this.count,b.clearPermanentBots(),b.respawnBots())}},{name:"orbital-bot upgrade",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">orbital-bot upgrade</a>',description:"<strong>convert</strong> your current bots to <strong>orbital-bots</strong><br>increase <strong class='color-d'>damage</strong> by <strong>300%</strong> and <strong>radius</strong> by <strong>50%</strong>",maxCount:1,count:0,frequency:3,frequencyDefault:3,isBotTech:!0,allowed:()=>tech.orbitBotCount>1&&!b.hasBotUpgrade(),requires:"2 or more orbital bots and no other bot upgrade",effect(){tech.isOrbitBotUpgrade=!0,b.convertBotsTo("orbital-bot");const e=190+120*tech.isOrbitBotUpgrade;for(let t=0;t<bullet.length;t++)"orbit"===bullet[t].botType&&(bullet[t].isUpgraded=!0,bullet[t].range=e,bullet[t].orbitalSpeed=Math.sqrt(.25/e));tech.setBotTechFrequency(),tech.setTechFrequency("orbital-bot",5)},remove(){if(this.count){const e=190+100*tech.isOrbitBotUpgrade;for(let t=0;t<bullet.length;t++)"orbit"===bullet[t].botType&&(bullet[t].range=e,bullet[t].orbitalSpeed=Math.sqrt(.25/e));tech.setBotTechFrequency(1)}tech.isOrbitBotUpgrade=!1}},{name:"dynamo-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">dynamo-bot</a>',description:"a <strong class='color-bot'>bot</strong> <strong class='color-d'>damages</strong> mobs while it <strong>traces</strong> your path<br>regen <strong>6</strong> <strong class='color-f'>energy</strong> per second when it's near",maxCount:9,count:0,frequency:1,frequencyDefault:1,isBot:!0,isBotTech:!0,allowed:()=>!0,requires:"",effect(){tech.dynamoBotCount++,b.dynamoBot()},remove(){this.count&&(tech.dynamoBotCount-=this.count,b.clearPermanentBots(),b.respawnBots())}},{name:"dynamo-bot upgrade",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">dynamo-bot upgrade</a>',description:"<strong>convert</strong> your current bots to <strong>dynamo-bots</strong><br>increase regen to <strong>20</strong> <strong class='color-f'>energy</strong> per second",maxCount:1,count:0,frequency:3,frequencyDefault:3,isBotTech:!0,allowed:()=>tech.dynamoBotCount>1&&!b.hasBotUpgrade(),requires:"2 or more dynamo bots and no other bot upgrade",effect(){tech.isDynamoBotUpgrade=!0,b.convertBotsTo("dynamo-bot");for(let e=0;e<bullet.length;e++)"dynamo"===bullet[e].botType&&(bullet[e].isUpgraded=!0);tech.setBotTechFrequency(),tech.setTechFrequency("dynamo-bot",5)},remove(){if(this.count){for(let e=0;e<bullet.length;e++)"dynamo"===bullet[e].botType&&(bullet[e].isUpgraded=!1);tech.setBotTechFrequency(1)}tech.isDynamoBotUpgrade=!1}},{name:"bot fabrication",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">bot fabrication</a>',descriptionFunction:()=>`after you collect ${powerUps.orb.research(2+Math.floor(.1666*b.totalBots()))}use them to build a<br>random <strong class='color-bot'>bot</strong> <em>(+1 cost every 6 bots)</em>`,maxCount:1,count:0,frequency:2,frequencyDefault:2,isBotTech:!0,allowed:()=>powerUps.research.count>1||build.isExperimentSelection,requires:"at least 2 research",effect(){tech.isRerollBots=!0,powerUps.research.changeRerolls(0),simulation.makeTextLog("<span class='color-var'>m</span>.<span class='color-r'>research</span> <span class='color-symbol'>=</span> 0")},remove(){tech.isRerollBots=!1}},{name:"robotics",description:"spawn <strong>2</strong> random <strong>bots</strong><br><strong>quadruple</strong> the <strong class='flicker'>frequency</strong> of finding <strong>bot</strong> <strong class='color-m'>tech</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,isBotTech:!0,allowed:()=>b.totalBots()>1||build.isExperimentSelection,requires:"at least 2 bots",effect:()=>{b.randomBot(),b.randomBot();for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isBotTech&&(tech.tech[e].frequency*=4)},remove(){if(this.count>0){b.removeBot(),b.removeBot(),b.clearPermanentBots(),b.respawnBots();for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isBotTech&&(tech.tech[e].frequency=Math.ceil(tech.tech[e].frequency/4))}}},{name:"perimeter defense",description:"reduce <strong class='color-harm'>harm</strong> by <strong>8%</strong><br>for each of your permanent <strong class='color-bot'>bots</strong>",maxCount:1,count:0,frequency:2,frequencyDefault:2,isBotTech:!0,allowed:()=>b.totalBots()>1&&!tech.isEnergyHealth,requires:"at least 2 bots",effect(){tech.isBotArmor=!0},remove(){tech.isBotArmor=!1}},{name:"network effect",description:"increase <strong class='color-d'>damage</strong> by <strong>7%</strong><br>for each of your permanent <strong class='color-bot'>bots</strong>",maxCount:1,count:0,frequency:2,frequencyDefault:2,isBotTech:!0,allowed:()=>b.totalBots()>1,requires:"at least 2 bots",effect(){tech.isBotDamage=!0},remove(){tech.isBotDamage=!1}},{name:"ersatz bots",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Ersatz_good\' class="link">ersatz bots</a>',description:"<strong>double</strong> your current permanent <strong class='color-bot'>bots</strong><br>remove <strong>all</strong> <strong class='color-g'>guns</strong> in your inventory",maxCount:1,count:0,frequency:2,frequencyDefault:2,isBotTech:!0,isBadRandomOption:!0,numberOfGunsLost:0,allowed:()=>b.totalBots()>3&&!build.isExperimentSelection,requires:"NOT EXPERIMENT MODE, at least 4 bots",effect(){this.numberOfGunsLost=b.inventory.length,b.removeAllGuns(),simulation.makeGunHUD();for(let e=0;e<tech.nailBotCount;e++)b.nailBot();tech.nailBotCount*=2;for(let e=0;e<tech.laserBotCount;e++)b.laserBot();tech.laserBotCount*=2;for(let e=0;e<tech.foamBotCount;e++)b.foamBot();tech.foamBotCount*=2;for(let e=0;e<tech.boomBotCount;e++)b.boomBot();tech.boomBotCount*=2;for(let e=0;e<tech.orbitBotCount;e++)b.orbitBot();tech.orbitBotCount*=2;for(let e=0;e<tech.dynamoBotCount;e++)b.dynamoBot();tech.dynamoBotCount*=2;for(let e=0;e<tech.plasmaBotCount;e++)b.plasmaBot();tech.plasmaBotCount*=2;for(let e=0;e<tech.missileBotCount;e++)b.missileBot();tech.missileBotCount*=2},remove(){if(this.count){for(let e=0;e<this.numberOfGunsLost;e++)powerUps.spawn(m.pos.x+60*(Math.random()-.5),m.pos.y+60*(Math.random()-.5),"gun");this.numberOfGunsLost=0,tech.nailBotCount=Math.round(tech.nailBotCount/2),tech.laserBotCount=Math.round(tech.laserBotCount/2),tech.foamBotCount=Math.round(tech.foamBotCount/2),tech.boomBotCount=Math.round(tech.boomBotCount/2),tech.orbitBotCount=Math.round(tech.orbitBotCount/2),tech.dynamoBotCount=Math.round(tech.dynamoBotCount/2),tech.plasmaBotCount=Math.round(tech.plasmaBotCount/2),tech.missileBotCount=Math.round(tech.missileBotCount/2),b.clearPermanentBots(),b.respawnBots()}}},{name:"mass driver",description:"increase <strong class='color-block'>block</strong> collision <strong class='color-d'>damage</strong> by <strong>300%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>"wormhole"!==m.fieldUpgrades[m.fieldMode].name,requires:"not wormhole",effect(){tech.blockDamage=.3},remove(){tech.blockDamage=.075}},{name:"inflation",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Inflation_(cosmology)\' class="link">inflation</a>',description:"<strong>throwing</strong> a <strong class='color-block'>block</strong> expands it by <strong>300%</strong><br><strong>holding</strong> a <strong class='color-block'>block</strong> reduces <strong class='color-harm'>harm</strong> by <strong>85%</strong>",maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.blockDamage>.075&&"pilot wave"!==m.fieldUpgrades[m.fieldMode].name&&"wormhole"!==m.fieldUpgrades[m.fieldMode].name&&!tech.isTokamak,requires:"mass driver, not pilot wave, tokamak, wormhole",effect(){tech.isAddBlockMass=!0},remove(){tech.isAddBlockMass=!1}},{name:"restitution",description:"<strong>throwing</strong> a <strong class='color-block'>block</strong> makes it very <strong>bouncy</strong><br>increase <strong class='color-block'>block</strong> collision <strong class='color-d'>damage</strong> by <strong>150%</strong>",maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.blockDamage>.075&&"pilot wave"!==m.fieldUpgrades[m.fieldMode].name&&"wormhole"!==m.fieldUpgrades[m.fieldMode].name&&!tech.isTokamak,requires:"mass driver, not pilot wave not tokamak, wormhole",effect(){tech.isBlockRestitution=!0},remove(){tech.isBlockRestitution=!1}},{name:"flywheel",description:"after a mob <strong>dies</strong> its <strong class='color-block'>block</strong> is <strong>flung</strong> at mobs<br>increase <strong class='color-block'>block</strong> collision <strong class='color-d'>damage</strong> by <strong>150%</strong>",maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.blockDamage>.075&&!tech.nailsDeathMob&&!tech.sporesOnDeath&&!tech.isExplodeMob&&!tech.botSpawner&&!tech.iceIXOnDeath,requires:"mass driver, no other mob death tech",effect(){tech.isMobBlockFling=!0},remove(){tech.isMobBlockFling=!1}},{name:"buckling",description:`if a <strong class='color-block'>block</strong> you threw kills a mob<br>spawn <strong>1</strong> ${powerUps.orb.heal()}, ${powerUps.orb.ammo()}, or ${powerUps.orb.research(1)}`,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.blockDamage>.075&&"pilot wave"!==m.fieldUpgrades[m.fieldMode].name&&!tech.isTokamak,requires:"mass driver, not pilot wave, tokamak",effect(){tech.isBlockPowerUps=!0},remove(){tech.isBlockPowerUps=!1}},{name:"Pauli exclusion",description:"after receiving <strong class='color-harm'>harm</strong> from a <strong>collision</strong> become<br><strong>immune</strong> to <strong class='color-harm'>harm</strong> for <strong>1</strong> extra second",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.collisionImmuneCycles+=60,m.immuneCycle<m.cycle+tech.collisionImmuneCycles&&(m.immuneCycle=m.cycle+tech.collisionImmuneCycles)},remove(){tech.collisionImmuneCycles=30}},{name:"complex spin-statistics",description:"become <strong>immune</strong> to <strong class='color-harm'>harm</strong> for <strong>1.8</strong> seconds<br>once every <strong>7</strong> seconds",maxCount:3,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.cyclicImmunity+=108},remove(){tech.cyclicImmunity=0}},{name:"NOR gate",description:"if <strong>flip-flop</strong> is in the <strong class='color-flop'>ON</strong> state<br>take <strong>0</strong> <strong class='color-harm'>harm</strong> from collisions with mobs",maxCount:1,count:0,frequency:4,frequencyDefault:4,allowed:()=>tech.isFlipFlop,requires:"flip-flop",effect(){tech.isFlipFlopHarm=!0},remove(){tech.isFlipFlopHarm=!1}},{name:"flip-flop",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Flip-flop_(electronics)\' class="link">flip-flop</a>',description:'toggle <strong class="color-flop">ON</strong> and <strong class="color-flop">OFF</strong> after a <strong>collision</strong><br>unlock advanced <strong class=\'color-m\'>tech</strong> that runs if <strong class="color-flop">ON</strong>',nameInfo:"<span id = 'tech-flip-flop'></span>",addNameInfo(){setTimeout((function(){document.getElementById("tech-flip-flop")&&(tech.isFlipFlopOn?(document.getElementById("tech-flip-flop").innerHTML=" = <strong>ON</strong>",m.eyeFillColor=m.fieldMeterColor):(document.getElementById("tech-flip-flop").innerHTML=" = <strong>OFF</strong>",m.eyeFillColor="transparent"))}),100)},maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isRelay,requires:"not relay switch",effect(){tech.isFlipFlop=!0,tech.isFlipFlopOn=!0,m.isShipMode||(m.draw=m.drawFlipFlop)},remove(){tech.isFlipFlop=!1,tech.isFlipFlopOn=!1,m.eyeFillColor="transparent"}},{name:"relay switch",description:'toggle <strong class="color-flop">ON</strong> and <strong class="color-flop">OFF</strong> after picking up a <strong>power up</strong><br>unlock advanced <strong class=\'color-m\'>tech</strong> that runs if <strong class="color-flop">ON</strong>',nameInfo:"<span id = 'tech-switch'></span>",addNameInfo(){setTimeout((function(){document.getElementById("tech-switch")&&(tech.isFlipFlopOn?(document.getElementById("tech-switch").innerHTML=" = <strong>ON</strong>",m.eyeFillColor=m.fieldMeterColor):(document.getElementById("tech-switch").innerHTML=" = <strong>OFF</strong>",m.eyeFillColor="transparent"))}),100)},maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isFlipFlop,requires:"not flip-flop",effect(){tech.isRelay=!0,tech.isFlipFlopOn=!0,m.isShipMode||(m.draw=m.drawFlipFlop)},remove(){tech.isRelay=!1,tech.isFlipFlopOn=!1,m.eyeFillColor="transparent"}},{name:"NAND gate",description:"if in the <strong class='color-flop'>ON</strong> state<br>do <strong>50%</strong> more <strong class='color-d'>damage</strong>",maxCount:1,count:0,frequency:4,frequencyDefault:4,allowed:()=>tech.isFlipFlop||tech.isRelay,requires:"ON/OFF tech",effect(){tech.isFlipFlopDamage=!0},remove(){tech.isFlipFlopDamage=!1}},{name:"transistor",description:"if <strong class='color-flop'>ON</strong> regen <strong>20</strong> <strong class='color-f'>energy</strong> per second<br>if <strong class='color-flop'>OFF</strong> drain <strong>1</strong> <strong class='color-f'>energy</strong> per second",maxCount:1,count:0,frequency:4,frequencyDefault:4,allowed:()=>tech.isFlipFlop||tech.isRelay,requires:"ON/OFF tech",effect(){tech.isFlipFlopEnergy=!0},remove(){tech.isFlipFlopEnergy=!1}},{name:"shift registers",description:"set to the <strong class='color-flop'>ON</strong> state<br>at the start of a <strong>level</strong>",maxCount:1,count:0,frequency:4,frequencyDefault:4,allowed:()=>tech.isFlipFlopEnergy||tech.isFlipFlopDamage||tech.isFlipFlopHarm||tech.relayIce,requires:"2 ON/OFF techs",effect(){tech.isFlipFlopLevelReset=!0},remove(){tech.isFlipFlopLevelReset=!1}},{name:"thermocouple",description:"if  <strong>relay switch</strong> is in the <strong class='color-flop'>ON</strong> state<br>condense <strong>4-13</strong> <strong class='color-s'>ice IX</strong> crystals every second",maxCount:9,count:0,frequency:4,frequencyDefault:4,allowed:()=>tech.isRelay,requires:"relay switch",effect(){tech.relayIce++},remove(){tech.relayIce=0}},{name:"crystallizer",description:"after <strong class='color-s'>frozen</strong> mobs <strong>die</strong> they<br>shatter into <strong class='color-s'>ice IX</strong> crystals",maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.isIceCrystals||tech.isSporeFreeze||tech.isIceField||tech.isIceShot||tech.relayIce||tech.isNeedleIce||tech.blockingIce>1)&&!tech.sporesOnDeath&&!tech.isExplodeMob&&!tech.botSpawner&&!tech.isMobBlockFling&&!tech.nailsDeathMob,requires:"a localized freeze effect, no other mob death tech",effect(){tech.iceIXOnDeath++},remove(){tech.iceIXOnDeath=0}},{name:"thermoelectric effect",description:"<strong>killing</strong> mobs with <strong class='color-s'>ice IX</strong><br>generates <strong>100</strong> <strong class='color-f'>energy</strong>",maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isIceField||tech.relayIce||tech.isNeedleIce||tech.blockingIce||tech.iceIXOnDeath||tech.isIceShot,requires:"ice IX",effect(){tech.iceEnergy++},remove(){tech.iceEnergy=0}},{name:"superfluidity",description:"<strong class='color-s'>freeze</strong> effects are applied to a small area",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isIceCrystals||tech.isSporeFreeze||tech.isIceField||tech.relayIce||tech.isNeedleIce||tech.blockingIce>1||tech.iceIXOnDeath||tech.isIceShot,requires:"a localized freeze effect",effect(){tech.isAoESlow=!0},remove(){tech.isAoESlow=!1}},{name:"liquid cooling",description:"<strong class='color-s'>freeze</strong> all mobs for <strong>7</strong> seconds<br>after receiving <strong class='color-harm'>harm</strong>",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isSlowFPS,requires:"clock gating",effect(){tech.isHarmFreeze=!0},remove(){tech.isHarmFreeze=!1}},{name:"clock gating",description:"<strong>slow</strong> <strong>time</strong> by <strong>50%</strong> after receiving <strong class='color-harm'>harm</strong><br>reduce <strong class='color-harm'>harm</strong> by <strong>20%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>simulation.fpsCapDefault>45,requires:"FPS above 45",effect(){tech.isSlowFPS=!0},remove(){tech.isSlowFPS=!1}},{name:"MACHO",description:"a massive but compact object slowly <strong>follows</strong> you<br>take <strong>66%</strong> less <strong class='color-harm'>harm</strong> inside it's <strong>halo</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect:()=>{tech.isMACHO=!0,spawn.MACHO()},remove(){tech.isMACHO=!1,tech.isHarmMACHO=!1;for(let e=0,t=mob.length;e<t;e++)mob[e].isMACHO&&(mob[e].alive=!1)}},{name:"axion",description:"while inside the <strong>MACHO</strong> <strong>75%</strong> of your total<br><strong class='color-harm'>harm</strong> reduction is added to your <strong class='color-d'>damage</strong>",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isMACHO,requires:"MACHO",effect:()=>{tech.isAxion=!0},remove(){tech.isAxion=!1}},{name:"ablative drones",description:"rebuild your broken parts as <strong>drones</strong><br>chance to occur after receiving <strong class='color-harm'>harm</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isDroneOnDamage=!0},remove(){tech.isDroneOnDamage=!1}},{name:"non-Newtonian armor",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Non-Newtonian_fluid\' class="link">non-Newtonian armor</a>',description:"for <strong>10 seconds</strong> after receiving <strong class='color-harm'>harm</strong><br>reduce <strong class='color-harm'>harm</strong> by <strong>66%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isHarmArmor=!0},remove(){tech.isHarmArmor=!1}},{name:"radiative equilibrium",description:"for <strong>10 seconds</strong> after receiving <strong class='color-harm'>harm</strong><br>increase <strong class='color-d'>damage</strong> by <strong>200%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isHarmDamage=!0},remove(){tech.isHarmDamage=!1}},{name:"CPT symmetry",description:"<strong>charge</strong>, <strong>parity</strong>, and <strong>time</strong> invert to undo <strong class='color-harm'>harm</strong><br><strong class='color-rewind'>rewind</strong> <strong>(1.5—5)</strong> seconds for <strong>(66—220)</strong> <strong class='color-f'>energy</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>m.maxEnergy>.99&&"standing wave"!==m.fieldUpgrades[m.fieldMode].name&&!tech.isEnergyHealth&&!tech.isRewindField,requires:"not standing wave, mass-energy, max energy reduction",effect(){tech.isRewindAvoidDeath=!0},remove(){tech.isRewindAvoidDeath=!1}},{name:"causality bots",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Causality\' class="link">causality bots</a>',description:"when you <strong class='color-rewind'>rewind</strong>, build several <strong class='color-bot'>bots</strong><br>that protect you for about <strong>9</strong> seconds",maxCount:3,count:0,frequency:2,frequencyDefault:2,isBotTech:!0,allowed:()=>tech.isRewindAvoidDeath||tech.isRewindField,requires:"CPT, retrocausality",effect(){tech.isRewindBot++},remove(){tech.isRewindBot=0}},{name:"causality bombs",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Causality\' class="link">causality bombs</a>',description:"when you <strong class='color-rewind'>rewind</strong> drop several <strong>grenades</strong><br>become immune to <strong class='color-harm'>harm</strong> until they <strong class='color-e'>explode</strong>",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isRewindAvoidDeath||tech.isRewindField,requires:"CPT, retrocausality",effect(){tech.isRewindGrenade=!0},remove(){tech.isRewindGrenade=!1}},{name:"piezoelectricity",description:"<strong>colliding</strong> with mobs gives you <strong>2048</strong> <strong class='color-f'>energy</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isPiezo=!0},remove(){tech.isPiezo=!1}},{name:"ground state",description:"reduce <strong class='color-harm'>harm</strong> by <strong>66%</strong><br>you <strong>no longer</strong> passively regenerate <strong class='color-f'>energy</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isCrouchRegen,requires:"not inductive coupling",effect:()=>{tech.energyRegen=0,m.fieldRegen=tech.energyRegen},remove(){tech.energyRegen=.001,m.fieldRegen=tech.energyRegen}},{name:"mass-energy equivalence",description:"<strong class='color-f'>energy</strong> protects you instead of <strong class='color-h'>health</strong><br><strong class='color-harm'>harm</strong> <strong>reduction</strong> effects provide <strong>no</strong> benefit",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!(tech.isZeno||tech.isNoHeals||tech.isPiezo||tech.isRewindAvoidDeath||tech.isTechDamage||tech.isMutualism),requires:"not Zeno, ergodicity, piezoelectricity, CPT, antiscience, mutualism",effect:()=>{m.health=0,document.getElementById("health").style.display="none",document.getElementById("health-bg").style.display="none",document.getElementById("dmg").style.backgroundColor="#0cf",tech.isEnergyHealth=!0,simulation.mobDmgColor="rgba(14, 190, 235,0.7)",m.displayHealth()},remove(){tech.isEnergyHealth&&(tech.isEnergyHealth=!1,document.getElementById("health").style.display="inline",document.getElementById("health-bg").style.display="inline",document.getElementById("dmg").style.backgroundColor="#f67",m.health=Math.max(Math.min(m.maxHealth,m.energy),.1),simulation.mobDmgColor="rgba(255,0,0,0.7)",m.displayHealth()),tech.isEnergyHealth=!1}},{name:"1st ionization energy",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Ionization_energy\' class="link">1st ionization energy</a>',description:`each ${powerUps.orb.heal()} you collect<br>increases your <strong>maximum</strong> <strong class='color-f'>energy</strong> by <strong>8</strong>`,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isEnergyHealth,requires:"mass-energy equivalence",effect(){tech.healGiveMaxEnergy=!0,powerUps.heal.color="#0ae";for(let e=0;e<powerUp.length;e++)"heal"===powerUp[e].name&&(powerUp[e].color=powerUps.heal.color)},remove(){tech.healGiveMaxEnergy=!1,powerUps.heal.color="#0eb";for(let e=0;e<powerUp.length;e++)"heal"===powerUp[e].name&&(powerUp[e].color=powerUps.heal.color)}},{name:"weak interaction",description:"each unused <strong>power up</strong> at the end of a <strong>level</strong><br>adds 5 <strong>maximum</strong> <strong class='color-f'>energy</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isDroneGrab,requires:"not delivery drone",effect(){tech.isExtraMaxEnergy=!0},remove(){tech.isExtraMaxEnergy=!1}},{name:"electroweak interaction",description:"unused <strong>power ups</strong> at the end of each <strong>level</strong><br>are still activated <em>(selections are random)</em>",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isExtraMaxEnergy,requires:"weak interaction",effect(){tech.isEndLevelPowerUp=!0},remove(){tech.isEndLevelPowerUp=!1}},{name:"electronegativity",description:"increase <strong class='color-d'>damage</strong> by <strong>1%</strong><br>for every <strong>9</strong> stored <strong class='color-f'>energy</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect:()=>{tech.isEnergyDamage=!0},remove(){tech.isEnergyDamage=!1}},{name:"exothermic process",description:"increase <strong class='color-d'>damage</strong> by <strong>50%</strong><br>if a mob <strong>dies</strong> drain <strong class='color-f'>energy</strong> by <strong>25%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isEnergyLoss=!0},remove(){tech.isEnergyLoss=!1}},{name:"heat engine",description:"increase <strong class='color-d'>damage</strong> by <strong>50%</strong>, but<br>reduce maximum <strong class='color-f'>energy</strong> by <strong>50</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isRewindAvoidDeath,requires:"not CPT",effect(){tech.isMaxEnergyTech=!0,m.setMaxEnergy()},remove(){tech.isMaxEnergyTech=!1,m.setMaxEnergy()}},{name:"Gibbs free energy",description:"increase <strong class='color-d'>damage</strong> by <strong>0.7%</strong><br>for each <strong class='color-f'>energy</strong> below <strong>100</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isLowEnergyDamage=!0},remove(){tech.isLowEnergyDamage=!1}},{name:"overcharge",description:"increase your <strong>maximum</strong> <strong class='color-f'>energy</strong> by <strong>60</strong><br><strong>+10%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.bonusEnergy+=.6,m.setMaxEnergy(),this.refundAmount+=tech.addJunkTechToPool(.1)},refundAmount:0,remove(){tech.bonusEnergy=0,m.setMaxEnergy(),this.count>0&&this.refundAmount>0&&(tech.removeJunkTechFromPool(this.refundAmount),this.refundAmount=0)}},{name:"Maxwell's demon",description:"<strong class='color-f'>energy</strong> above your max decays <strong>95%</strong> slower<br><strong>+10%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>m.energy>m.maxEnergy||build.isExperimentSelection,requires:"energy above your max",effect(){tech.overfillDrain=.92,this.refundAmount+=tech.addJunkTechToPool(.1)},refundAmount:0,remove(){tech.overfillDrain=.7,this.count>0&&this.refundAmount>0&&(tech.removeJunkTechFromPool(this.refundAmount),this.refundAmount=0)}},{name:"inductive coupling",description:"passive <strong class='color-f'>energy</strong> regen is increased by <strong>700%</strong><br>but you only regen when <strong>crouched</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>0!==tech.energyRegen&&!tech.isDamageAfterKillNoRegen,requires:"not ground state, predator",effect(){tech.isCrouchRegen=!0,m.regenEnergy=function(){m.immuneCycle<m.cycle&&m.crouch&&(m.energy+=7*m.fieldRegen),m.energy<0&&(m.energy=0)}},remove(){tech.isCrouchRegen=!1,m.regenEnergy=m.regenEnergyDefault}},{name:"energy conservation",description:"<strong>5%</strong> of <strong class='color-d'>damage</strong> done recovered as <strong class='color-f'>energy</strong>",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.energySiphon+=.05},remove(){tech.energySiphon=0}},{name:"waste heat recovery",description:"if a mob has <strong>died</strong> in the last <strong>5 seconds</strong><br>regen <strong>5%</strong> of max <strong class='color-f'>energy</strong> every second",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isEnergyRecovery=!0},remove(){tech.isEnergyRecovery=!1}},{name:"recycling",description:"if a mob has <strong>died</strong> in the last <strong>5 seconds</strong><br>regain <strong>1%</strong> of max <strong class='color-h'>health</strong> every second",maxCount:1,count:0,frequency:1,frequencyDefault:1,isHealTech:!0,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy equivalence",effect(){tech.isHealthRecovery=!0},remove(){tech.isHealthRecovery=!1}},{name:"predator",description:"<span style = 'font-size:91%;'>if a mob has <strong>died</strong> in the last <strong>5 seconds</strong> inhibit<br>passive <strong class='color-f'>energy</strong> regen and increase <strong class='color-d'>damage</strong> <strong>50%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isCrouchRegen,requires:"not inductive coupling",effect(){tech.isDamageAfterKillNoRegen=!0,m.regenEnergy=function(){m.immuneCycle<m.cycle&&m.lastKillCycle+300<m.cycle&&(m.energy+=m.fieldRegen),m.energy<0&&(m.energy=0)}},remove(){this.count&&(m.regenEnergy=m.regenEnergyDefault),tech.isDamageAfterKillNoRegen=!1}},{name:"torpor",description:"if a mob has <strong>not died</strong> in the last <strong>5 seconds</strong><br>reduce <strong class='color-harm'>harm</strong> by <strong>66%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isHarmReduceNoKill=!0},remove(){tech.isHarmReduceNoKill=!1}},{name:"Zeno's paradox",description:"reduce <strong class='color-harm'>harm</strong> by <strong>83%</strong>, but every <strong>5</strong> seconds<br>remove <strong>1/10</strong> of your current <strong class='color-h'>health</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isZeno=!0},remove(){tech.isZeno=!1}},{name:"negative feedback",description:"increase <strong class='color-d'>damage</strong> by <strong>5%</strong><br>for every <strong>10</strong> <strong class='color-h'>health</strong> below <strong>100</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>m.health<.6||build.isExperimentSelection,requires:"health below 60",effect(){tech.isLowHealthDmg=!0},remove(){tech.isLowHealthDmg=!1}},{name:"antiscience",description:"increase <strong class='color-d'>damage</strong> by <strong>90%</strong><br>lose <strong>11</strong> <strong class='color-h'>health</strong> when you pick up a <strong class='color-m'>tech</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){tech.isTechDamage=!0},remove(){tech.isTechDamage=!1}},{name:"enthalpy",description:"<strong class='color-h'>heal</strong> for <strong>3%</strong> of <strong class='color-d'>damage</strong> done<br>take <strong>10%</strong> more <strong class='color-harm'>harm</strong>",maxCount:9,count:0,frequency:1,frequencyDefault:1,isHealTech:!0,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy equivalence",effect(){tech.healthDrain+=.03},remove(){tech.healthDrain=0}},{name:"fluoroantimonic acid",description:"increase <strong class='color-d'>damage</strong> by <strong>35%</strong><br>when your <strong class='color-h'>health</strong> is above <strong>100</strong>",maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>m.maxHealth>1,requires:"max health above 100",effect(){tech.isAcidDmg=!0},remove(){tech.isAcidDmg=!1}},{name:"tungsten carbide",description:"increase your <strong>maximum</strong> <strong class='color-h'>health</strong> by <strong>100</strong><br><strong>landings</strong> that force you to crouch cause <strong class='color-harm'>harm</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy equivalence",effect(){tech.isFallingDamage=!0,m.setMaxHealth(),m.addHealth(1/simulation.healScale)},remove(){tech.isFallingDamage=!1,m.setMaxHealth()}},{name:"quenching",description:`over healing from ${powerUps.orb.heal()} does <strong class='color-harm'>harm</strong><br>but it also increase your <strong>maximum</strong> <strong class='color-h'>health</strong>`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isEnergyHealth&&!tech.isNoHeals,requires:"not mass-energy equivalence, ergodicity",effect(){tech.isOverHeal=!0},remove(){tech.isOverHeal=!1}},{name:"negative entropy",description:`at the start of each <strong>level</strong><br>spawn ${powerUps.orb.heal()} for every <strong>26</strong> missing health`,maxCount:1,count:0,frequency:1,frequencyDefault:1,isHealTech:!0,allowed:()=>m.health>.1&&!tech.isNoHeals,requires:"has some health, not ergodicity",effect(){tech.isHealLowHealth=!0},remove(){tech.isHealLowHealth=!1}},{name:"adiabatic healing",description:`${powerUps.orb.heal()} are <strong>100%</strong> more effective<br><strong>+5%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool`,maxCount:3,count:0,frequency:1,frequencyDefault:1,isHealTech:!0,allowed:()=>(m.health/m.maxHealth<.7||build.isExperimentSelection)&&!tech.isEnergyHealth&&!tech.isNoHeals,requires:"under 70% health, not mass-energy equivalence, ergodicity",effect(){tech.largerHeals++,this.refundAmount+=tech.addJunkTechToPool(.05);for(let e=0;e<powerUp.length;e++)"heal"===powerUp[e].name&&(powerUp[e].size=powerUps.heal.size())},refundAmount:0,remove(){tech.largerHeals=1,this.count>0&&this.refundAmount>0&&(tech.removeJunkTechFromPool(this.refundAmount),this.refundAmount=0)}},{name:"maintenance",description:`</strong>double</strong> the <strong class='flicker'>frequency</strong> of finding <strong class='color-h'>healing</strong> <strong class='color-m'>tech</strong><br>spawn ${powerUps.orb.heal(13)}`,maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>!0,requires:"NOT EXPERIMENT MODE",effect(){for(let e=0;e<13;e++)powerUps.spawn(m.pos.x+60*(Math.random()-.5),m.pos.y+60*(Math.random()-.5),"heal");for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isHealTech&&(tech.tech[e].frequency*=2)},remove(){}},{name:"anthropic principle",nameInfo:"<span id = 'tech-anthropic'></span>",addNameInfo(){setTimeout((function(){powerUps.research.changeRerolls(0)}),1e3)},description:`once per level, instead of <strong>dying</strong><br>use ${powerUps.orb.research(1)} and spawn ${powerUps.orb.heal(5)}`,maxCount:1,count:0,frequency:1,frequencyDefault:1,isHealTech:!0,allowed:()=>powerUps.research.count>0||build.isExperimentSelection,requires:"at least 1 research",effect(){tech.isDeathAvoid=!0,tech.isDeathAvoidedThisLevel=!1,setTimeout((function(){powerUps.research.changeRerolls(0)}),1e3)},remove(){tech.isDeathAvoid=!1}},{name:"weak anthropic principle",description:"after <strong>anthropic principle</strong> prevents your <strong>death</strong><br>add <strong>50%</strong> <strong class='color-dup'>duplication</strong> chance for that level",maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.isDeathAvoid,requires:"anthropic principle",effect(){tech.isAnthropicTech=!0,powerUps.setDupChance()},remove(){tech.isAnthropicTech=!1,powerUps.setDupChance()}},{name:"strong anthropic principle",description:"after <strong>anthropic principle</strong> prevents your <strong>death</strong><br>increase <strong class='color-d'>damage</strong> by <strong>137.03599%</strong> for that level",maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.isDeathAvoid,requires:"anthropic principle",effect(){tech.isAnthropicDamage=!0},remove(){tech.isAnthropicDamage=!1}},{name:"quantum immortality",description:"reduce <strong class='color-harm'>harm</strong> by <strong>33%</strong><br>after <strong>dying</strong>, continue in an <strong class='alt'>alternate reality</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isImmortal=!0},remove(){tech.isImmortal=!1}},{name:"non-unitary operator",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Unitary_operator\' class="link">non-unitary operator</a>',description:"reduce combat <strong>difficulty</strong> by <strong>2 levels</strong>, but<br>after a <strong>collision</strong> enter an <strong class='alt'>alternate reality</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isResearchReality&&!tech.isSwitchReality,requires:"not Ψ(t) collapse, many-worlds",effect(){tech.isCollisionRealitySwitch=!0,level.difficultyDecrease(2*simulation.difficultyMode)},remove(){tech.isCollisionRealitySwitch=!1,this.count>0&&level.difficultyIncrease(2*simulation.difficultyMode)}},{name:"many-worlds",description:`on each new <strong>level</strong> use ${powerUps.orb.research(1)} to enter an<br><strong class='alt'>alternate reality</strong> and spawn a <strong class='color-m'>tech</strong> power up`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isResearchReality&&!tech.isCollisionRealitySwitch,requires:"not Ψ(t) collapse, non-unitary",effect(){tech.isSwitchReality=!0},remove(){tech.isSwitchReality=!1}},{name:"Ψ(t) collapse",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Wave_function_collapse\' class="link">Ψ(t) collapse</a>',description:`enter an <strong class='alt'>alternate reality</strong> after you <strong class='color-r'>research</strong><br>spawn ${powerUps.orb.research(21)}`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isSwitchReality&&!tech.isCollisionRealitySwitch&&!tech.isJunkResearch,requires:"not many-worlds, non-unitary, pseudoscience",effect(){tech.isResearchReality=!0;for(let e=0;e<16;e++)powerUps.spawn(m.pos.x+60*Math.random(),m.pos.y+60*Math.random(),"research",!1)},remove(){tech.isResearchReality=!1}},{name:"decoherence",description:`<strong class='color-r'>researched</strong> or <strong>canceled</strong> <strong class='color-m'>tech</strong> won't <strong>reoccur</strong> <br>spawn ${powerUps.orb.research(9)}`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isSuperDeterminism,requires:"not superdeterminism",effect(){tech.isBanish=!0;for(let e=0;e<9;e++)powerUps.spawn(m.pos.x+40*(Math.random()-.5),m.pos.y+40*(Math.random()-.5),"research",!1)},remove(){if(tech.isBanish){tech.isBanish=!1;for(let e=0;e<tech.tech.length;e++)tech.tech[e].isBanished&&(tech.tech[e].isBanished=!1)}}},{name:"renormalization",description:`using ${powerUps.orb.research(1)} for <strong>any</strong> purpose<br>has a <strong>40%</strong> chance to spawn ${powerUps.orb.research(1)}`,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(powerUps.research.count>3||build.isExperimentSelection)&&!tech.isSuperDeterminism,requires:"at least 4 research and not superdeterminism",effect(){tech.renormalization=!0},remove(){tech.renormalization=!1}},{name:"perturbation theory",description:`<strong>66%</strong> decreased <strong><em>delay</em></strong> after firing<br>when you have no ${powerUps.orb.research(1)} in your inventory`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>0===powerUps.research.count,requires:"no research",effect(){tech.isRerollHaste=!0,tech.researchHaste=.33,b.setFireCD()},remove(){tech.isRerollHaste=!1,tech.researchHaste=1,b.setFireCD()}},{name:"ansatz",description:`after choosing a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>spawn ${powerUps.orb.research(2)}if you have no ${powerUps.orb.research(1)} in your inventory`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>0===powerUps.research.count&&!tech.isSuperDeterminism&&!tech.isRerollHaste&&!tech.isResearchReality,requires:"no research, not superdeterminism, Ψ(t) collapse, perturbation theory",effect:()=>{tech.isAnsatz=!0},remove(){tech.isAnsatz=!1}},{name:"Bayesian statistics",description:`increase <strong class='color-d'>damage</strong> by <strong>3.7%</strong><br>for each ${powerUps.orb.research(1)} in your inventory`,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>powerUps.research.count>5||build.isExperimentSelection,requires:"at least 6 research",effect(){tech.isRerollDamage=!0},remove(){tech.isRerollDamage=!1}},{name:"pseudoscience",description:"<span style = 'font-size:94%;'>when <strong>selecting</strong> a power up, <strong class='color-r'>research</strong> <strong>3</strong> times</span><br>for <strong>free</strong>, but add <strong>0-3%</strong> <strong class='color-j'>JUNK</strong> to the <strong class='color-m'>tech</strong> pool",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isResearchReality,requires:"not Ψ(t) collapse",effect(){tech.isJunkResearch=!0},remove(){tech.isJunkResearch=!1}},{name:"brainstorming",description:"<strong class='color-m'>tech</strong> choices <strong>randomize</strong><br>every <strong>2</strong> seconds for <strong>10</strong> seconds",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isBrainstorm=!0,tech.isBrainstormActive=!1,tech.brainStormDelay=120},remove(){tech.isBrainstorm=!1,tech.isBrainstormActive=!1}},{name:"cross disciplinary",description:"<strong class='color-m'>tech</strong> have an extra <strong class='color-f'>field</strong> or <strong class='color-g'>gun</strong> <strong>choice</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isDeterminism,requires:"not determinism",effect:()=>{tech.isExtraGunField=!0},remove(){tech.isExtraGunField=!1}},{name:"emergence",description:"<strong class='color-m'>tech</strong>, <strong class='color-f'>fields</strong>, and <strong class='color-g'>guns</strong> have <strong>5</strong> <strong>choices</strong><br><strong>+5%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isDeterminism,requires:"not determinism",effect:()=>{tech.isExtraChoice=!0,this.refundAmount+=tech.addJunkTechToPool(.05)},refundAmount:0,remove(){tech.isExtraChoice=!1,this.count>0&&this.refundAmount>0&&(tech.removeJunkTechFromPool(this.refundAmount),this.refundAmount=0)}},{name:"determinism",description:"spawn <strong>5</strong> <strong class='color-m'>tech</strong>, but you have only<br> <strong>1 choice</strong> for <strong class='color-m'>tech</strong>, <strong class='color-f'>fields</strong>, and <strong class='color-g'>guns</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,isBadRandomOption:!0,isNonRefundable:!0,allowed:()=>!tech.isExtraChoice&&!tech.isExtraGunField,requires:"NOT EXPERIMENT MODE, not emergence, cross disciplinary",effect:()=>{tech.isDeterminism=!0;for(let e=0;e<5;e++)powerUps.spawn(m.pos.x+60*(Math.random()-.5),m.pos.y+60*(Math.random()-.5),"tech")},remove(){tech.isDeterminism=!1}},{name:"superdeterminism",description:`spawn <strong>5</strong> <strong class='color-m'>tech</strong>, but you have <strong>no cancel</strong><br>and ${powerUps.orb.research(1)}, no longer <strong>spawn</strong>`,maxCount:1,count:0,frequency:4,frequencyDefault:4,isBadRandomOption:!0,isNonRefundable:!0,allowed:()=>tech.isDeterminism&&!tech.isAnsatz,requires:"NOT EXPERIMENT MODE, determinism, not ansatz",effect:()=>{tech.isSuperDeterminism=!0;for(let e=0;e<5;e++)powerUps.spawn(m.pos.x+60*(Math.random()-.5),m.pos.y+60*(Math.random()-.5),"tech")},remove(){tech.isSuperDeterminism=!1}},{name:"unified field theory",description:`spawn ${powerUps.orb.research(6)}and when <strong>paused</strong><br><strong>clicking</strong> the <strong class='color-f'>field</strong> box switches your <strong class='color-f'>field</strong>`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"not superdeterminism",effect(){tech.isPauseSwitchField=!0;for(let e=0;e<6;e++)powerUps.spawn(m.pos.x+40*(Math.random()-.5),m.pos.y+40*(Math.random()-.5),"research",!1)},remove(){tech.isPauseSwitchField&&(tech.isPauseSwitchField=!1,powerUps.research.changeRerolls(-6))}},{name:"abiogenesis",description:`at the start of a level spawn a 2nd <strong>boss</strong><br>use ${powerUps.orb.research(4)}or add <strong>49%</strong> <strong class='color-j'>JUNK</strong> to the <strong class='color-m'>tech</strong> pool`,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(build.isExperimentSelection||powerUps.research.count>3)&&!tech.isDuplicateBoss,requires:"at least 4 research and not parthenogenesis",effect(){tech.isResearchBoss=!0},remove(){tech.isResearchBoss=!1}},{name:"meta-analysis",description:`if you choose a <strong class='color-j'>JUNK</strong> <strong class='color-m'>tech</strong> you instead get a<br>random normal <strong class='color-m'>tech</strong> and ${powerUps.orb.research(3)}`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isMetaAnalysis=!0},remove(){tech.isMetaAnalysis=!1}},{name:"dark patterns",description:"reduce combat <strong>difficulty</strong> by <strong>1 level</strong><br><strong>+31%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>level.onLevel<8&&level.onLevel>0,requires:"on levels 1 through 7",effect(){level.difficultyDecrease(simulation.difficultyMode),simulation.makeTextLog("level.difficultyDecrease(simulation.difficultyMode)"),this.refundAmount+=tech.addJunkTechToPool(.31)},refundAmount:0,remove(){this.count>0&&(this.refundAmount>0&&tech.removeJunkTechFromPool(this.refundAmount),level.difficultyIncrease(simulation.difficultyMode))}},{name:"ergodicity",description:`reduce combat <strong>difficulty</strong> by <strong>2 levels</strong><br>${powerUps.orb.heal()} have <strong>no</strong> effect`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>level.onLevel>1&&!tech.isEnergyHealth,requires:"past levels 1, not mass-energy",effect(){tech.isNoHeals=!0,level.difficultyDecrease(2*simulation.difficultyMode),simulation.makeTextLog("level.difficultyDecrease(simulation.difficultyMode <span class='color-symbol'>*</span> 2)"),powerUps.heal.color="#abb";for(let e=0;e<powerUp.length;e++)"heal"===powerUp[e].name&&(powerUp[e].color=powerUps.heal.color)},remove(){if(tech.isNoHeals){powerUps.heal.color="#0eb";for(let e=0;e<powerUp.length;e++)"heal"===powerUp[e].name&&(powerUp[e].color=powerUps.heal.color)}tech.isNoHeals=!1,this.count>0&&level.difficultyIncrease(2*simulation.difficultyMode)}},{name:"bubble fusion",description:`after destroying a mob's natural <strong>shield</strong><br>spawn <strong>1-2</strong> ${powerUps.orb.heal()}, ${powerUps.orb.ammo()}, or ${powerUps.orb.research(1)}`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!0,requires:"",effect(){tech.isShieldAmmo=!0},remove(){tech.isShieldAmmo=!1}},{name:"commodities exchange",description:`clicking <strong style = 'font-size:150%;'>×</strong> to cancel a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>spawns <strong>5-10</strong> ${powerUps.orb.heal()}, ${powerUps.orb.ammo()}, or ${powerUps.orb.research(1)}`,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isSuperDeterminism,requires:"not superdeterminism",effect(){tech.isCancelRerolls=!0},remove(){tech.isCancelRerolls=!1}},{name:"futures exchange",description:"clicking <strong style = 'font-size:150%;'>×</strong> to <strong>cancel</strong> a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>adds <strong>4.3%</strong> power up <strong class='color-dup'>duplication</strong> chance",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.duplicationChance()<1&&!tech.isSuperDeterminism,requires:"below 100% duplication chance, not superdeterminism",effect(){tech.isCancelDuplication=!0,powerUps.setDupChance()},remove(){tech.isCancelDuplication=!1,powerUps.setDupChance()}},{name:"replication",description:"<strong>10%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br><strong>+30%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool",maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.duplicationChance()<1,requires:"below 100% duplication chance",effect(){tech.duplicateChance+=.1,powerUps.setDupChance(),build.isExperimentSelection||simulation.isTextLogOpen||simulation.circleFlare(.1),this.refundAmount+=tech.addJunkTechToPool(.3)},refundAmount:0,remove(){tech.duplicateChance=0,powerUps.setDupChance(),this.count>0&&this.refundAmount>0&&(tech.removeJunkTechFromPool(this.refundAmount),this.refundAmount=0)}},{name:"stimulated emission",description:"<strong>15%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br>but, after a <strong>collision</strong> eject <strong>1</strong> <strong class='color-m'>tech</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.duplicationChance()<1,requires:"below 100% duplication chance",effect:()=>{tech.isStimulatedEmission=!0,powerUps.setDupChance(),build.isExperimentSelection||simulation.isTextLogOpen||simulation.circleFlare(.15)},remove(){tech.isStimulatedEmission=!1,powerUps.setDupChance()}},{name:"metastability",description:"<strong>12%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br><strong class='color-dup'>duplicates</strong> <strong class='color-e'>explode</strong> with a <strong>3</strong> second <strong>half-life</strong> ",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.duplicationChance()<1,requires:"below 100% duplication chance",effect:()=>{tech.isPowerUpsVanish=!0,powerUps.setDupChance(),build.isExperimentSelection||simulation.isTextLogOpen||simulation.circleFlare(.12)},remove(){tech.isPowerUpsVanish=!1,powerUps.setDupChance()}},{name:"correlated damage",description:"your chance to <strong class='color-dup'>duplicate</strong> power ups<br>increases your <strong class='color-d'>damage</strong> by the same percent",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.duplicationChance()>.15,requires:"duplication chance > 15%",effect(){tech.isDupDamage=!0},remove(){tech.isDupDamage=!1}},{name:"parthenogenesis",description:"<span style = 'font-size:90%;'> <strong>bosses</strong> have a <strong>2x</strong> chance to be <strong class='color-dup'>duplicated</strong>, but their<br><strong>health</strong> is increased by your <strong class='color-dup'>duplication</strong> chance</span>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.duplicationChance()>0&&!tech.isResearchBoss,requires:"some duplication chance, not abiogenesis",effect(){tech.isDuplicateBoss=!0},remove(){tech.isDuplicateBoss=!1}},{name:"apomixis",description:"when you reach <strong>111%</strong> <strong class='color-dup'>duplication</strong><br>spawn <strong>11 bosses</strong> with <strong>111%</strong> more <strong>health</strong>",maxCount:1,count:0,frequency:10,frequencyDefault:10,isNonRefundable:!0,allowed:()=>tech.duplicationChance()>.99,requires:"duplication chance above 99%",effect(){tech.is111Duplicate=!0,tech.maxDuplicationEvent()},remove(){tech.is111Duplicate=!1}},{name:"Born rule",description:"<strong>remove</strong> all current <strong class='color-m'>tech</strong><br>spawn new <strong class='color-m'>tech</strong> to replace them",maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>tech.totalCount>6,requires:"NOT EXPERIMENT MODE, more than 6 tech",effect:()=>{for(let e=0;e<bullet.length;++e)Matter.Composite.remove(engine.world,bullet[e]);bullet=[];let e=1;for(let t=0,o=tech.tech.length;t<o;t++)tech.tech[t].isNonRefundable||(e+=tech.tech[t].count);tech.isDeterminism&&(e-=4),tech.isSuperDeterminism&&(e-=4),tech.setupAllTech(),simulation.isCheating&&tech.setCheating(),lore.techCount=0;for(let t=0;t<e;t++)powerUps.spawn(m.pos.x+100*(Math.random()-.5),m.pos.y+100*(Math.random()-.5),"tech")},remove(){}},{name:"Occam's razor",descriptionFunction(){return`randomly remove <strong>half</strong> your <strong class='color-m'>tech</strong><br>for each removed gain <strong>${100*this.damagePerRemoved}%</strong> <strong class='color-d'>damage</strong> <em>(~${50*this.damagePerRemoved*tech.totalCount}%)</em>`},maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>tech.totalCount>6,requires:"NOT EXPERIMENT MODE, more than 6 tech",removePercent:.5,damagePerRemoved:.5,effect(){let e=[];for(let t=0,o=tech.tech.length;t<o;t++)tech.tech[t].count&&!tech.tech[t].isNonRefundable&&e.push(t);e=shuffle(e);let t=0;for(let o=0,n=e.length*this.removePercent;o<n;o++)t+=tech.removeTech(e[o]);tech.OccamDamage=1+this.damagePerRemoved*t},remove(){tech.OccamDamage=0}},{name:"exchange symmetry",description:"remove <strong>1</strong> random <strong class='color-m'>tech</strong><br>spawn <strong>2</strong> new <strong class='color-g'>guns</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>tech.totalCount>3&&!tech.isSuperDeterminism,requires:"NOT EXPERIMENT MODE, at least 4 tech, not superdeterminism",effect:()=>{const e=[];for(let t=0;t<tech.tech.length;t++)tech.tech[t].count>0&&e.push(t);const t=e[Math.floor(Math.random()*e.length)];simulation.makeTextLog(`<span class='color-var'>tech</span>.removeTech("<span class='color-text'>${tech.tech[t].name}</span>")`);for(let e=0;e<tech.tech[t].count;e++)powerUps.spawn(m.pos.x,m.pos.y,"gun");powerUps.spawn(m.pos.x,m.pos.y,"gun"),tech.tech[t].count=0,tech.tech[t].remove(),tech.tech[t].isLost=!0,simulation.updateTechHUD()},remove(){}},{name:"monte carlo experiment",description:"remove <strong>1</strong> random <strong class='color-m'>tech</strong><br>spawn <strong>2</strong> <strong class='color-m'>tech</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>tech.totalCount>3&&tech.duplicationChance()>0&&!tech.isSuperDeterminism,requires:"NOT EXPERIMENT MODE, some duplication, at least 4 tech, not superdeterminism",effect:()=>{const e=tech.removeTech();for(let t=0;t<e+1;t++)powerUps.spawn(m.pos.x+60*(Math.random()-.5),m.pos.y+60*(Math.random()-.5),"tech")},remove(){}},{name:"strange attractor",description:`use ${powerUps.orb.research(2)} to spawn <strong>1</strong> <strong class='color-m'>tech</strong><br>with <strong>double</strong> your <strong class='color-dup'>duplication</strong> chance`,maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>!tech.isSuperDeterminism&&tech.duplicationChance()>0&&powerUps.research.count>1,requires:"NOT EXPERIMENT MODE, some duplication, not super determinism",effect:()=>{powerUps.research.changeRerolls(-2),simulation.makeTextLog(`<span class='color-var'>m</span>.<span class='color-r'>research</span> <span class='color-symbol'>-=</span> 2<br>${powerUps.research.count}`),powerUps.directSpawn(m.pos.x,m.pos.y,"tech"),Math.random()<2*tech.duplicationChance()&&powerUps.directSpawn(m.pos.x+10,m.pos.y+5,"tech")},remove(){}},{name:"vector fields",description:"<strong>triple</strong> the <strong class='flicker'>frequency</strong> of finding <strong class='color-f'>field</strong> <strong class='color-m'>tech</strong><br>spawn a <strong class='color-f'>field</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,isNonRefundable:!0,isBadRandomOption:!0,allowed:()=>!tech.isSuperDeterminism,requires:"NOT EXPERIMENT MODE, not superdeterminism",effect(){powerUps.spawn(m.pos.x,m.pos.y,"field");for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isFieldTech&&(tech.tech[e].frequency*=3)},remove(){}},{name:"reinforcement learning",description:"increase the <strong class='flicker'>frequency</strong> of finding copies of<br>recursive <strong class='color-m'>tech</strong> you already have by <strong>1000%</strong>",maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.totalCount>9,requires:"at least 10 tech",effect:()=>{for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].count>0&&(tech.tech[e].frequency*=10)},remove(){for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].count>0&&tech.tech[e].frequency>1&&(tech.tech[e].frequency/=10)}},{name:"needle ice",description:"when <strong>needles</strong> impact walls<br>they chip off <strong>1-2</strong> freezing <strong class='color-s'>ice IX</strong> crystals",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.isNeedles||tech.isNeedleShot)&&!tech.needleTunnel,requires:"nail gun, needle gun, needle-shot, not nanowires",effect(){tech.isNeedleIce=!0},remove(){tech.isNeedleIce=!1}},{name:"ceramics",description:"<strong>needles</strong> and <strong>harpoons</strong> pierce <strong>shields</strong><br>directly <strong class='color-d'>damaging</strong> shielded mobs",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("harpoon")||tech.isNeedles||tech.isNeedleShot,requires:"nail gun, needle gun, needle-shot, harpoon",effect(){tech.isShieldPierce=!0},remove(){tech.isShieldPierce=!1}},{name:"nanowires",description:"<strong>needles</strong> tunnel through <strong class='color-block'>blocks</strong> and <strong>map</strong><br>increase needle <strong class='color-d'>damage</strong> by <strong>20%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.haveGunCheck("nail gun")&&tech.isNeedles||tech.isNeedleShot&&tech.haveGunCheck("shotgun"))&&!tech.isNeedleIce,requires:"needle gun, needle-shot, not needle ice",effect(){tech.needleTunnel=!0},remove(){tech.needleTunnel=!1}},{name:"needle gun",description:"<strong>nail gun</strong> fires <strong>3</strong> mob piercing <strong>needles</strong><br>requires <strong>3</strong> times more <strong>bullets</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("nail gun")&&!tech.nailInstantFireRate&&!tech.isIceCrystals&&!tech.isRivets&&!tech.nailRecoil,requires:"nail gun, not ice crystal, rivets, rotary cannon, or pneumatic actuator",effect(){for(tech.isNeedles=!0,i=0,len=b.guns.length;i<len;i++)if("nail gun"===b.guns[i].name){b.guns[i].ammo=Math.ceil(b.guns[i].ammo/3),b.guns[i].ammoPack=Math.ceil(b.guns[i].defaultAmmoPack/3),b.guns[i].chooseFireMethod(),simulation.updateGunHUD();break}},remove(){if(tech.isNeedles)for(tech.isNeedles=!1,i=0,len=b.guns.length;i<len;i++)if("nail gun"===b.guns[i].name){b.guns[i].chooseFireMethod(),b.guns[i].ammo=Math.ceil(3*b.guns[i].ammo),b.guns[i].ammoPack=b.guns[i].defaultAmmoPack,simulation.updateGunHUD();break}}},{name:"rivet gun",description:"<strong>nail gun</strong> slowly fires a heavy <strong>rivet</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("nail gun")&&!tech.nailInstantFireRate&&!tech.isIceCrystals&&!tech.isNeedles,requires:"nail gun, not ice crystal, needles, or pneumatic actuator",effect(){for(tech.isRivets=!0,i=0,len=b.guns.length;i<len;i++)if("nail gun"===b.guns[i].name){b.guns[i].chooseFireMethod();break}},remove(){if(tech.isRivets)for(tech.isRivets=!1,i=0,len=b.guns.length;i<len;i++)if("nail gun"===b.guns[i].name){b.guns[i].chooseFireMethod();break}}},{name:"pneumatic hammer",description:"<span style = 'font-size:95%;'><strong>rivets</strong>, <strong>slugs</strong>, <strong>needles</strong>, and <strong>nails</strong> are <strong>18%</strong> larger</span><br>increases mass and physical <strong class='color-d'>damage</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isMineDrop+tech.nailBotCount+tech.fragments+tech.nailsDeathMob+2*((tech.haveGunCheck("mine")&&!tech.isLaserMine)+tech.haveGunCheck("nail gun")+tech.isNeedleShot+tech.isNailShot+tech.isSlugShot)>1,requires:"nails, nail gun, rivets, shotgun, slug",effect(){tech.nailSize+=.18},remove(){tech.nailSize=1}},{name:"pneumatic actuator",description:"<strong>nail gun</strong> takes <strong>no</strong> time to ramp up<br>to it's shortest <strong><em>delay</em></strong> after firing",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("nail gun")&&!tech.isRivets&&!tech.isNeedles&&!tech.nailRecoil,requires:"nail gun, not rotary cannon, rivets, or needles",effect(){for(tech.nailInstantFireRate=!0,i=0,len=b.guns.length;i<len;i++)"nail gun"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(tech.nailInstantFireRate)for(tech.nailInstantFireRate=!1,i=0,len=b.guns.length;i<len;i++)"nail gun"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"ice crystal nucleation",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Nucleation\' class="link">ice crystal nucleation</a>',description:"the <strong>nail gun</strong> uses <strong class='color-f'>energy</strong> to condense<br>unlimited <strong class='color-s'>freezing</strong> <strong>ice shards</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("nail gun")&&!tech.isRivets&&!tech.isNeedles,requires:"nail gun, not rivets, needles",effect(){for(tech.isIceCrystals=!0,i=0,len=b.guns.length;i<len;i++)if("nail gun"===b.guns[i].name){b.guns[i].ammoPack=1/0,b.guns[i].recordedAmmo=b.guns[i].ammo,b.guns[i].ammo=1/0,simulation.updateGunHUD();break}},remove(){if(tech.isIceCrystals)for(tech.isIceCrystals=!1,i=0,len=b.guns.length;i<len;i++)if("nail gun"===b.guns[i].name){b.guns[i].ammoPack=b.guns[i].defaultAmmoPack,b.guns[i].recordedAmmo&&(b.guns[i].ammo=b.guns[i].recordedAmmo),simulation.updateGunHUD();break}}},{name:"rotary cannon",description:"<strong>nail gun</strong> has increased muzzle <strong>speed</strong>,<br>maximum <strong>fire rate</strong>, <strong>accuracy</strong>, and <strong>recoil</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("nail gun")&&!tech.nailInstantFireRate&&!tech.isNeedles,requires:"nail gun, not pneumatic actuator, needle gun",effect(){for(tech.nailRecoil=!0,i=0,len=b.guns.length;i<len;i++)"nail gun"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(tech.nailRecoil)for(tech.nailRecoil=!1,i=0,len=b.guns.length;i<len;i++)"nail gun"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"supercritical fission",description:"<strong>nails</strong>, <strong>needles</strong>, and <strong>rivets</strong> can <strong class='color-e'>explode</strong><br>if they strike mobs near their <strong>center</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isNailShot||tech.isNeedleShot||tech.nailBotCount>1||tech.haveGunCheck("nail gun"),requires:"nail gun, nails",effect(){tech.isNailCrit=!0},remove(){tech.isNailCrit=!1}},{name:"irradiated nails",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Irradiation\' class="link">irradiated nails</a>',description:"<strong>nails</strong>, <strong>needles</strong>, and <strong>rivets</strong> are <strong class='color-p'>radioactive</strong><br>about <strong>90%</strong> more <strong class='color-d'>damage</strong> over <strong>3</strong> seconds",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isMineDrop+tech.nailBotCount+tech.fragments+tech.nailsDeathMob/2+2*((tech.haveGunCheck("mine")&&!tech.isLaserMine)+(tech.haveGunCheck("nail gun")&&!tech.isShieldPierce)+tech.isNeedleShot+tech.isNailShot)>1,requires:"nail gun, nails, rivets, not ceramic needles",effect(){tech.isNailRadiation=!0},remove(){tech.isNailRadiation=!1}},{name:"6s half-life",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Half-life\' class="link">6s half-life</a>',description:"<strong>nails</strong> are made of <strong class='color-p'>plutonium-238</strong><br>increase <strong class='color-d'>damage</strong> by <strong>100%</strong> over <strong>6</strong> seconds",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isNailRadiation&&!tech.isFastRadiation,requires:"irradiated nails, not 1s half-life",effect(){tech.isSlowRadiation=!0},remove(){tech.isSlowRadiation=!1}},{name:"1s half-life",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Half-life\' class="link">1s half-life</a>',description:"<strong>nails</strong> are made of <strong class='color-p'>lithium-8</strong><br><strong class='color-d'>damage</strong> occurs after <strong>1</strong> second",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isNailRadiation&&!tech.isSlowRadiation,requires:"irradiated nails, not 6s half-life",effect(){tech.isFastRadiation=!0},remove(){tech.isFastRadiation=!1}},{name:"spin-statistics",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Spin%E2%80%93statistics_theorem\' class="link">spin-statistics</a>',description:"<strong>immune</strong> to <strong class='color-harm'>harm</strong> while firing the <strong>shotgun</strong><br>shotgun has <strong>50%</strong> fewer shots",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun"),requires:"shotgun",effect(){for(tech.isShotgunImmune=!0,i=0,len=b.guns.length;i<len;i++)if("shotgun"===b.guns[i].name){b.guns[i].ammo=Math.ceil(.5*b.guns[i].ammo),b.guns[i].ammoPack=.5*b.guns[i].defaultAmmoPack;break}simulation.updateGunHUD()},remove(){if(tech.isShotgunImmune){for(tech.isShotgunImmune=!1,i=0,len=b.guns.length;i<len;i++)if("shotgun"===b.guns[i].name){b.guns[i].ammoPack=b.guns[i].defaultAmmoPack,b.guns[i].ammo=Math.ceil(2*b.guns[i].ammo);break}simulation.updateGunHUD()}}},{name:"Newton's 3rd law",description:"<strong>shotgun</strong> <strong>recoil</strong> is increased<br>decrease <strong>shotgun</strong> <strong><em>delay</em></strong> after firing by <strong>66%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isShotgunReversed,requires:"shotgun, not Noether violation",effect(){tech.isShotgunRecoil=!0},remove(){tech.isShotgunRecoil=!1}},{name:"Noether violation",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Noether%27s_theorem\' class="link">Noether violation</a>',description:"increase <strong>shotgun</strong> <strong class='color-d'>damage</strong> <strong>60%</strong><br>its <strong>recoil</strong> is increased and <strong>reversed</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isShotgunRecoil,requires:"shotgun, not Newton's 3rd law",effect(){tech.isShotgunReversed=!0},remove(){tech.isShotgunReversed=!1}},{name:"slug",description:"<strong>shotgun</strong> lobs <strong>1</strong> huge <strong>bullet</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isNailShot&&!tech.isIncendiary&&!tech.isIceShot&&!tech.isFoamShot&&!tech.isWormShot&&!tech.isNeedleShot,requires:"shotgun, not nail-shot, foam-shot, worm-shot, ice-shot, needle-shot",effect(){for(tech.isSlugShot=!0,i=0,len=b.guns.length;i<len;i++)if("shotgun"===b.guns[i].name){b.guns[i].do=function(){if(!input.field&&input.down){ctx.beginPath();const e=input.down?212:160,t={x:e*Math.cos(m.angle),y:e*Math.sin(m.angle)},o={x:m.pos.x,y:m.pos.y};for(let e=0;e<20;e++)t.x*=.9712,t.y=.977*t.y+9.87,o.x+=t.x,o.y+=t.y,ctx.lineTo(o.x,o.y);ctx.strokeStyle="rgba(68, 68, 68, 0.2)",ctx.lineWidth=2,ctx.stroke()}};break}},remove(){if(tech.isSlugShot)for(i=0,len=b.guns.length;i<len;i++)if("shotgun"===b.guns[i].name){b.guns[i].do=function(){};break}tech.isSlugShot=!1}},{name:"nail-shot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Nail_(fastener)\' class="link">nail-shot</a>',description:"<strong>shotgun</strong> fires <strong>17</strong> <strong>nails</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isIncendiary&&!tech.isSlugShot&&!tech.isIceShot&&!tech.isFoamShot&&!tech.isWormShot&&!tech.isNeedleShot,requires:"shotgun, not incendiary, slug, foam-shot, worm-shot, ice-shot, needle-shot",effect(){tech.isNailShot=!0},remove(){tech.isNailShot=!1}},{name:"needle-shot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Needle\' class="link">needle-shot</a>',description:"<strong>shotgun</strong> propels <strong>11</strong> mob piercing <strong>needles</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isNailShot&&!tech.isIncendiary&&!tech.isSlugShot&&!tech.isFoamShot&&!tech.isWormShot&&!tech.isIceShot,requires:"shotgun, not incendiary, nail-shot, slug, foam-shot, worm-shot, ice-shot",effect(){tech.isNeedleShot=!0},remove(){tech.isNeedleShot=!1}},{name:"worm-shot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Worm\' class="link">worm-shot</a>',description:"<strong>shotgun</strong> hatches <strong>3-4</strong> mob seeking <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong><br><em>worms benefit from spore technology</em>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isNailShot&&!tech.isIncendiary&&!tech.isSlugShot&&!tech.isIceShot&&!tech.isFoamShot&&!tech.isNeedleShot,requires:"shotgun, not incendiary, nail-shot, slug, foam-shot, ice-shot, needle-shot",effect(){tech.isWormShot=!0},remove(){tech.isWormShot=!1}},{name:"foam-shot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Foam\' class="link">foam-shot</a>',description:"<strong>shotgun</strong> sprays <strong>13</strong> sticky <strong>foam</strong> bubbles",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isNailShot&&!tech.isIncendiary&&!tech.isSlugShot&&!tech.isIceShot&&!tech.isWormShot&&!tech.isNeedleShot,requires:"shotgun, not incendiary, nail-shot, slug, worm-shot, ice-shot, needle-shot",effect(){tech.isFoamShot=!0},remove(){tech.isFoamShot=!1}},{name:"ice-shot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Ice-nine_(disambiguation)\' class="link">ice-shot</a>',description:"<strong>shotgun</strong> grows <strong>15</strong> freezing <strong class='color-s'>ice IX</strong> crystals",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("shotgun")&&!tech.isNailShot&&!tech.isIncendiary&&!tech.isSlugShot&&!tech.isFoamShot&&!tech.isWormShot&&!tech.isNeedleShot,requires:"shotgun, not incendiary, nail-shot, slug, foam-shot, worm-shot",effect(){tech.isIceShot=!0},remove(){tech.isIceShot=!1}},{name:"supertemporal",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Temporal_paradox\' class="link">supertemporal</a>',description:"fire <strong>super ball</strong> from the same point in <strong>space</strong><br> but separated by <strong>0.1</strong> seconds in <strong>time</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("super balls")&&!tech.oneSuperBall,requires:"super balls, but not the tech super ball",effect(){for(tech.superBallDelay=!0,i=0,len=b.guns.length;i<len;i++)"super balls"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(tech.superBallDelay)for(tech.superBallDelay=!1,i=0,len=b.guns.length;i<len;i++)"super balls"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"super sized",description:"increase <strong>super ball</strong> radius by <strong>14%</strong><br>increases <strong class='color-d'>damage</strong> by about <strong>27%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("super balls"),requires:"super balls",effect(){tech.bulletSize+=.14},remove(){tech.bulletSize=1}},{name:"super duper",description:"randomly fire <strong>+0</strong>, <strong>+1</strong>, or <strong>+2</strong> extra <strong>super balls</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("super balls")&&!tech.oneSuperBall,requires:"super balls, not super ball",effect(){tech.extraSuperBalls+=3},remove(){tech.extraSuperBalls=0}},{name:"super ball",description:"fire just <strong>1 large</strong> super <strong>ball</strong><br>that <strong>stuns</strong> mobs for <strong>3</strong> second",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("super balls")&&!tech.extraSuperBalls&&!tech.superBallDelay,requires:"super balls, not super duper or supertemporal",effect(){for(tech.oneSuperBall=!0,i=0,len=b.guns.length;i<len;i++)"super balls"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(tech.oneSuperBall)for(tech.oneSuperBall=!1,i=0,len=b.guns.length;i<len;i++)"super balls"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"phase velocity",description:"matter wave <strong>propagates</strong> faster through <strong>solids</strong><br>increase matter wave <strong class='color-d'>damage</strong> by <strong>15%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("matter wave")&&!tech.isLongitudinal,requires:"matter wave, not phonon",effect(){tech.isPhaseVelocity=!0},remove(){tech.isPhaseVelocity=!1}},{name:"bound state",description:"wave packets <strong>reflect</strong> backwards <strong>2</strong> times<br><strong>range</strong> is reduced by <strong>25%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("matter wave"),requires:"matter wave",effect(){tech.waveReflections+=2},remove(){tech.waveReflections=1}},{name:"amplitude",description:"wave packet <strong>amplitude</strong> is <strong>33%</strong> higher<br>wave <strong class='color-d'>damage</strong> is increased by <strong>50%</strong>",isGunTech:!0,maxCount:3,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("matter wave"),requires:"matter wave",effect(){tech.waveFrequency*=.66,tech.wavePacketDamage*=1.5},remove(){tech.waveFrequency=.2,tech.wavePacketDamage=1}},{name:"propagation",description:"wave packet propagation <strong>speed</strong> is <strong>20%</strong> slower<br>wave <strong class='color-d'>damage</strong> is increased by <strong>50%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("matter wave"),requires:"matter wave",effect(){tech.waveBeamSpeed*=.8,tech.waveBeamDamage+=.75},remove(){tech.waveBeamSpeed=10,tech.waveBeamDamage=1.5}},{name:"phonon",description:"matter wave emits low <strong>frequency</strong>, high <strong class='color-d'>damage</strong><br><strong>expanding arcs</strong> that propagate through <strong>solids</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("matter wave")&&!tech.isPhaseVelocity&&!tech.isBulletTeleport,requires:"matter wave, not phase velocity, uncertainty principle",effect(){for(tech.isLongitudinal=!0,i=0,len=b.guns.length;i<len;i++)if("matter wave"===b.guns[i].name){b.guns[i].chooseFireMethod(),b.guns[i].ammoPack=b.guns[i].defaultAmmoPack/8,b.guns[i].ammo=Math.ceil(b.guns[i].ammo/8),simulation.updateGunHUD();break}},remove(){if(tech.isLongitudinal)for(i=0,len=b.guns.length;i<len;i++)if("matter wave"===b.guns[i].name){tech.isLongitudinal=!1,b.guns[i].chooseFireMethod(),b.guns[i].ammoPack=b.guns[i].defaultAmmoPack,b.guns[i].ammo=Math.ceil(8*b.guns[i].ammo),simulation.updateGunHUD();break}tech.isLongitudinal=!1}},{name:"isotropic radiator",description:"<strong>matter wave</strong> expands in <strong>all</strong> directions<br><span style = 'font-size:90%;'><strong>range</strong> reduced <strong>40%</strong> and <strong class='color-d'>damage</strong> increased <strong>50%</strong></span>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isLongitudinal,requires:"matter wave, phonon",effect(){for(tech.is360Longitudinal=!0,i=0,len=b.guns.length;i<len;i++)if("matter wave"===b.guns[i].name){b.guns[i].chooseFireMethod();break}},remove(){for(tech.is360Longitudinal=!1,i=0,len=b.guns.length;i<len;i++)if("matter wave"===b.guns[i].name){b.guns[i].chooseFireMethod();break}}},{name:"cruise missile",description:"<strong>missiles</strong> travel <strong>63%</strong> slower,<br>but have a <strong>50%</strong> larger <strong class='color-e'>explosive</strong> payload",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("missiles")||tech.isMissileField||tech.missileBotCount,requires:"missiles",effect(){tech.missileSize=!0},remove(){tech.missileSize=!1}},{name:"missile-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">missile-bot</a>',description:"gain a <strong class='color-bot'>bot</strong> that fires <strong>missiles</strong> at mobs<br>remove your <strong>missile gun</strong>",isGunTech:!0,isRemoveGun:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,isBot:!0,isBotTech:!0,allowed:()=>tech.haveGunCheck("missiles",!1),requires:"missiles",effect(){tech.missileBotCount++,b.missileBot(),tech.haveGunCheck("missiles",!1)&&b.removeGun("missiles")},remove(){this.count&&(tech.missileBotCount=0,b.clearPermanentBots(),b.respawnBots(),tech.haveGunCheck("missiles",!1)||b.giveGuns("missiles"))}},{name:"MIRV",description:"fire <strong>+1</strong> <strong>missile</strong> and <strong>grenade</strong><br>decrease <strong class='color-e'>explosion</strong> <strong>radius</strong> up to <strong>10%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("missiles")||tech.missileBotCount||tech.haveGunCheck("grenades"),requires:"missiles, grenades",effect(){tech.missileCount++},remove(){tech.missileCount=1}},{name:"rocket-propelled grenade",description:"<strong>grenades</strong> rapidly <strong>accelerate</strong> forward<br>map <strong>collisions</strong> trigger an <strong class='color-e'>explosion</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("grenades"),requires:"grenades",effect(){tech.isRPG=!0,b.setGrenadeMode()},remove(){tech.isRPG=!1,b.setGrenadeMode()}},{name:"vacuum bomb",description:"<strong>grenades</strong> fire slower, <strong class='color-e'>explode</strong> bigger<br> and, <strong>suck</strong> everything towards them",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("grenades")&&!tech.isNeutronBomb,requires:"grenades, not neutron bomb",effect(){tech.isVacuumBomb=!0,b.setGrenadeMode()},remove(){tech.isVacuumBomb=!1,b.setGrenadeMode()}},{name:"chain reaction",description:"increase <strong>grenade</strong> radius and <strong class='color-d'>damage</strong> <strong>33%</strong><br><strong class='color-block'>blocks</strong> caught in <strong class='color-e'>explosions</strong> also <strong class='color-e'>explode</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isVacuumBomb&&!tech.isExplodeRadio,requires:"grenades, vacuum bomb, not iridium-192",effect(){tech.isBlockExplode=!0},remove(){tech.isBlockExplode=!1}},{name:"neutron bomb",description:"<strong>grenades</strong> are <strong class='color-p'>irradiated</strong> with <strong class='color-p'>Cf-252</strong><br>does <strong class='color-d'>damage</strong>, <strong class='color-harm'>harm</strong>, and drains <strong class='color-f'>energy</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("grenades")&&!tech.fragments&&!tech.isVacuumBomb,requires:"grenades, not fragmentation, vacuum bomb",effect(){tech.isNeutronBomb=!0,b.setGrenadeMode()},remove(){tech.isNeutronBomb=!1,b.setGrenadeMode()}},{name:"vacuum permittivity",description:"increase <strong class='color-p'>radioactive</strong> range by <strong>20%</strong><br>objects in range of the bomb are <strong>slowed</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isNeutronBomb,requires:"grenades, neutron bomb",effect(){tech.isNeutronSlow=!0},remove(){tech.isNeutronSlow=!1}},{name:"radioactive contamination",description:"after a mob or shield <strong>dies</strong>,<br> leftover <strong class='color-p'>radiation</strong> <strong>spreads</strong> to a nearby mob",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isNailRadiation||tech.isWormholeDamage||tech.isNeutronBomb||tech.isExplodeRadio,requires:"radiation damage source",effect(){tech.isRadioactive=!0},remove(){tech.isRadioactive=!1}},{name:"water shielding",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Radiation_protection#Radiation_shielding\' class="link">water shielding</a>',description:"<strong class='color-p'>radioactive</strong> effects on you are reduced by 75%<br><em>neutron bomb, drones, explosions, slime</em>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isNeutronBomb||tech.isDroneRadioactive||tech.isExplodeRadio,requires:"neutron bomb or irradiated drones or iridium-192",effect(){tech.isRadioactiveResistance=!0},remove(){tech.isRadioactiveResistance=!1}},{name:"iridium-192",description:"<strong class='color-e'>explosions</strong> release <strong class='color-p'>gamma radiation</strong><br><strong>100%</strong> more <strong class='color-d'>damage</strong>, but over 4 seconds",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>1===tech.explosiveRadius&&!tech.isSmallExplosion&&(tech.haveGunCheck("missiles")||tech.isIncendiary||tech.haveGunCheck("grenades")&&!tech.isNeutronBomb||tech.isPulseLaser||tech.isMissileField||tech.boomBotCount>1||tech.isTokamak),requires:"an explosive damage source, not ammonium nitrate or nitroglycerin",effect:()=>{tech.isExplodeRadio=!0},remove(){tech.isExplodeRadio=!1}},{name:"ammonium nitrate",description:"increase <strong class='color-e'>explosive</strong> <strong class='color-d'>damage</strong> by <strong>30%</strong><br>increase <strong class='color-e'>explosive</strong> <strong>radius</strong> by <strong>30%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isExplodeRadio&&tech.hasExplosiveDamageCheck(),requires:"an explosive damage source, not iridium-192",effect:()=>{tech.explosiveRadius+=.3},remove(){tech.explosiveRadius=1}},{name:"nitroglycerin",description:"increase <strong class='color-e'>explosive</strong> <strong class='color-d'>damage</strong> by <strong>66%</strong><br>decrease <strong class='color-e'>explosive</strong> <strong>radius</strong> by <strong>33%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isExplodeRadio&&tech.hasExplosiveDamageCheck(),requires:"an explosive damage source, not iridium-192",effect:()=>{tech.isSmallExplosion=!0},remove(){tech.isSmallExplosion=!1}},{name:"acetone peroxide",description:"increase <strong class='color-e'>explosive</strong> <strong>radius</strong> by <strong>80%</strong>, but<br>you take <strong>300%</strong> more <strong class='color-harm'>harm</strong> from <strong class='color-e'>explosions</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,isBadRandomOption:!0,allowed:()=>tech.hasExplosiveDamageCheck(),requires:"an explosive damage source",effect:()=>{tech.isExplosionHarm=!0},remove(){tech.isExplosionHarm=!1}},{name:"shock wave",description:"<strong class='color-e'>explosions</strong> <strong>stun</strong> mobs for <strong>1-2</strong> seconds<br>decrease <strong class='color-e'>explosive</strong> <strong class='color-d'>damage</strong> by <strong>30%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>!tech.isExplodeRadio&&tech.hasExplosiveDamageCheck(),requires:"an explosive damage source, not iridium-192",effect(){tech.isExplosionStun=!0},remove(){tech.isExplosionStun=!1}},{name:"controlled explosion",description:`use ${powerUps.orb.research(3)} to dynamically <strong>reduce</strong> all<br><strong class='color-e'>explosions</strong> until they do no <strong class='color-harm'>harm</strong>`,isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isImmuneExplosion&&(build.isExperimentSelection||powerUps.research.count>2)&&(tech.haveGunCheck("missiles")||tech.isMissileField||tech.missileBotCount>0||tech.isIncendiary||tech.isPulseLaser||tech.isTokamak||tech.haveGunCheck("grenades")&&!tech.isNeutronBomb),requires:"an explosive damage source, not electric reactive armor",effect:()=>{tech.isSmartRadius=!0;for(let e=0;e<3;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1)},remove(){tech.isSmartRadius=!1,this.count>0&&powerUps.research.changeRerolls(3)}},{name:"electric reactive armor",description:"<strong class='color-harm'>harm</strong> from <strong class='color-e'>explosions</strong> is passively reduced<br>by <strong>5%</strong> for every <strong>10</strong> stored <strong class='color-f'>energy</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isSmartRadius&&!tech.isExplodeRadio&&tech.hasExplosiveDamageCheck(),requires:"an explosive damage source, not iridium-192",effect:()=>{tech.isImmuneExplosion=!0},remove(){tech.isImmuneExplosion=!1}},{name:"incendiary ammunition",description:"<strong>shotgun</strong>, <strong>super balls</strong>, and <strong>drones</strong><br>are loaded with <strong class='color-e'>explosives</strong>",isGunTech:!0,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>("molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isDroneTeleport||tech.isDroneRadioactive||tech.isSporeField||tech.isMissileField||tech.isIceField)||tech.haveGunCheck("drones")&&!tech.isForeverDrones&&!tech.isDroneRadioactive&&!tech.isDroneTeleport||tech.haveGunCheck("super balls")||tech.haveGunCheck("shotgun"))&&!tech.isNailShot&&!tech.isIceShot&&!tech.isFoamShot&&!tech.isWormShot&&!tech.isNeedleShot,requires:"super balls, basic or slug shotgun, drones, not irradiated drones or burst drones",effect(){tech.isIncendiary=!0},remove(){tech.isIncendiary=!1}},{name:"fragmentation",description:"some <strong class='color-e'>detonations</strong> and collisions eject <strong>nails</strong><br><em style = 'font-size: 90%'>blocks, grenades, missiles, slugs, harpoon</em>",isGunTech:!0,maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.haveGunCheck("harpoon")||tech.haveGunCheck("grenades")&&!tech.isNeutronBomb||tech.haveGunCheck("missiles")||tech.missileBotCount||tech.haveGunCheck("shotgun")&&tech.isSlugShot||tech.blockDamage>.075,requires:"grenades, missiles, shotgun slugs, harpoon, or mass driver",effect(){tech.fragments++},remove(){tech.fragments=0}},{name:"booby trap",description:"drop a <strong>mine</strong> after picking up a <strong>power up</strong><br><strong>+53%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("mine"),requires:"mines",effect(){tech.isMineDrop=!0,tech.isMineDrop&&b.mine(m.pos,{x:0,y:0},0),this.refundAmount+=tech.addJunkTechToPool(.53)},refundAmount:0,remove(){tech.isMineDrop=!1,this.count>0&&this.refundAmount>0&&(tech.removeJunkTechFromPool(this.refundAmount),this.refundAmount=0)}},{name:"laser-mines",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Laser\' class="link">laser-mines</a>',description:"<strong>mines</strong> laid while you are <strong>crouched</strong><br>use <strong class='color-f'>energy</strong> to emit <strong>3</strong> unaimed <strong class='color-laser'>lasers</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("mine"),requires:"mines",effect(){tech.isLaserMine=!0},remove(){tech.isLaserMine=!1}},{name:"sentry",description:"instead of detonating, <strong>mines</strong> <strong>target</strong> mobs<br>with a stream of nails for about <strong>17</strong> seconds",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("mine"),requires:"mines",effect(){tech.isMineSentry=!0},remove(){tech.isMineSentry=!1}},{name:"blast mines",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Anti-personnel_mine\' class="link">blast mines</a>',description:"when a <strong>mine</strong> <strong>activates</strong><br>it <strong>stuns</strong> nearby mobs for <strong>2-4</strong> seconds",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("mine"),requires:"mines",effect(){tech.isMineStun=!0},remove(){tech.isMineStun=!1}},{name:"mycelial fragmentation",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Fungus\' class="link">mycelial fragmentation</a>',description:"<strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> release <strong>6</strong> more <strong class='color-p' style='letter-spacing: 2px;'>spores</strong><br>during their <strong>growth</strong> phase",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("spores"),requires:"spore gun",effect(){tech.isSporeGrowth=!0},remove(){tech.isSporeGrowth=!1}},{name:"tinsellated flagella",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Zoospore#Flagella_types\' class="link">tinsellated flagella</a>',description:"<strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> release <strong>2</strong> more <strong class='color-p' style='letter-spacing: 2px;'>spores</strong><br><strong class='color-p' style='letter-spacing: 2px;'>spores</strong> accelerate <strong>40% faster</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("spores")||tech.sporesOnDeath>0||tech.isSporeField,requires:"spore gun, spores",effect(){tech.isFastSpores=!0},remove(){tech.isFastSpores=!1}},{name:"cryodesiccation",description:"<strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> release <strong>2</strong> more <strong class='color-p' style='letter-spacing: 2px;'>spores</strong><br><strong class='color-p' style='letter-spacing: 2px;'>spores</strong> <strong class='color-s'>freeze</strong> mobs for <strong>1.5</strong> second",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("spores")||tech.sporesOnDeath>0||tech.isSporeField||tech.isWormShot,requires:"spore gun, spores or worms",effect(){tech.isSporeFreeze=!0},remove(){tech.isSporeFreeze=!1}},{name:"diplochory",description:"<strong class='color-p' style='letter-spacing: 2px;'>spores</strong> use you for <strong>dispersal</strong><br>until they <strong>locate</strong> a viable host",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("spores")||tech.sporesOnDeath>0||tech.isSporeField||tech.isWormShot,requires:"spore gun, spores or worms",effect(){tech.isSporeFollow=!0},remove(){tech.isSporeFollow=!1}},{name:"mutualism",description:"increase <strong class='color-p' style='letter-spacing: 2px;'>spore</strong> <strong class='color-d'>damage</strong> by <strong>150%</strong><br><strong class='color-p' style='letter-spacing: 2px;'>spores</strong> borrow <strong>0.5</strong> <strong>health</strong> until they <strong>die</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.haveGunCheck("spores")||tech.sporesOnDeath>0||tech.isSporeField)&&!tech.isEnergyHealth||tech.isWormShot,requires:"spore gun, spores, worms, not mass-energy",effect(){tech.isMutualism=!0},remove(){tech.isMutualism=!1}},{name:"nematodes",description:"<strong class='color-p' style='letter-spacing: 2px;'>spores</strong> develop into <strong>1/2</strong> as many <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong><br><strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong> do <strong>250%</strong> more <strong class='color-d'>damage</strong>",isGunTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.haveGunCheck("spores")||tech.sporesOnDeath>0||tech.isSporeField||tech.isWormholeSpores,requires:"spore gun, spores",effect(){tech.isSporeWorm=!0},remove(){tech.isSporeWorm=!1}},{name:"annelids",description:"increase <strong class='color-p' style='letter-spacing: -0.8px;'>worm</strong> size and <strong class='color-d'>damage</strong><br>between <strong>10%</strong> and <strong>120%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:3,frequencyDefault:3,allowed:()=>tech.isSporeWorm||tech.isWormShot,requires:"spore gun, shotgun, worms",effect(){tech.wormSize++},remove(){tech.wormSize=0}},{name:"necrophage",description:"if <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong> <strong>kill</strong> their target<br>they reset their <strong>lifespan</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isSporeWorm||tech.isWormShot,requires:"spore gun, shotgun, worms",effect(){tech.wormSurviveDmg=!0},remove(){tech.wormSurviveDmg=!1}},{name:"anti-shear topology",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Topology\' class="link">anti-shear topology</a>',description:"some <strong>projectiles</strong> last <strong>30% longer</strong><br><em style = 'font-size: 83%'>drone, spore, missile, foam, wave, neutron, ice</em>",isGunTech:!0,maxCount:3,count:0,frequency:2,frequencyDefault:2,allowed:()=>"molecular assembler"===m.fieldUpgrades[m.fieldMode].name||tech.haveGunCheck("spores")||tech.haveGunCheck("drones")||tech.haveGunCheck("missiles")||tech.haveGunCheck("foam")||tech.haveGunCheck("matter wave")||tech.isNeutronBomb||tech.isIceField||tech.isIceShot||tech.relayIce||tech.isNeedleIce||tech.blockingIce>1||tech.isWormShot||tech.foamBotCount>1,requires:"drones, spores, missiles, foam, matter wave, neutron bomb, ice IX",effect(){tech.isBulletsLastLonger+=.3},remove(){tech.isBulletsLastLonger=1}},{name:"fault tolerance",description:"spawn <strong>8</strong> <strong>drones</strong> that last <strong>forever</strong><br>remove your <strong>drone gun</strong>",isGunTech:!0,isRemoveGun:!0,maxCount:1,count:0,frequency:1,frequencyDefault:1,allowed:()=>tech.haveGunCheck("drones",!1)&&!tech.isDroneRespawn&&1===tech.isBulletsLastLonger,requires:"drones, not drone repair, anti-shear topology",effect(){if(tech.isForeverDrones+=8,tech.haveGunCheck("drones",!1)&&b.removeGun("drones"),tech.isDroneRadioactive)for(let e=0;e<2;e++)b.droneRadioactive({x:m.pos.x+30*(Math.random()-.5),y:m.pos.y+30*(Math.random()-.5)},5),bullet[bullet.length-1].endCycle=1/0;else for(let e=0;e<8;e++)b.drone({x:m.pos.x+30*(Math.random()-.5),y:m.pos.y+30*(Math.random()-.5)},5),bullet[bullet.length-1].endCycle=1/0},remove(){tech.isForeverDrones=0,this.count&&!tech.haveGunCheck("drones",!1)&&b.giveGuns("drones")}},{name:"reduced tolerances",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Engineering_tolerance\' class="link">reduced tolerances</a>',description:`increase <strong>drones</strong> per ${powerUps.orb.ammo()} or <strong class='color-f'>energy</strong> by <strong>66%</strong><br>reduce the average <strong>drone</strong> lifetime by <strong>40%</strong>`,isGunTech:!0,maxCount:3,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isDroneRadioactive&&(tech.haveGunCheck("drones")||"molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isSporeField||tech.isMissileField||tech.isIceField)),requires:"drones, not irradiated drones",effect(){for(tech.droneCycleReduction=Math.pow(.6,1+this.count),tech.droneEnergyReduction=Math.pow(.333,1+this.count),i=0,len=b.guns.length;i<len;i++)if("drones"===b.guns[i].name){const e=Math.pow(3,this.count+1);b.guns[i].ammoPack=b.guns[i].defaultAmmoPack*e}},remove(){for(tech.droneCycleReduction=1,tech.droneEnergyReduction=1,i=0,len=b.guns.length;i<len;i++)"drones"===b.guns[i].name&&(b.guns[i].ammoPack=b.guns[i].defaultAmmoPack)}},{name:"delivery drone",description:"if a <strong>drone</strong> picks up a <strong>power up</strong>,<br>it becomes <strong>larger</strong>, <strong>faster</strong>, and more <strong>durable</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isExtraMaxEnergy&&(tech.haveGunCheck("drones")||tech.isForeverDrones||"molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isSporeField||tech.isMissileField||tech.isIceField)),requires:"drones, not permittivity",effect(){tech.isDroneGrab=!0},remove(){tech.isDroneGrab=!1}},{name:"drone repair",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Unmanned_aerial_vehicle\' class="link">drone repair</a>',description:"after a <strong>drone</strong> expires it <strong>redeploys</strong><br>for a <strong>25%</strong> chance to use <strong>1</strong> <strong>drone</strong> <strong class='color-ammo'>ammo</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("drones"),requires:"drones",effect(){tech.isDroneRespawn=!0},remove(){tech.isDroneRespawn=!1}},{name:"brushless motor",description:"<strong>drones</strong> rapidly <strong>rush</strong> towards their target<br>increase <strong>drone</strong> collision <strong class='color-d'>damage</strong> by <strong>33%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>(tech.haveGunCheck("drones")||tech.isForeverDrones||"molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isSporeField||tech.isMissileField||tech.isIceField))&&!tech.isDroneRadioactive&&!tech.isIncendiary,requires:"drones, molecular assembler, not irradiated drones, incendiary",effect(){tech.isDroneTeleport=!0},remove(){tech.isDroneTeleport=!1}},{name:"axial flux motor",description:"<strong>drones</strong> can <strong>rush</strong> <strong>66%</strong> more often<br>increase <strong>drone</strong> collision <strong class='color-d'>damage</strong> by <strong>44%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isDroneTeleport,requires:"drones, brushless motor",effect(){tech.isDroneFastLook=!0},remove(){tech.isDroneFastLook=!1}},{name:"irradiated drones",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Irradiation\' class="link">irradiated drones</a>',description:`the space around <strong>drones</strong> is <strong class='color-p'>irradiated</strong><br>reduce <strong>drones</strong> per ${powerUps.orb.ammo()} or <strong class='color-f'>energy</strong> <strong>75%</strong>`,isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>1===tech.droneCycleReduction&&!tech.isIncendiary&&!tech.isDroneTeleport&&(tech.haveGunCheck("drones")||tech.isForeverDrones||"molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isSporeField||tech.isMissileField||tech.isIceField)),requires:"drones, not reduced tolerances, incendiary, torque bursts",effect(){for(tech.isDroneRadioactive=!0,i=0,len=b.guns.length;i<len;i++)"drones"===b.guns[i].name&&(b.guns[i].ammoPack=.25*b.guns[i].defaultAmmoPack,b.guns[i].ammo=Math.ceil(.25*b.guns[i].ammo),simulation.makeGunHUD())},remove(){if(tech.isDroneRadioactive)for(tech.isDroneRadioactive=!1,i=0,len=b.guns.length;i<len;i++)"drones"===b.guns[i].name&&(b.guns[i].ammoPack=b.guns[i].defaultAmmoPack,b.guns[i].ammo=4*b.guns[i].ammo,simulation.makeGunHUD())}},{name:"beta radiation",description:"reduce the average <strong>drone</strong> lifetime by <strong>50%</strong><br>increase <strong class='color-p'>radiation</strong> <strong class='color-d'>damage</strong> by <strong>100%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isDroneRadioactive,requires:"drones irradiated drones",effect(){tech.droneRadioDamage=2},remove(){tech.droneRadioDamage=1}},{name:"orthocyclic winding",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Coil_winding_technology\' class="link">orthocyclic winding</a>',description:"<strong>drones</strong> accelerate <strong>66%</strong> faster<br>increase <strong class='color-p'>radiation</strong> <strong class='color-d'>damage</strong> by <strong>33%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isDroneRadioactive,requires:"drones, irradiated drones",effect(){tech.isFastDrones=!0},remove(){tech.isFastDrones=!1}},{name:"capacitor bank",descriptionFunction:()=>`<strong>charge</strong> effects build up almost <strong>instantly</strong><br><em style = 'font-size:97%;'>throwing <strong class='color-block'>blocks</strong>, ${tech.haveGunCheck("foam",!1)?"<strong>foam</strong>":"foam"}, ${tech.isRailGun?"<strong>railgun</strong>":"railgun"}, ${tech.isPulseLaser?"<strong>pulse</strong>":"pulse"}, ${tech.isTokamak?"<strong>tokamak</strong>":"tokamak"}</em>`,isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.blockDamage>.075||tech.haveGunCheck("foam")||tech.isRailGun||tech.isTokamak||tech.isPulseLaser,requires:"throwing blocks, foam, railgun, pulse, tokamak",effect(){tech.isCapacitor=!0},remove(){tech.isCapacitor=!1}},{name:"electrostatic induction",description:"<strong>foam</strong> bubbles are electrically charged<br>causing <strong>attraction</strong> to nearby <strong>mobs</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isBulletTeleport&&(tech.haveGunCheck("foam")||tech.foamBotCount>1||tech.isFoamShot),requires:"foam, not uncertainty",effect(){tech.isFoamAttract=!0},remove(){tech.isFoamAttract=!1}},{name:"uncertainty principle",description:"<strong>foam</strong> and <strong>wave</strong> particle <strong>positions</strong> are random<br>increase their <strong class='color-d'>damage</strong> by <strong>43%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>!tech.isFoamAttract&&(tech.haveGunCheck("foam")||tech.foamBotCount>1||tech.isFoamShot)||tech.haveGunCheck("matter wave")&&!tech.isLongitudinal,requires:"foam, not electrostatic induction, matter wave, not phonon",effect(){tech.isBulletTeleport=!0},remove(){tech.isBulletTeleport=!1}},{name:"necrophoresis",description:"<strong>foam</strong> bubbles grow and split into 3 <strong>copies</strong><br> when the mob they are stuck to <strong>dies</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("foam")||tech.foamBotCount>1||tech.isFoamShot,requires:"foam",effect(){tech.isFoamGrowOnDeath=!0},remove(){tech.isFoamGrowOnDeath=!1}},{name:"aerogel",description:"<strong>foam</strong> bubbles <strong>float</strong> and dissipate <strong>50%</strong> faster<br>increase <strong>foam</strong> <strong class='color-d'>damage</strong> per second by <strong>150%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("foam")||tech.foamBotCount>1||tech.isFoamShot,requires:"foam",effect(){tech.isFastFoam=!0,tech.foamGravity=-3e-4},remove(){tech.isFastFoam=!1,tech.foamGravity=8e-5}},{name:"quantum foam",description:"<strong>foam</strong> gun fires <strong>0.25</strong> seconds into the <strong>future</strong><br>increase <strong>foam</strong> gun <strong class='color-d'>damage</strong> by <strong>66%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("foam"),requires:"foam",effect(){tech.foamFutureFire++},remove(){tech.foamFutureFire=0}},{name:"foam fractionation",description:"<strong>foam</strong> gun bubbles are <strong>100%</strong> larger<br>when you have below <strong>300</strong> <strong>foam</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("foam"),requires:"foam",effect(){tech.isAmmoFoamSize=!0},remove(){tech.isAmmoFoamSize=!1}},{name:"surfactant",description:"trade your <strong>foam gun</strong> for <strong>2</strong> <strong class='color-bot'>foam-bots</strong><br>and <strong>upgrade</strong> all bots to foam<br>",isGunTech:!0,isRemoveGun:!0,maxCount:1,count:0,frequency:1,frequencyDefault:1,isBot:!0,isBotTech:!0,isNonRefundable:!0,requires:"foam gun, NOT EXPERIMENT MODE, bot upgrades, fractionation, quantum foam",allowed:()=>tech.haveGunCheck("foam",!1)&&!b.hasBotUpgrade()&&!tech.isAmmoFoamSize&&!tech.foamFutureFire,effect(){tech.giveTech("foam-bot upgrade");for(let e=0;e<2;e++)b.foamBot(),tech.foamBotCount++;simulation.makeTextLog("tech.isFoamBotUpgrade = true"),tech.haveGunCheck("foam",!1)&&b.removeGun("foam")},remove(){}},{name:"filament",description:"increase the <strong>length</strong> of your <strong>harpoon</strong>'s <strong>rope</strong><br>by <strong>1%</strong> per harpoon <strong class='color-ammo'>ammo</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("harpoon"),requires:"harpoon",effect(){tech.isFilament=!0},remove(){tech.isFilament=!1}},{name:"unaaq",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Harpoon#/media/File:Harpon_Unaaq_MHNT_ETH_AC_198.jpg\' class="link">unaaq</a>',description:"increase the <strong>size</strong> of your <strong>harpoon</strong><br>by <strong>10%</strong> of the square root of harpoon <strong class='color-ammo'>ammo</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("harpoon"),requires:"harpoon",effect(){tech.isLargeHarpoon=!0},remove(){tech.isLargeHarpoon=!1}},{name:"toggling harpoon",description:"increase the <strong class='color-d'>damage</strong> of your next <strong>harpoon</strong><br>by <strong>800%</strong> after using it to collect a <strong>power up</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("harpoon"),requires:"harpoon",effect(){tech.isHarpoonPowerUp=!0},remove(){tech.isHarpoonPowerUp=!1,tech.harpoonDensity=.008}},{name:"reticulum",description:"fire <strong>+1</strong> <strong>harpoon</strong>, but <strong class='color-f'>energy</strong> cost<br>to <strong>retract</strong> also increases",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("harpoon"),requires:"harpoon",effect(){tech.extraHarpoons++},remove(){tech.extraHarpoons=0}},{name:"railgun",description:"firing the <strong>harpoon</strong> while crouched launches<br>a rod that is <strong>faster</strong>, <strong>larger</strong>, and more <strong>dense</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("harpoon"),requires:"railgun",effect(){tech.isRailGun=!0},remove(){tech.isRailGun=!1}},{name:"half-wave rectifier",description:"charging the <strong>railgun</strong> gives you <strong class='color-f'>energy</strong><br><em>instead of draining it</em>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isRailGun,requires:"harpoon, railgun",effect(){tech.isRailEnergyGain=!0},remove(){tech.isRailEnergyGain=!1}},{name:"laser diode",description:"all <strong class='color-laser'>lasers</strong> drain <strong>30%</strong> less <strong class='color-f'>energy</strong><br><em>affects laser-gun, laser-bot, laser-mines, pulse</em>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.haveGunCheck("laser")||tech.laserBotCount>1||tech.isLaserMine)&&.17===tech.laserDamage,requires:"laser, not free-electron",effect(){tech.isLaserDiode=.7,tech.laserColor="rgb(0, 11, 255)",tech.laserColorAlpha="rgba(0, 11, 255,0.5)"},remove(){tech.isLaserDiode=1,tech.laserColor="#f02",tech.laserColorAlpha="rgba(255, 0, 0, 0.5)"}},{name:"free-electron laser",description:"increase all <strong class='color-laser'>laser</strong> <strong class='color-d'>damage</strong> by <strong>200%</strong><br>increase all <strong class='color-laser'>laser</strong> <strong class='color-f'>energy</strong> drain by <strong>250%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.haveGunCheck("laser")||tech.isLaserMine||tech.laserBotCount>1)&&!tech.isPulseLaser&&1===tech.isLaserDiode,requires:"laser, not pulse, diodes",effect(){tech.laserFieldDrain=.007,tech.laserDamage=.51,tech.laserColor="#83f",tech.laserColorAlpha="rgba(136, 51, 255,0.5)"},remove(){tech.laserFieldDrain=.002,tech.laserDamage=.17,tech.laserColor="#f00",tech.laserColorAlpha="rgba(255, 0, 0, 0.5)"}},{name:"relativistic momentum",description:"all <strong class='color-laser'>lasers</strong> push <strong>mobs</strong> and <strong class='color-block'>blocks</strong> away<br><em>affects laser-gun, laser-bot, and laser-mines</em>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("laser")&&!tech.isPulseLaser||tech.laserBotCount>1,requires:"laser, not pulse",effect(){tech.isLaserPush=!0},remove(){tech.isLaserPush=!1}},{name:"specular reflection",description:"<strong>+2</strong> reflection for all <strong class='color-laser'>lasers</strong><br><em>affects laser-gun, laser-bot, and laser-mines</em>",isGunTech:!0,maxCount:3,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.haveGunCheck("laser")||tech.isLaserMine||tech.laserBotCount>1)&&!tech.isWideLaser&&!tech.isPulseLaser&&!tech.historyLaser,requires:"laser, not diffuse beam, pulse, or slow light",effect(){tech.laserReflections+=2},remove(){tech.laserReflections=2}},{name:"diffraction grating",description:"<strong class='color-laser'>laser</strong> gains a <strong>diverging</strong> beam",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("laser")&&!tech.isWideLaser&&!tech.isPulseAim&&!tech.historyLaser,requires:"laser gun, not neocognitron, diffuse beam, or slow light",effect(){for(tech.beamSplitter++,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(0!==tech.beamSplitter)for(tech.beamSplitter=0,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"diffuse beam",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Diffuser_(optics)\' class="link">diffuse beam</a>',description:"<strong class='color-laser'>laser</strong> beam is <strong>wider</strong> and doesn't <strong>reflect</strong><br>increase full beam <strong class='color-d'>damage</strong> by <strong>200%</strong>",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("laser")&&tech.laserReflections<3&&!tech.beamSplitter&&!tech.isPulseLaser&&!tech.historyLaser,requires:"laser gun, not specular reflection, diffraction grating, slow light, pulse",effect(){for(0===tech.wideLaser&&(tech.wideLaser=3),tech.isWideLaser=!0,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(tech.isWideLaser)for(tech.isWideLaser=!1,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"output coupler",description:"<strong>widen</strong> diffuse <strong class='color-laser'>laser</strong> beam by <strong>40%</strong><br>increase full beam <strong class='color-d'>damage</strong> by <strong>40%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isWideLaser,requires:"laser gun, diffuse beam",effect(){for(tech.wideLaser+=2,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){for(tech.isWideLaser?tech.wideLaser=3:tech.wideLaser=0,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"slow light",description:"<strong class='color-laser'>laser</strong> beam is <strong>spread</strong> into your recent <strong>past</strong><br>increase total beam <strong class='color-d'>damage</strong> by <strong>300%</strong>",isGunTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("laser")&&tech.laserReflections<3&&!tech.beamSplitter&&!tech.isWideLaser,requires:"laser gun, not specular reflection, diffraction grating, diffuse beam",effect(){for(tech.historyLaser++,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(tech.historyLaser)for(tech.historyLaser=0,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"pulse",description:"charge your <strong class='color-f'>energy</strong> and release it as a<br><strong class='color-laser'>laser</strong> pulse that initiates an <strong class='color-e'>explosion</strong> cluster",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.haveGunCheck("laser")&&tech.laserReflections<3&&!tech.isWideLaser&&.17===tech.laserDamage,requires:"laser gun, not specular reflection, diffuse, free-electron laser",effect(){for(tech.isPulseLaser=!0,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()},remove(){if(tech.isPulseLaser)for(tech.isPulseLaser=!1,i=0,len=b.guns.length;i<len;i++)"laser"===b.guns[i].name&&b.guns[i].chooseFireMethod()}},{name:"neocognitron",description:"<strong class='color-laser'>pulse</strong> automatically <strong>aims</strong> at a nearby mob",isGunTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isPulseLaser&&!tech.beamSplitter,requires:"laser gun, pulse, not diffraction grating",effect(){tech.isPulseAim=!0},remove(){tech.isPulseAim=!1}},{name:"zero point energy",description:`use ${powerUps.orb.research(2)}to increase your <strong>max</strong> <strong class='color-f'>energy</strong> by <strong>100</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>("standing wave"===m.fieldUpgrades[m.fieldMode].name||"pilot wave"===m.fieldUpgrades[m.fieldMode].name)&&(build.isExperimentSelection||powerUps.research.count>1),requires:"standing wave or pilot wave",effect(){tech.harmonicEnergy=1,m.setMaxEnergy();for(let e=0;e<2;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1)},remove(){tech.harmonicEnergy=0,m.setMaxEnergy(),this.count>0&&powerUps.research.changeRerolls(2)}},{name:"spherical harmonics",description:"<strong>standing wave</strong> oscillates in a 3rd dimension<br>increasing <strong>deflecting</strong> efficiency by <strong>40%</strong>",isFieldTech:!0,maxCount:9,count:0,frequency:3,frequencyDefault:3,allowed:()=>"standing wave"===m.fieldUpgrades[m.fieldMode].name,requires:"standing wave",effect(){tech.harmonics++,m.fieldShieldingScale=1.3*Math.pow(.6,tech.harmonics-2),m.harmonicShield=m.harmonicAtomic},remove(){tech.harmonics=2,m.fieldShieldingScale=1.3*Math.pow(.6,tech.harmonics-2),m.harmonicShield=m.harmonic3Phase}},{name:"expansion",description:"using <strong>standing wave</strong> field<br>temporarily <strong>expands</strong> its <strong>radius</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"standing wave"===m.fieldUpgrades[m.fieldMode].name,requires:"standing wave",effect(){tech.isStandingWaveExpand=!0},remove(){tech.isStandingWaveExpand=!1,m.harmonicRadius=1}},{name:"bremsstrahlung",description:"<strong>deflecting</strong> does <strong class='color-d'>damage</strong> to mobs",isFieldTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>"standing wave"===m.fieldUpgrades[m.fieldMode].name||"perfect diamagnetism"===m.fieldUpgrades[m.fieldMode].name,requires:"standing wave, perfect diamagnetism",effect(){tech.blockDmg+=1.75},remove(){tech.blockDmg=0}},{name:"triple point",description:"the pressure from <strong>deflecting</strong> is used<br>to condense <strong class='color-s'>ice IX</strong> crystals",isFieldTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>"standing wave"===m.fieldUpgrades[m.fieldMode].name||"perfect diamagnetism"===m.fieldUpgrades[m.fieldMode].name,requires:"standing wave, perfect diamagnetism",effect(){tech.blockingIce++},remove(){tech.blockingIce=0}},{name:"flux pinning",description:"<strong>deflecting</strong> mobs with your <strong>field</strong><br><strong>stuns</strong> them for <strong>4</strong> seconds",isFieldTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>"perfect diamagnetism"===m.fieldUpgrades[m.fieldMode].name||"standing wave"===m.fieldUpgrades[m.fieldMode].name||"molecular assembler"===m.fieldUpgrades[m.fieldMode].name,requires:"a field that can block",effect(){tech.isStunField+=240},remove(){tech.isStunField=0}},{name:"eddy current brake",description:"project a field that limits the <strong>top speed</strong> of mobs<br>field <strong>radius</strong> scales with stored <strong class='color-f'>energy</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"perfect diamagnetism"===m.fieldUpgrades[m.fieldMode].name,requires:"perfect diamagnetism",effect(){tech.isPerfectBrake=!0},remove(){tech.isPerfectBrake=!1}},{name:"Meissner effect",description:"increase <strong>perfect diamagnetism</strong> field<br><strong>radius</strong> by <strong>55%</strong> and circular <strong>arc</strong> by <strong>22°</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"perfect diamagnetism"===m.fieldUpgrades[m.fieldMode].name,requires:"perfect diamagnetism",effect(){tech.isBigField=!0},remove(){tech.isBigField=!1}},{name:"tessellation",description:`use ${powerUps.orb.research(2)}to reduce <strong class='color-harm'>harm</strong> by <strong>50%</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>("pilot wave"===m.fieldUpgrades[m.fieldMode].name||"perfect diamagnetism"===m.fieldUpgrades[m.fieldMode].name||"negative mass"===m.fieldUpgrades[m.fieldMode].name)&&(build.isExperimentSelection||powerUps.research.count>3),requires:"perfect diamagnetism, negative mass, pilot wave",effect(){tech.isFieldHarmReduction=!0;for(let e=0;e<2;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1)},remove(){tech.isFieldHarmReduction=!1,this.count>0&&powerUps.research.changeRerolls(2)}},{name:"neutronium",description:"reduce <strong class='color-harm'>harm</strong> by <strong>90%</strong> when your <strong class='color-f'>field</strong> is active<br><strong>move</strong> and <strong>jump</strong> <strong>33%</strong> <strong>slower</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"negative mass"===m.fieldUpgrades[m.fieldMode].name&&!tech.isEnergyHealth,requires:"negative mass, not mass-energy",effect(){tech.isNeutronium=!0,tech.baseFx*=.66,tech.baseJumpForce*=.66,m.setMovement()},remove(){tech.isNeutronium=!1,tech.isFreeWormHole||(tech.baseFx=.08,tech.baseJumpForce=10.5,m.setMovement())}},{name:"annihilation",description:"<strong>touching</strong> normal mobs <strong>annihilates</strong> them<br>but drains <strong>33%</strong> of your maximum <strong class='color-f'>energy</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"negative mass"===m.fieldUpgrades[m.fieldMode].name,requires:"negative mass",effect(){tech.isAnnihilation=!0},remove(){tech.isAnnihilation=!1}},{name:"inertial mass",description:"<strong>negative mass</strong> is larger and <strong>faster</strong><br><strong class='color-block'>blocks</strong> also move <strong>horizontally</strong> with the field",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"negative mass"===m.fieldUpgrades[m.fieldMode].name,requires:"negative mass",effect(){tech.isFlyFaster=!0},remove(){tech.isFlyFaster=!1}},{name:"pair production",description:"picking up a <strong>power up</strong> gives you <strong>200</strong> <strong class='color-f'>energy</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"molecular assembler"===m.fieldUpgrades[m.fieldMode].name||"standing wave"===m.fieldUpgrades[m.fieldMode].name||"pilot wave"===m.fieldUpgrades[m.fieldMode].name,requires:"molecular assembler or pilot wave",effect:()=>{tech.isMassEnergy=!0,m.energy+=2},remove(){tech.isMassEnergy=!1}},{name:"bot manufacturing",description:`use <strong>molecular assembler</strong> and ${powerUps.orb.research(2)}<br>to build <strong>3</strong> random <strong class='color-bot'>bots</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:1,frequencyDefault:1,isBotTech:!0,isNonRefundable:!0,allowed:()=>powerUps.research.count>1&&"molecular assembler"===m.fieldUpgrades[m.fieldMode].name,requires:"NOT EXPERIMENT MODE, molecular assembler",effect:()=>{for(let e=0;e<2;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1);m.energy=.01,b.randomBot(),b.randomBot(),b.randomBot()},remove(){}},{name:"bot prototypes",description:`use ${powerUps.orb.research(3)}to build<br><strong>2</strong> random <strong class='color-bot'>bots</strong> and <strong>upgrade</strong> all <strong class='color-bot'>bots</strong> to that type`,isFieldTech:!0,maxCount:1,count:0,frequency:1,frequencyDefault:1,isBotTech:!0,isNonRefundable:!0,allowed:()=>powerUps.research.count>2&&"molecular assembler"===m.fieldUpgrades[m.fieldMode].name,requires:"NOT EXPERIMENT MODE, molecular assembler",effect:()=>{for(let e=0;e<3;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1);const e=[];e.push((()=>{tech.giveTech("nail-bot upgrade");for(let e=0;e<2;e++)b.nailBot(),tech.nailBotCount++;simulation.makeTextLog("tech.isNailBotUpgrade = true")})),e.push((()=>{tech.giveTech("foam-bot upgrade");for(let e=0;e<2;e++)b.foamBot(),tech.foamBotCount++;simulation.makeTextLog("tech.isFoamBotUpgrade = true")})),e.push((()=>{tech.giveTech("boom-bot upgrade");for(let e=0;e<2;e++)b.boomBot(),tech.boomBotCount++;simulation.makeTextLog("tech.isBoomBotUpgrade = true")})),e.push((()=>{tech.giveTech("laser-bot upgrade");for(let e=0;e<2;e++)b.laserBot(),tech.laserBotCount++;simulation.makeTextLog("tech.isLaserBotUpgrade = true")})),e.push((()=>{tech.giveTech("orbital-bot upgrade");for(let e=0;e<2;e++)b.orbitBot(),tech.orbitBotCount++;simulation.makeTextLog("tech.isOrbitalBotUpgrade = true")}));for(let t=0;t<2;t++)e.push((()=>{tech.giveTech("dynamo-bot upgrade");for(let e=0;e<2;e++)b.dynamoBot(),tech.dynamoBotCount++;simulation.makeTextLog("tech.isDynamoBotUpgrade = true")}));e[Math.floor(Math.random()*e.length)]()},remove(){}},{name:"mycelium manufacturing",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Mycelium\' class="link">mycelium manufacturing</a>',description:`use ${powerUps.orb.research(1)}to repurpose <strong>molecular assembler</strong><br>excess <strong class='color-f'>energy</strong> used to grow <strong class='color-p' style='letter-spacing: 2px;'>spores</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>(build.isExperimentSelection||powerUps.research.count>0)&&"molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isMissileField||tech.isIceField||tech.isFastDrones||tech.isDroneGrab||tech.isDroneRadioactive||tech.isDroneTeleport),requires:"molecular assembler, no other manufacturing, no drone tech",effect(){if(!build.isExperimentSelection)for(let e=0;e<1;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1);tech.isSporeField=!0},remove(){tech.isSporeField=!1,this.count>0&&powerUps.research.changeRerolls(1)}},{name:"missile manufacturing",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Missile\' class="link">missile manufacturing</a>',description:`use ${powerUps.orb.research(1)}to repurpose <strong>molecular assembler</strong><br>excess <strong class='color-f'>energy</strong> used to construct <strong>missiles</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>(build.isExperimentSelection||powerUps.research.count>0)&&m.maxEnergy>.5&&"molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isSporeField||tech.isIceField||tech.isFastDrones||tech.isDroneGrab||tech.isDroneRadioactive||tech.isDroneTeleport),requires:"molecular assembler, no other manufacturing, no drone tech",effect(){if(!build.isExperimentSelection)for(let e=0;e<1;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1);tech.isMissileField=!0},remove(){tech.isMissileField=!1,this.count>0&&powerUps.research.changeRerolls(1)}},{name:"ice IX manufacturing",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Ice-nine_(disambiguation)\' class="link">ice IX manufacturing</a>',description:`use ${powerUps.orb.research(1)}to repurpose <strong>molecular assembler</strong><br>excess <strong class='color-f'>energy</strong> used to condense <strong class='color-s'>ice IX</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>(build.isExperimentSelection||powerUps.research.count>0)&&"molecular assembler"===m.fieldUpgrades[m.fieldMode].name&&!(tech.isSporeField||tech.isMissileField||tech.isFastDrones||tech.isDroneGrab||tech.isDroneRadioactive||tech.isDroneTeleport),requires:"molecular assembler, no other manufacturing, no drone tech",effect(){if(!build.isExperimentSelection)for(let e=0;e<1;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1);tech.isIceField=!0},remove(){tech.isIceField=!1,this.count>0&&powerUps.research.changeRerolls(1)}},{name:"degenerate matter",description:"reduce <strong class='color-harm'>harm</strong> by <strong>60%</strong> while your <strong class='color-f'>field</strong> is active",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>("plasma torch"===m.fieldUpgrades[m.fieldMode].name||"perfect diamagnetism"===m.fieldUpgrades[m.fieldMode].name||"pilot wave"===m.fieldUpgrades[m.fieldMode].name)&&!tech.isEnergyHealth,requires:"perfect diamagnetism, pilot wave, plasma, not mass-energy",effect(){tech.isHarmReduce=!0},remove(){tech.isHarmReduce=!1}},{name:"tokamak",description:"throwing a <strong class='color-block'>block</strong> converts it into <strong class='color-f'>energy</strong><br>and a pulsed fusion <strong class='color-e'>explosion</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"plasma torch"===m.fieldUpgrades[m.fieldMode].name||"molecular assembler"===m.fieldUpgrades[m.fieldMode].name,requires:"plasma torch or molecular assembler",effect(){tech.isTokamak=!0},remove(){tech.isTokamak=!1}},{name:"plasma-bot",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Robot\' class="link">plasma-bot</a>',description:"remove your <strong>field</strong> to build a <strong class='color-bot'>bot</strong><br>that uses <strong class='color-f'>energy</strong> to emit <strong class='color-plasma'>plasma</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,isBot:!0,isBotTech:!0,allowed:()=>"plasma torch"===m.fieldUpgrades[m.fieldMode].name&&(build.isExperimentSelection||powerUps.research.count>0),requires:"plasma torch",effect(){tech.plasmaBotCount++,b.plasmaBot(),build.isExperimentSelection&&(document.getElementById("field-"+m.fieldMode).classList.remove("build-field-selected"),document.getElementById("field-0").classList.add("build-field-selected")),m.setField("field emitter")},remove(){this.count>0&&(tech.plasmaBotCount=0,b.clearPermanentBots(),b.respawnBots(),0===m.fieldMode&&(m.setField("plasma torch"),build.isExperimentSelection&&(document.getElementById("field-0").classList.remove("build-field-selected"),document.getElementById("field-"+m.fieldMode).classList.add("build-field-selected"))))}},{name:"plasma jet",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Plasma_(physics)\' class="link">plasma jet</a>',description:`use ${powerUps.orb.research(2)} to increase <strong class='color-plasma'>plasma</strong> <strong>torch</strong> range <strong>50%</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>(tech.plasmaBotCount||"plasma torch"===m.fieldUpgrades[m.fieldMode].name)&&(build.isExperimentSelection||powerUps.research.count>1),requires:"plasma torch",effect(){tech.isPlasmaRange+=.5;for(let e=0;e<2;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1)},remove(){tech.isPlasmaRange=1,this.count>0&&powerUps.research.changeRerolls(2*this.count)}},{name:"extruder",description:"<strong class='color-plasma'>plasma</strong> <strong>torch</strong> <strong class='color-plasma'>extrudes</strong> a thin hot wire<br>increases <strong class='color-d'>damage</strong> and <strong class='color-f'>energy</strong> drain",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"plasma torch"===m.fieldUpgrades[m.fieldMode].name,requires:"plasma torch",effect(){tech.isExtruder=!0,m.fieldUpgrades[m.fieldMode].set()},remove(){tech.isExtruder=!1,this.count&&m.fieldUpgrades[m.fieldMode].set()}},{name:"refractory metal",description:"<strong class='color-plasma'>extrude</strong> metals at a higher <strong class='color-plasma'>temperature</strong><br>increases effective <strong>radius</strong> and <strong class='color-d'>damage</strong>",isFieldTech:!0,maxCount:9,count:0,frequency:2,frequencyDefault:2,allowed:()=>tech.isExtruder,requires:"extruder",effect(){tech.extruderRange+=50},remove(){tech.extruderRange=15}},{name:"retrocausality",description:"<strong>time dilation</strong> uses <strong class='color-f'>energy</strong> to <strong>rewind</strong> your<br><strong class='color-h'>health</strong>, <strong>velocity</strong>, and <strong>position</strong> up to <strong>10 s</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>!("time dilation"!==m.fieldUpgrades[m.fieldMode].name||m.isShipMode||tech.isRewindAvoidDeath||tech.isEnergyHealth||tech.isTimeSkip||tech.isFreezeMobs),requires:"time dilation, not CPT symmetry, mass-energy, timelike, Bose Einstein condensate",effect(){tech.isRewindField=!0,m.fieldUpgrades[m.fieldMode].set(),m.wakeCheck()},remove(){tech.isRewindField=!1,this.count&&m.fieldUpgrades[m.fieldMode].set()}},{name:"timelike",description:"<strong>time dilation</strong> doubles your relative time <strong>rate</strong><br>and makes you immune to <strong class='color-harm'>harm</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"time dilation"===m.fieldUpgrades[m.fieldMode].name&&!m.isShipMode&&!tech.isRewindField,requires:"time dilation, not retrocausality",effect(){tech.isTimeSkip=!0},remove(){tech.isTimeSkip=!1}},{name:"Lorentz transformation",description:`use ${powerUps.orb.research(3)}to increase your time rate<br><strong>move</strong>, <strong>jump</strong>, and <strong>shoot</strong> <strong>50%</strong> faster`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>"time dilation"===m.fieldUpgrades[m.fieldMode].name&&(build.isExperimentSelection||powerUps.research.count>2),requires:"time dilation",effect(){tech.isFastTime=!0,m.setMovement(),b.setFireCD();for(let e=0;e<3;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1)},remove(){tech.isFastTime=!1,m.setMovement(),b.setFireCD(),this.count>0&&powerUps.research.changeRerolls(3)}},{name:"time crystals",description:"<strong>quadruple</strong> your default <strong class='color-f'>energy</strong> regeneration",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"time dilation"===m.fieldUpgrades[m.fieldMode].name||"pilot wave"===m.fieldUpgrades[m.fieldMode].name,requires:"time dilation or pilot wave",effect:()=>{tech.energyRegen=.004,m.fieldRegen=tech.energyRegen},remove(){tech.energyRegen=.001,m.fieldRegen=tech.energyRegen}},{name:"no-cloning theorem",description:"<strong>40%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br>after a <strong>mob</strong> <strong>dies</strong>, lose <strong>2%</strong> <strong class='color-dup'>duplication</strong> chance",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"time dilation"===m.fieldUpgrades[m.fieldMode].name||"metamaterial cloaking"===m.fieldUpgrades[m.fieldMode].name,requires:"cloaking, time dilation",effect(){tech.cloakDuplication=.4,powerUps.setDupChance(),build.isExperimentSelection||simulation.isTextLogOpen||simulation.circleFlare(.4)},remove(){tech.cloakDuplication=0,powerUps.setDupChance()}},{name:"symbiosis",description:"after a <strong>mob</strong> <strong>dies</strong>, lose <strong>0.5</strong> max <strong class='color-h'>health</strong><br><strong>bosses</strong> spawn <strong>1</strong> extra <strong class='color-m'>tech</strong> after they <strong>die</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"metamaterial cloaking"===m.fieldUpgrades[m.fieldMode].name||"time dilation"===m.fieldUpgrades[m.fieldMode].name,requires:"cloaking or time dilation",effect(){tech.isAddRemoveMaxHealth=!0},remove(){tech.isAddRemoveMaxHealth=!1}},{name:"boson composite",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Boson\' class="link">boson composite</a>',description:"<strong>intangible</strong> to <strong class='color-block'>blocks</strong> and mobs while <strong class='color-cloaked'>cloaked</strong><br>passing through <strong>shields</strong> drains your <strong class='color-f'>energy</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"metamaterial cloaking"===m.fieldUpgrades[m.fieldMode].name,requires:"metamaterial cloaking",effect(){tech.isIntangible=!0},remove(){tech.isIntangible&&(tech.isIntangible=!1,player.collisionFilter.mask=cat.body|cat.map|cat.mob|cat.mobBullet|cat.mobShield)}},{name:"dazzler",description:"<strong class='color-cloaked'>decloaking</strong> <strong>stuns</strong> nearby mobs<br>and drains 10 <strong class='color-f'>energy</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"metamaterial cloaking"===m.fieldUpgrades[m.fieldMode].name,requires:"metamaterial cloaking",effect(){tech.isCloakStun=!0},remove(){tech.isCloakStun=!1}},{name:"ambush",description:"metamaterial cloaking field <strong class='color-d'>damage</strong> effect<br>is increased from <span style = 'text-decoration: line-through;'>333%</span> to <strong>666%</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"metamaterial cloaking"===m.fieldUpgrades[m.fieldMode].name,requires:"metamaterial cloaking",effect(){tech.sneakAttackDmg=7.66},remove(){tech.sneakAttackDmg=4.33}},{name:"dynamical systems",description:`use ${powerUps.orb.research(2)}to increase your <strong class='color-d'>damage</strong> by <strong>35%</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>("plasma torch"===m.fieldUpgrades[m.fieldMode].name||"metamaterial cloaking"===m.fieldUpgrades[m.fieldMode].name||"pilot wave"===m.fieldUpgrades[m.fieldMode].name)&&(build.isExperimentSelection||powerUps.research.count>1),requires:"cloaking, pilot wave, or plasma torch",effect(){tech.isCloakingDamage=!0;for(let e=0;e<2;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1)},remove(){tech.isCloakingDamage=!1,this.count>0&&powerUps.research.changeRerolls(2)}},{name:"discrete optimization",description:"increase <strong class='color-d'>damage</strong> by <strong>40%</strong><br><strong>40%</strong> increased <strong><em>delay</em></strong> after firing",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"plasma torch"===m.fieldUpgrades[m.fieldMode].name||"metamaterial cloaking"===m.fieldUpgrades[m.fieldMode].name||"pilot wave"===m.fieldUpgrades[m.fieldMode].name||"molecular assembler"===m.fieldUpgrades[m.fieldMode].name,requires:"metamaterial cloaking, molecular assembler, plasma torch or pilot wave",effect(){tech.aimDamage=1.4,b.setFireCD()},remove(){tech.aimDamage=1,b.setFireCD()}},{name:"WIMPs",description:`at the end of each <strong>level</strong> spawn ${powerUps.orb.research(5)}<br> and a <strong class='color-harm'>harmful</strong> particle that slowly <strong>chases</strong> you`,isFieldTech:!0,maxCount:9,count:0,frequency:1,frequencyDefault:1,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name||"pilot wave"===m.fieldUpgrades[m.fieldMode].name,requires:"wormhole or pilot wave",effect:()=>{tech.wimpCount++,spawn.WIMP();for(let e=0,t=1+5*Math.random();e<t;e++)powerUps.spawn(level.exit.x+100*(Math.random()-.5),level.exit.y-100+100*(Math.random()-.5),"research",!1)},remove(){tech.wimpCount=0}},{name:"cosmic string",description:"<strong>stun</strong> and do <strong class='color-p'>radioactive</strong> <strong class='color-d'>damage</strong> to <strong>mobs</strong><br>if you tunnel through them with a <strong class='color-worm'>wormhole</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name,requires:"wormhole",effect(){tech.isWormholeDamage=!0},remove(){tech.isWormholeDamage=!1}},{name:"virtual particles",description:`use ${powerUps.orb.research(4)}to exploit your <strong class='color-worm'>wormhole</strong> for a<br><strong>13%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong>`,isFieldTech:!0,maxCount:1,count:0,frequency:3,frequencyDefault:3,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name&&(build.isExperimentSelection||powerUps.research.count>3),requires:"wormhole",effect(){tech.wormDuplicate=.13,powerUps.setDupChance(),build.isExperimentSelection||simulation.isTextLogOpen||simulation.circleFlare(.13);for(let e=0;e<4;e++)powerUps.research.count>0&&powerUps.research.changeRerolls(-1)},remove(){tech.wormDuplicate=0,powerUps.setDupChance(),this.count>0&&powerUps.research.changeRerolls(4)}},{name:"Penrose process",description:"after a <strong class='color-block'>block</strong> falls into a <strong class='color-worm'>wormhole</strong><br>you gain <strong>63</strong> <strong class='color-f'>energy</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name,requires:"wormhole",effect(){tech.isWormholeEnergy=!0},remove(){tech.isWormholeEnergy=!1}},{name:"transdimensional spores",link:'<a target="_blank" href=\'https://en.wikipedia.org/wiki/Dimension\' class="link">transdimensional spores</a>',description:"when <strong class='color-block'>blocks</strong> fall into a <strong class='color-worm'>wormhole</strong><br>higher dimension <strong class='color-p' style='letter-spacing: 2px;'>spores</strong> are summoned",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name,requires:"wormhole",effect(){tech.isWormholeSpores=!0},remove(){tech.isWormholeSpores=!1}},{name:"geodesics",description:`your <strong>projectiles</strong> can traverse <strong class='color-worm'>wormholes</strong><br>spawn 2 <strong class='color-g'>guns</strong> and ${powerUps.orb.ammo(2)}`,isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name,requires:"wormhole",effect(){tech.isWormBullets=!0;for(let e=0;e<2;e++)powerUps.spawn(m.pos.x,m.pos.y,"gun"),powerUps.spawn(m.pos.x,m.pos.y,"ammo")},remove(){if(tech.isWormBullets){for(let e=0;e<2;e++)b.inventory.length&&b.removeGun(b.guns[b.inventory[b.inventory.length-1]].name);tech.isWormBullets=!1}}},{name:"charmed baryons",description:"<strong class='color-worm'>wormholes</strong> require <strong>zero</strong> <strong class='color-f'>energy</strong><br><strong>move</strong> and <strong>jump</strong> <strong>33%</strong> <strong>slower</strong>",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name&&!tech.isWormholeMapIgnore,requires:"wormhole, not affine connection",effect(){tech.isFreeWormHole=!0,tech.baseFx*=.66,tech.baseJumpForce*=.66,m.setMovement()},remove(){tech.isFreeWormHole=!1,tech.isNeutronium||(tech.baseFx=.08,tech.baseJumpForce=10.5,m.setMovement())}},{name:"affine connection",description:"<strong class='color-worm'>wormholes</strong> can tunnel through the <strong>map</strong><br>at <strong>200%</strong> increased <strong class='color-f'>energy</strong> cost",isFieldTech:!0,maxCount:1,count:0,frequency:2,frequencyDefault:2,allowed:()=>"wormhole"===m.fieldUpgrades[m.fieldMode].name&&!tech.isFreeWormHole,requires:"wormhole, not charmed baryons",effect(){tech.isWormholeMapIgnore=!0},remove(){tech.isWormholeMapIgnore=!1}},{name:"-ship-",description:"<strong style='color: #f55;'>experiment:</strong> fly around with no legs<br>aim with the keyboard",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection&&!m.isShipMode&&"negative mass"!==m.fieldUpgrades[m.fieldMode].name,requires:"",effect(){m.shipMode()},remove(){}},{name:"-quantum leap-",description:"<strong style='color: #f55;'>experiment:</strong> every 20 seconds<br>become an <strong class='alt'>alternate</strong> version of yourself",maxCount:1,count:0,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection,requires:"",interval:void 0,effect(){this.interval=setInterval((()=>{build.isExperimentSelection||(m.switchWorlds(),simulation.trails())}),2e4)},remove(){this.count>0&&clearTimeout(this.interval)}},{name:"-shields-",description:"<strong style='color: #f55;'>experiment:</strong> every 5 seconds<br>all mobs gain a shield",maxCount:1,count:0,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection,requires:"",effect(){this.interval=setInterval((()=>{if(!build.isExperimentSelection)for(let e=0;e<mob.length;e++)mob[e].isShielded||mob[e].shield||!mob[e].isDropPowerUp||spawn.shield(mob[e],mob[e].position.x,mob[e].position.y,1,!0)}),5e3)},interval:void 0,remove(){this.count>0&&clearTimeout(this.interval)}},{name:"-Fourier analysis-",description:"<strong style='color: #f55;'>experiment:</strong> your aiming is random",maxCount:1,count:0,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection&&!m.isShipMode,requires:"not ship",effect(){m.look=()=>{m.angle=2*Math.sin(.0133*m.cycle)+Math.sin(.013*m.cycle)+.5*Math.sin(.031*m.cycle)+.33*Math.sin(.03*m.cycle);m.transSmoothX=canvas.width2-m.pos.x-.8*(simulation.mouse.x-canvas.width2),m.transSmoothY=canvas.height2-m.pos.y-.8*(simulation.mouse.y-canvas.height2),m.transX+=.07*(m.transSmoothX-m.transX),m.transY+=.07*(m.transSmoothY-m.transY)}},remove(){this.count>0&&(m.look=m.lookDefault())}},{name:"-panopticon-",description:"<strong style='color: #f55;'>experiment:</strong> mobs can always see you",maxCount:1,count:0,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection,requires:"",effect(){this.interval=setInterval((()=>{if(!build.isExperimentSelection)for(let e=0;e<mob.length;e++)!mob[e].shield&&mob[e].isDropPowerUp&&(mob[e].locatePlayer(),mob[e].seePlayer.yes=!0)}),1e3)},interval:void 0,remove(){this.count>0&&clearTimeout(this.interval)}},{name:"-decomposers-",description:"<strong style='color: #f55;'>experiment:</strong> after they die<br>mobs leave behind spawns",maxCount:1,count:0,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection,requires:"",effect(){tech.deathSpawns=.2},remove(){tech.deathSpawns=0}},{name:"-WIMP-",description:"<strong style='color: #f55;'>experiment:</strong> <strong class='color-harm'>harmful</strong> particles slowly <strong>chase</strong> you",maxCount:1,count:0,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection,requires:"",effect(){tech.wimpExperiment=5},remove(){tech.wimpExperiment=0}},{name:"-symbiosis-",description:"<strong style='color: #f55;'>experiment:</strong> if you <strong>kill</strong> a <strong>mob</strong><br>lose <strong>0.2</strong> max <strong class='color-h'>health</strong>",maxCount:1,count:0,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection,requires:"",effect(){tech.removeMaxHealthOnKill=.002},remove(){tech.removeMaxHealthOnKill=0}},{name:"-parthenocarpy-",description:"<strong style='color: #f55;'>experiment:</strong> spawn about 50% more mobs",maxCount:1,count:1,frequency:0,isBadRandomOption:!0,isExperimentalMode:!0,allowed:()=>build.isExperimentSelection,requires:"",effect(){tech.isMoreMobs=!0},remove(){tech.isMoreMobs=!1}},{name:"brainstorm",description:"the <strong class='color-m'>tech</strong> choice menu <strong>randomizes</strong><br>every <strong>0.5</strong> seconds for <strong>10</strong> seconds",maxCount:1,count:0,frequency:0,frequencyDefault:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){tech.isBrainstorm=!0,tech.isBrainstormActive=!1,tech.brainStormDelay=30},remove(){tech.isBrainstorm=!1,tech.isBrainstormActive=!1}},{name:"catabolysis",description:"set your <strong>maximum</strong> <strong class='color-h'>health</strong> to <strong>1</strong><br><strong>double</strong> your current <strong class='color-ammo'>ammo</strong> <strong>10</strong> times",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!tech.isFallingDamage&&!tech.isOverHeal&&!tech.isEnergyHealth,requires:"not quenching, tungsten carbide, mass-energy",effect(){m.baseHealth=.01,m.setMaxHealth();for(let e=0;e<b.guns.length;e++)b.guns[e].ammo=b.guns[e].ammo*Math.pow(2,10);simulation.updateGunHUD()},remove(){}},{name:"density",description:"<strong class='color-block'>block</strong> are <strong>10</strong> times less <strong>dense</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0;e<body.length;e++)Matter.Body.setDensity(body[e],1e-4);level.addToWorld=()=>{for(let e=0;e<body.length;e++)body[e]===m.holdingTarget||body[e].isNoSetCollision||(body[e].collisionFilter.category=cat.body,body[e].collisionFilter.mask=cat.player|cat.map|cat.body|cat.bullet|cat.mob|cat.mobBullet),Matter.Body.setDensity(body[e],1e-4),body[e].classType="body",Composite.add(engine.world,body[e]);for(let e=0;e<map.length;e++)map[e].collisionFilter.category=cat.map,map[e].collisionFilter.mask=cat.player|cat.map|cat.body|cat.bullet|cat.powerUp|cat.mob|cat.mobBullet,Matter.Body.setStatic(map[e],!0),Composite.add(engine.world,map[e])}},remove(){this.count&&(m.look=m.lookDefault)}},{name:"palantír",description:"see far away lands",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){m.look=()=>{m.angle=Math.atan2(simulation.mouseInGame.y-m.pos.y,simulation.mouseInGame.x-m.pos.x);m.transSmoothX=canvas.width2-m.pos.x-2*(simulation.mouse.x-canvas.width2),m.transSmoothY=canvas.height2-m.pos.y-2*(simulation.mouse.y-canvas.height2),m.transX+=(m.transSmoothX-m.transX)*m.lookSmoothing,m.transY+=(m.transSmoothY-m.transY)*m.lookSmoothing}},remove(){this.count&&(m.look=m.lookDefault)}},{name:"motion sickness",description:"disable camera smoothing",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){m.look=()=>{m.angle=Math.atan2(simulation.mouseInGame.y-m.pos.y,simulation.mouseInGame.x-m.pos.x);const e=1.2;m.transSmoothX=canvas.width2-m.pos.x-(simulation.mouse.x-canvas.width2)*e,m.transSmoothY=canvas.height2-m.pos.y-(simulation.mouse.y-canvas.height2)*e,m.transX=canvas.width2-m.pos.x-(simulation.mouse.x-canvas.width2)*e,m.transY=canvas.height2-m.pos.y-(simulation.mouse.y-canvas.height2)*e}},remove(){this.count&&(m.look=m.lookDefault)}},{name:"planetesimals",description:'play <strong>planetesimals</strong><br><em>(an annoying asteroids game with Newtonian physics)</em><br>clearing a <strong>level</strong> in <strong>planetesimals</strong> spawns a <strong class=\'color-m\'>tech</strong> in <strong>n-gon</strong><br>but, if you <strong style="color:red;">die</strong> in <strong>planetesimals</strong> you <strong style="color:red;">die</strong> in <strong>n-gon</strong>',maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){window.open("../../planetesimals/index.html","_blank");const e=new BroadcastChannel("planetesimals");e.activated=!1,e.onmessage=function(t){"tech"===t.data&&powerUps.directSpawn(m.pos.x,m.pos.y,"tech"),"death"===t.data&&(m.death(),e.close()),"ready"!==t.data||e.activated||(e.activated=!0,e.postMessage("activate"))}},remove(){}},{name:"facsimile",description:"inserts a copy of your current level into the level list",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){level.levels.splice(level.onLevel,0,level.levels[level.onLevel])},remove(){}},{name:"negative friction",description:"when you touch walls you speed up instead of slowing down. It's kinda fun.",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){player.friction=-.4},remove(){this.count&&(player.friction=.002)}},{name:"bounce",description:"you bounce off things.  It's annoying, but not that bad.",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){player.restitution=.9},remove(){this.count&&(player.restitution=0)}},{name:"mouth",description:"mobs have a non functional mouth",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){mobs.draw=()=>{ctx.lineWidth=2;let e=mob.length;for(;e--;){ctx.beginPath();const t=mob[e].vertices;ctx.moveTo(t[0].x,t[0].y);for(let e=1,o=t.length;e<o;++e)ctx.lineTo(t[e].x,t[e].y);ctx.quadraticCurveTo(mob[e].position.x,mob[e].position.y,t[0].x,t[0].y),ctx.fillStyle=mob[e].fill,ctx.strokeStyle=mob[e].stroke,ctx.fill(),ctx.stroke()}}},remove(){mobs.draw=()=>{ctx.lineWidth=2;let e=mob.length;for(;e--;){ctx.beginPath();const t=mob[e].vertices;ctx.moveTo(t[0].x,t[0].y);for(let e=1,o=t.length;e<o;++e)ctx.lineTo(t[e].x,t[e].y);ctx.lineTo(t[0].x,t[0].y),ctx.fillStyle=mob[e].fill,ctx.strokeStyle=mob[e].stroke,ctx.fill(),ctx.stroke()}}}},{name:"all-stars",description:"make all mobs look like stars",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){mobs.draw=()=>{ctx.lineWidth=2;let e=mob.length;for(;e--;){ctx.beginPath();const t=mob[e].vertices;ctx.moveTo(t[0].x,t[0].y);for(let o=1,n=t.length;o<n;++o)ctx.quadraticCurveTo(mob[e].position.x,mob[e].position.y,t[o].x,t[o].y);ctx.quadraticCurveTo(mob[e].position.x,mob[e].position.y,t[0].x,t[0].y),ctx.fillStyle=mob[e].fill,ctx.strokeStyle=mob[e].stroke,ctx.fill(),ctx.stroke()}}},remove(){mobs.draw=()=>{ctx.lineWidth=2;let e=mob.length;for(;e--;){ctx.beginPath();const t=mob[e].vertices;ctx.moveTo(t[0].x,t[0].y);for(let e=1,o=t.length;e<o;++e)ctx.lineTo(t[e].x,t[e].y);ctx.lineTo(t[0].x,t[0].y),ctx.fillStyle=mob[e].fill,ctx.strokeStyle=mob[e].stroke,ctx.fill(),ctx.stroke()}}}},{name:"true colors",description:"set all power ups to their real world colors",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){const e=shuffle([powerUps.research.color,powerUps.heal.color,powerUps.ammo.color,powerUps.ammo.color,powerUps.field.color,powerUps.gun.color]);powerUps.research.color=e[0],powerUps.heal.color=e[1],powerUps.ammo.color=e[2],powerUps.field.color=e[3],powerUps.tech.color=e[4],powerUps.gun.color=e[5];for(let t=0;t<powerUp.length;t++)switch(powerUp[t].name){case"research":powerUp[t].color=e[0];break;case"heal":powerUp[t].color=e[1];break;case"ammo":powerUp[t].color=e[2];break;case"field":powerUp[t].color=e[3];break;case"tech":powerUp[t].color=e[4];break;case"gun":powerUp[t].color=e[5]}},remove(){const e=["#f7b","#0eb","#467","#0cf","hsl(246,100%,77%)","#26a"];powerUps.research.color=e[0],powerUps.heal.color=e[1],powerUps.ammo.color=e[2],powerUps.field.color=e[3],powerUps.tech.color=e[4],powerUps.gun.color=e[5];for(let t=0;t<powerUp.length;t++)switch(powerUp[t].name){case"research":powerUp[t].color=e[0];break;case"heal":powerUp[t].color=e[1];break;case"ammo":powerUp[t].color=e[2];break;case"field":powerUp[t].color=e[3];break;case"tech":powerUp[t].color=e[4];break;case"gun":powerUp[t].color=e[5]}}},{name:"emergency broadcasting",description:"emit 2 sound sine waveforms at 853 Hz and 960 Hz<br><em>lower your volume</em>",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,isNonRefundable:!0,allowed:()=>!0,requires:"",effect:()=>{let e=function(){const e=new(window.AudioContext||window.webkitAudioContext),t=e.createOscillator(),o=e.createGain();o.gain.value=.3,t.connect(o),o.connect(e.destination),t.type="sine",t.frequency.value=853,t.start();const n=e.createOscillator(),r=e.createGain();return r.gain.value=.3,n.connect(r),r.connect(e.destination),n.type="sine",n.frequency.value=960,n.start(),e}();delay=1e3,setTimeout((()=>{e.suspend(),powerUps.spawn(m.pos.x+160*(Math.random()-.5),m.pos.y+160*(Math.random()-.5),"heal"),setTimeout((()=>{e.resume(),setTimeout((()=>{e.suspend(),powerUps.spawn(m.pos.x+160*(Math.random()-.5),m.pos.y+160*(Math.random()-.5),"heal"),setTimeout((()=>{e.resume(),setTimeout((()=>{e.suspend(),powerUps.spawn(m.pos.x+160*(Math.random()-.5),m.pos.y+160*(Math.random()-.5),"heal"),setTimeout((()=>{e.resume(),setTimeout((()=>{e.suspend(),powerUps.spawn(m.pos.x+160*(Math.random()-.5),m.pos.y+160*(Math.random()-.5),"heal"),setTimeout((()=>{e.resume(),setTimeout((()=>{e.suspend(),powerUps.spawn(m.pos.x+160*(Math.random()-.5),m.pos.y+160*(Math.random()-.5),"heal"),setTimeout((()=>{e.resume(),setTimeout((()=>{e.suspend(),e.close(),powerUps.spawn(m.pos.x+160*(Math.random()-.5),m.pos.y+160*(Math.random()-.5),"heal")}),delay)}),delay)}),delay)}),delay)}),delay)}),delay)}),delay)}),delay)}),delay)}),delay)}),delay)},remove(){}},{name:"automatic",description:"you can't fire when moving<br>always <strong>fire</strong> when at <strong>rest</strong>",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!tech.isFireMoveLock,requires:"not Higgs mechanism",effect:()=>{tech.isAlwaysFire=!0,b.setFireMethod()},remove(){tech.isAlwaysFire&&(tech.isAlwaysFire=!1,b.setFireMethod())}},{name:"hidden variable",description:`spawn ${powerUps.orb.heal(15)}<br>but hide your <strong class='color-h'>health</strong> bar`,maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!tech.isEnergyHealth,requires:"not mass-energy",effect(){document.getElementById("health").style.display="none",document.getElementById("health-bg").style.display="none";for(let e=0;e<15;e++)powerUps.spawn(m.pos.x+160*(Math.random()-.5),m.pos.y+160*(Math.random()-.5),"heal")},remove(){}},{name:"not a bug",description:"initiate a totally safe game crash for 5 seconds",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){const e=simulation.drawCircle;simulation.drawCircle=()=>{mob[1/0].position},setTimeout((()=>{simulation.drawCircle=e,canvas.width=canvas.width}),5e3)},remove(){}},{name:"posture",description:"stand a bit taller",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!m.isShipMode,requires:"",effect(){m.yOffWhen.stand=70},remove(){m.yOffWhen.stand=49}},{name:"rhythm",description:"you oscillate up and down",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,isNonRefundable:!0,allowed:()=>!m.isShipMode,requires:"",effect(){setInterval((()=>{m.yOffWhen.stand=53+28*Math.sin(.2*simulation.cycle),m.onGround&&!m.crouch&&(m.yOffGoal=m.yOffWhen.stand)}),100)},remove(){}},{name:"spinor",description:"the direction you aim is determined by your position",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isNonRefundable:!0,isJunk:!0,allowed:()=>!m.isShipMode,requires:"",effect(){m.look=function(){m.angle=((m.pos.x+m.pos.y)/100+Math.PI)%Math.PI*2-Math.PI;m.transSmoothX=canvas.width2-m.pos.x-.8*(simulation.mouse.x-canvas.width2),m.transSmoothY=canvas.height2-m.pos.y-.8*(simulation.mouse.y-canvas.height2),m.transX+=.07*(m.transSmoothX-m.transX),m.transY+=.07*(m.transSmoothY-m.transY)}},remove(){this.count&&(m.look=m.lookDefault)}},{name:"decomposers",description:"after they die <strong>mobs</strong> leave behind <strong>spawns</strong>",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isNonRefundable:!0,isJunk:!0,allowed:()=>0===tech.deathSpawns,requires:"",effect(){tech.deathSpawns=.2},remove(){tech.deathSpawns=0}},{name:"panopticon",description:"<strong>mobs</strong> can always see you",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isNonRefundable:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){setInterval((()=>{for(let e=0;e<mob.length;e++)!mob[e].shield&&mob[e].isDropPowerUp&&(mob[e].locatePlayer(),mob[e].seePlayer.yes=!0)}),1e3)},remove(){}},{name:"Fourier analysis",description:"your aiming is now controlled by this equation:<br>2sin(0.0133t) + sin(0.013t) + 0.5sin(0.031t)+ 0.33sin(0.03t)",maxCount:1,count:0,frequency:0,isExperimentHide:!0,isJunk:!0,allowed:()=>!m.isShipMode,requires:"not ship",effect(){m.look=()=>{m.angle=2*Math.sin(.0133*m.cycle)+Math.sin(.013*m.cycle)+.5*Math.sin(.031*m.cycle)+.33*Math.sin(.03*m.cycle);simulation.mouse.y,m.transSmoothX=canvas.width2-m.pos.x-.8*(simulation.mouse.x-canvas.width2),m.transSmoothY=canvas.height2-m.pos.y-.8*(simulation.mouse.y-canvas.height2),m.transX+=.07*(m.transSmoothX-m.transX),m.transY+=.07*(m.transSmoothY-m.transY)}},remove(){this.count&&(m.look=m.lookDefault)}},{name:"disintegrated armament",description:"spawn a <strong class='color-g'>gun</strong><br><strong>remove</strong> your active <strong class='color-g'>gun</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>b.inventory.length>0,requires:"at least 1 gun",effect(){b.inventory.length>0&&b.removeGun(b.guns[b.activeGun].name),simulation.makeGunHUD(),powerUps.spawn(m.pos.x+60*(Math.random()-.5),m.pos.y+60*(Math.random()-.5),"gun")},remove(){}},{name:"probability",description:"increase the <strong class='flicker'>frequency</strong><br>of one random <strong class='color-m'>tech</strong> by <strong>100</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){let e=[];for(let t=0,o=tech.tech.length;t<o;t++)tech.tech[t].count<tech.tech[t].maxCount&&tech.tech[t].allowed()&&!tech.tech[t].isJunk&&!tech.tech.isLore&&e.push(t);if(e.length){const t=e[Math.floor(Math.random()*e.length)];tech.tech[t].frequency=100}},remove(){}},{name:"encryption",description:"secure <strong class='color-m'>tech</strong> information",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){String.prototype.shuffle=function(){for(var e=this.split(""),t=e.length-1;t>0;t--){var o=Math.floor(Math.random()*(t+1)),n=e[t];e[t]=e[o],e[o]=n}return e.join("")};for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].name=tech.tech[e].name.shuffle()},remove(){}},{name:"transparency",description:"become invisible to yourself<br><em>mobs can still see you</em>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){m.draw=()=>{}},remove(){}},{name:"quantum leap",description:"become an <strong class='alt'>alternate</strong> version of yourself<br>every <strong>20</strong> seconds",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){setInterval((()=>{m.switchWorlds(),simulation.trails()}),2e4)},remove(){}},{name:"score",description:"Add a score to n-gon!",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){setInterval((()=>{let e=Math.ceil(1e3*Math.random()*Math.random()*Math.random()*Math.random()*Math.random());simulation.makeTextLog(`simulation.score <span class='color-symbol'>=</span> ${e.toFixed(0)}`)}),1e4)},remove(){}},{name:"pop-ups",description:"sign up to learn endless easy ways to win n-gon<br>that Landgreen doesn't want you to know!!!1!!",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){setInterval((()=>{alert(`The best combo is ${tech.tech[Math.floor(Math.random()*tech.tech.length)].name} with ${tech.tech[Math.floor(Math.random()*tech.tech.length)].name}!`)}),3e4)},remove(){}},{name:"music",description:"add music to n-gon",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){window.open("https://www.youtube.com/results?search_query=music","_blank")},remove(){}},{name:"performance",description:"display performance stats to n-gon",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){var e;(e=document.createElement("script")).onload=function(){var e=new Stats;document.body.appendChild(e.dom),requestAnimationFrame((function t(){e.update(),requestAnimationFrame(t)}))},e.src="https://unpkg.com/stats.js@0.17.0/build/stats.min.js",document.head.appendChild(e),document.getElementById("health").style.left="86px",document.getElementById("health-bg").style.left="86px"},remove(){}},{name:"repartitioning",description:"set the <strong class='flicker'>frequency</strong> of finding normal <strong class='color-m'>tech</strong> to <strong>0</strong><br>spawn 5 <strong class='color-m'>tech</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0,t=tech.tech.length;e<t;e++)tech.tech[e].isJunk?tech.tech[e].frequency=2:tech.tech[e].frequency=0;for(let e=0;e<5;e++)powerUps.spawn(m.pos.x,m.pos.y,"tech")},remove(){}},{name:"defragment",description:"set the <strong class='flicker'>frequency</strong> of finding <strong class='color-j'>JUNK</strong> <strong class='color-m'>tech</strong> to zero",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=tech.tech.length-1;e>0;e--)tech.tech[e].isJunk&&(tech.tech[e].frequency=0)},remove(){}},{name:"ship",description:"fly around with no legs<br>reduce combat <strong>difficulty</strong> by <strong>1 level</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!m.isShipMode&&"negative mass"!==m.fieldUpgrades[m.fieldMode].name,requires:"",effect(){m.shipMode(),level.difficultyDecrease(simulation.difficultyMode)},remove(){}},{name:"pitch",description:"oscillate the pitch of your world",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){setInterval((()=>{simulation.paused||ctx.rotate(.001*Math.sin(.01*simulation.cycle))}),16)},remove(){}},{name:"umbra",description:"produce a blue glow around everything<br>and probably some simulation lag",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){ctx.shadowColor="#06f",ctx.shadowBlur=25},remove(){}},{name:"lighter",description:'ctx.globalCompositeOperation = "lighter"',maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>"negative mass"!==m.fieldUpgrades[m.fieldMode].name,requires:"",effect(){ctx.globalCompositeOperation="lighter"},remove(){}},{name:"rewind",description:"every 5 seconds <strong class='color-rewind'>rewind</strong> <strong>2</strong> seconds<br>lasts 120 seconds",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0;e<24;e++)setTimeout((()=>{m.rewind(120)}),5e3*e)},remove(){}},{name:"energy to mass conversion",description:"convert your <strong class='color-f'>energy</strong> into <strong class='color-block'>blocks</strong>",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0,t=40;e<t;e++)setTimeout((()=>{m.energy-=1/t;const e=body.length;where=Vector.add(m.pos,{x:400*(Math.random()-.5),y:400*(Math.random()-.5)}),spawn.bodyRect(where.x,where.y,Math.floor(15+100*Math.random()),Math.floor(15+100*Math.random())),body[e].collisionFilter.category=cat.body,body[e].collisionFilter.mask=cat.player|cat.map|cat.body|cat.bullet|cat.mob|cat.mobBullet,body[e].classType="body",Composite.add(engine.world,body[e])}),100*e)},remove(){}},{name:"level.nextLevel()",description:"advance to the next level",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){level.nextLevel()},remove(){}},{name:"expert system",description:"spawn a <strong class='color-m'>tech</strong> power up<br><strong>+64%</strong> <strong class='color-j'>JUNK</strong> to the potential <strong class='color-m'>tech</strong> pool",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){powerUps.spawn(m.pos.x,m.pos.y,"tech"),tech.addJunkTechToPool(.64)},remove(){}},{name:"energy investment",description:"every 10 seconds drain your <strong class='color-f'>energy</strong><br>return it doubled 10 seconds later<br>lasts 180 seconds",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0;e<18;e++)setTimeout((()=>{const e=m.energy;m.energy=0,setTimeout((()=>{m.energy+=2*e}),5e3)}),1e4*e)},remove(){}},{name:"missile Launching System",description:"fire missiles for the next 60 seconds",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0;e<60;e++)setTimeout((()=>{const e={x:m.pos.x,y:m.pos.y-40};b.missile(e,-Math.PI/2+.2*(Math.random()-.5)*Math.sqrt(tech.missileCount),-2)}),1e3*e)},remove(){}},{name:"grenade production",description:"drop grenades for the next 120 seconds",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0;e<120;e++)setTimeout((()=>{b.grenade(Vector.add(m.pos,{x:10*(Math.random()-.5),y:10*(Math.random()-.5)}),-Math.PI/2);const e=bullet[bullet.length-1];Matter.Body.setVelocity(e,{x:.1*e.velocity.x,y:.1*e.velocity.y})}),1e3*e)},remove(){}},{name:"Sleipnir",description:"grow more legs",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!m.isShipMode,requires:"",effect(){m.draw=function(){ctx.fillStyle=m.fillColor,m.walk_cycle+=m.flipLegs*m.Vx,ctx.save(),ctx.globalAlpha=m.immuneCycle<m.cycle?1:.5,ctx.translate(m.pos.x,m.pos.y);for(let e=0;e<16;e++)m.calcLeg(Math.PI*e/8,-3*e/16),m.drawLeg("#444");ctx.rotate(m.angle),ctx.beginPath(),ctx.arc(0,0,30,0,2*Math.PI),ctx.fillStyle=this.bodyGradient,ctx.fill(),ctx.arc(15,0,4,0,2*Math.PI),ctx.strokeStyle="#333",ctx.lineWidth=2,ctx.stroke(),ctx.restore(),m.yOff=.85*m.yOff+.15*m.yOffGoal}},remove(){}},{name:"diegesis",description:"indicate gun fire <strong><em>delay</em></strong><br>through a rotation of your head",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!m.isShipMode,requires:"",effect(){m.draw=function(){ctx.fillStyle=m.fillColor,m.walk_cycle+=m.flipLegs*m.Vx,ctx.save(),ctx.globalAlpha=m.immuneCycle<m.cycle?1:.5,ctx.translate(m.pos.x,m.pos.y),m.calcLeg(Math.PI,-3),m.drawLeg("#4a4a4a"),m.calcLeg(0,0),m.drawLeg("#333"),ctx.rotate(m.angle-(m.fireCDcycle!=1/0?.25*m.flipLegs*Math.pow(Math.max(m.fireCDcycle-m.cycle,0),.5):0)),ctx.beginPath(),ctx.arc(0,0,30,0,2*Math.PI),ctx.fillStyle=this.bodyGradient,ctx.fill(),ctx.arc(15,0,4,0,2*Math.PI),ctx.strokeStyle="#333",ctx.lineWidth=2,ctx.stroke(),ctx.restore(),m.yOff=.85*m.yOff+.15*m.yOffGoal}},remove(){}},{name:"pareidolia",description:"don't",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!m.isShipMode,requires:"",effect(){m.draw=function(){ctx.fillStyle=m.fillColor,m.walk_cycle+=m.flipLegs*m.Vx,ctx.save(),ctx.globalAlpha=m.immuneCycle<m.cycle?1:.7,ctx.translate(m.pos.x,m.pos.y),m.calcLeg(Math.PI,-3),m.drawLeg("#4a4a4a"),m.calcLeg(0,0),m.drawLeg("#333"),ctx.rotate(m.angle),ctx.beginPath(),ctx.arc(0,0,30,0,2*Math.PI),ctx.fillStyle=this.bodyGradient,ctx.fill(),ctx.strokeStyle="#333",ctx.lineWidth=2,m.angle>-Math.PI/2&&m.angle<Math.PI/2||ctx.scale(1,-1),ctx.stroke(),ctx.beginPath(),ctx.arc(2,-6,7,0,2*Math.PI),ctx.stroke(),ctx.beginPath(),ctx.arc(25,-6,7,.25*Math.PI,1.6*Math.PI),ctx.stroke(),ctx.beginPath(),ctx.arc(2,-10,9,1.25*Math.PI,1.75*Math.PI),ctx.stroke(),ctx.beginPath(),ctx.arc(25,-10,9,1.25*Math.PI,1.4*Math.PI),ctx.stroke(),ctx.beginPath(),ctx.arc(18,13,10,0,2*Math.PI),ctx.fillStyle=this.bodyGradient,ctx.fill(),ctx.stroke(),ctx.beginPath(),ctx.arc(18,13,6,0,2*Math.PI),ctx.fillStyle="#555",ctx.fill(),ctx.stroke(),ctx.beginPath(),ctx.arc(3,-6,3,0,2*Math.PI),ctx.fill(),ctx.stroke(),ctx.beginPath(),ctx.arc(26,-6,3,0,2*Math.PI),ctx.fill(),ctx.stroke(),ctx.restore(),m.yOff=.85*m.yOff+.15*m.yOffGoal}},remove(){}},{name:"prism",description:"you cycle through different <strong>colors</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){m.color={hue:0,sat:100,light:50},setInterval((function(){m.color.hue++,m.setFillColors()}),10)},remove(){}},{name:"assimilation",description:"all your <strong class='color-bot'>bots</strong> are converted to the <strong>same</strong> random model",maxCount:1,count:0,frequency:0,isBotTech:!0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>b.totalBots()>2,requires:"at least 3 bots",effect(){const e=b.totalBots();tech.dynamoBotCount=0,tech.nailBotCount=0,tech.laserBotCount=0,tech.orbitBotCount=0,tech.foamBotCount=0,tech.boomBotCount=0,tech.plasmaBotCount=0,tech.missileBotCount=0;for(let e=0;e<bullet.length;e++)bullet[e].botType&&(bullet[e].endCycle=0);const t=[()=>{b.nailBot(),tech.nailBotCount++},()=>{b.foamBot(),tech.foamBotCount++},()=>{b.boomBot(),tech.boomBotCount++},()=>{b.laserBot(),tech.laserBotCount++},()=>{b.orbitBot(),tech.orbitBotCount++},()=>{b.dynamoBot(),tech.dynamoBotCount++}],o=Math.floor(Math.random()*t.length);for(let n=0;n<e;n++)t[o]()},remove(){}},{name:"growth hacking",description:"increase combat <strong>difficulty</strong> by <strong>1 level</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){level.difficultyIncrease(simulation.difficultyMode)},remove(){}},{name:"stun",description:"<strong>stun</strong> all mobs for up to <strong>8</strong> seconds",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){for(let e=0;e<mob.length;e++)mobs.statusStun(mob[e],480)},remove(){}},{name:"re-arm",description:"remove all your <strong class='color-g'>guns</strong>,<br>and <strong>spawn</strong> new ones",maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>b.inventory.length>0,requires:"at least 1 gun",effect(){for(let e=0;e<b.inventory.length;e++)powerUps.spawn(m.pos.x+60*(Math.random()-.5),m.pos.y+60*(Math.random()-.5),"gun");b.inventory=[],b.activeGun=null,b.inventoryGun=0;for(let e=0,t=b.guns.length;e<t;++e)b.guns[e].have=!1,b.guns[e].ammo!==1/0&&(b.guns[e].ammo=0);simulation.makeGunHUD()},remove(){}},{name:"re-research",description:`<strong>eject</strong> all your ${powerUps.orb.research(1)}`,maxCount:9,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>powerUps.research.count>3,requires:"at least 4 research",effect(){const e=10*powerUps.research.count+100;for(let t=0;t<powerUps.research.count;t++)powerUps.directSpawn(m.pos.x+e*(Math.random()-.5),m.pos.y+e*(Math.random()-.5),"research");powerUps.research.count=0},remove(){}},{name:"quantum black hole",description:`use your <strong class='color-f'>energy</strong> and ${powerUps.orb.research(4)} to <strong>spawn</strong><br>inside the event horizon of a huge <strong>black hole</strong>`,maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>powerUps.research.count>3,requires:"at least 4 research",effect(){m.energy=0,spawn.suckerBoss(m.pos.x,m.pos.y-700),powerUps.research.changeRerolls(-4),simulation.makeTextLog(`<span class='color-var'>m</span>.<span class='color-r'>research</span> <span class='color-symbol'>--</span><br>${powerUps.research.count}`)},remove(){}},{name:"black hole cluster",description:"spawn <strong>30</strong> nearby <strong>black holes</strong>",maxCount:1,count:0,frequency:0,isNonRefundable:!0,isExperimentHide:!0,isJunk:!0,allowed:()=>!0,requires:"",effect(){const e={x:1,y:0};for(let t=0;t<30;t++){const t=Vector.add(m.pos,Vector.mult(Vector.rotate(e,2*Math.random()*Math.PI),2e3+1200*Math.random()));spawn.sucker(t.x,t.y,140);mob[mob.length-1].locatePlayer()}},remove(){}},{name:"undefined",description:'<strong class="lore-text">this</strong>',maxCount:1,count:0,frequency:3,frequencyDefault:3,isLore:!0,isExperimentHide:!0,allowed:()=>!0,requires:"",effect(){setTimeout((()=>{lore.techCount++,lore.techCount===lore.techGoal?(this.frequency=0,this.description='<strong class="lore-text">null</strong> is open at level.final()'):(this.frequency+=2*lore.techGoal,this.description=`<em>uncaught error:</em><br><strong>${Math.max(0,lore.techGoal-lore.techCount)}</strong> more required for access to <strong class="lore-text">null</strong>`)}),1)},remove(){lore.techCount=0,this.maxCount=lore.techGoal,this.description='<strong class="lore-text">this</strong>'}}],fireRate:null,bulletSize:null,energySiphon:null,healthDrain:null,isCrouchAmmo:null,isBulletsLastLonger:null,isImmortal:null,sporesOnDeath:null,isImmuneExplosion:null,isExplodeMob:null,isDroneOnDamage:null,isAcidDmg:null,isAnnihilation:null,largerHeals:null,squirrelFx:null,isCrit:null,isLowHealthDmg:null,isFarAwayDmg:null,isEntanglement:null,isMassEnergy:null,isExtraChoice:null,laserBotCount:null,dynamoBotCount:null,nailBotCount:null,foamBotCount:null,boomBotCount:null,plasmaBotCount:null,missileBotCount:null,orbitBotCount:null,collisionImmuneCycles:null,blockDmg:null,isPiezo:null,isFastDrones:null,isFastSpores:null,oneSuperBall:null,laserReflections:null,laserDamage:null,laserFieldDrain:null,isAmmoFromHealth:null,mobSpawnWithHealth:null,isEnergyRecovery:null,isHealthRecovery:null,isEnergyLoss:null,isDeathAvoid:null,isDeathAvoidedThisLevel:null,isSporeField:null,isMissileField:null,isIceField:null,isPlasmaRange:null,isFreezeMobs:null,isIceCrystals:null,blockDamage:null,isBlockStun:null,isStunField:null,isHarmDamage:null,energyRegen:null,isVacuumBomb:null,renormalization:null,fragments:null,isEnergyDamage:null,botSpawner:null,isBotSpawnerReset:null,isSporeFollow:null,isNailRadiation:null,isEnergyHealth:null,isExplosionStun:null,restDamage:null,isRPG:null,missileCount:null,isDeterminism:null,isSuperDeterminism:null,isHarmReduce:null,nailsDeathMob:null,isSlowFPS:null,isNeutronStun:null,isAnsatz:null,isDamageFromBulletCount:null,isLaserDiode:null,isNailShot:null,slowFire:null,fastTime:null,squirrelJump:null,isFastRadiation:null,isExtraMaxEnergy:null,isAmmoForGun:null,isRapidPulse:null,isPulseAim:null,isSporeFreeze:null,isShotgunRecoil:null,isHealLowHealth:null,isAoESlow:null,isHarmArmor:null,isTurret:null,isRerollDamage:null,isHarmFreeze:null,isBotArmor:null,isRerollHaste:null,researchHaste:null,isMineDrop:null,isRerollBots:null,isNailBotUpgrade:null,isFoamBotUpgrade:null,isLaserBotUpgrade:null,isBoomBotUpgrade:null,isOrbitBotUpgrade:null,isDroneGrab:null,isOneGun:null,isDamageForGuns:null,isGunCycle:null,isFastFoam:null,isSporeGrowth:null,isStimulatedEmission:null,nailGun:null,nailInstantFireRate:null,isCapacitor:null,isEnergyNoAmmo:null,isSmallExplosion:null,isExplosionHarm:null,extraMaxHealth:null,isIntangible:null,isCloakStun:null,bonusEnergy:null,healGiveMaxEnergy:null,healMaxEnergyBonus:0,aimDamage:null,isNoFireDefense:null,isNoFireDamage:null,duplicateChance:null,beamSplitter:null,iceEnergy:null,isPerfectBrake:null,explosiveRadius:null,isWormholeEnergy:null,isWormholeDamage:null,isNailCrit:null,isFlechetteExplode:null,isWormholeSpores:null,isWormBullets:null,isWideLaser:null,wideLaser:null,isPulseLaser:null,isRadioactive:null,isRailEnergyGain:null,isMineSentry:null,isIncendiary:null,overfillDrain:null,isNeutronSlow:null,historyLaser:null,isSpeedHarm:null,isSpeedDamage:null,isTimeSkip:null,isCancelDuplication:null,cancelCount:null,isCancelRerolls:null,isBotDamage:null,isBanish:null,isMaxEnergyTech:null,isLowEnergyDamage:null,isRewindBot:null,isRewindGrenade:null,isExtruder:null,isEndLevelPowerUp:null,missileSize:null,isLaserMine:null,isAmmoFoamSize:null,isIceIX:null,isDupDamage:null,isFireRateForGuns:null,cyclicImmunity:null,isTechDamage:null,isRestHarm:null,isFireMoveLock:null,isRivets:null,isNeedles:null,isExplodeRadio:null,isPauseSwitchField:null,isShieldPierce:null,isDuplicateBoss:null,is111Duplicate:null,isDynamoBotUpgrade:null,isBlockPowerUps:null,foamFutureFire:null,isDamageAfterKillNoRegen:null,isHarmReduceNoKill:null,isSwitchReality:null,isResearchReality:null,isAnthropicDamage:null,isFlipFlop:null,isFlipFlopHarm:null,isFlipFlopOn:null,isFlipFlopLevelReset:null,isFlipFlopDamage:null,isFlipFlopEnergy:null,isRelay:null,relayIce:null,isMetaAnalysis:null,isFoamAttract:null,droneCycleReduction:null,droneEnergyReduction:null,isNoHeals:null,isAlwaysFire:null,isDroneRespawn:null,deathSpawns:null,isMobBlockFling:null,blockingIce:null,isPhaseVelocity:null,waveBeamSpeed:null,wavePacketAmplitude:null,isCollisionRealitySwitch:null,iceIXOnDeath:null,wimpCount:null,isAddBlockMass:null,isMACHO:null,isHarmMACHO:null,isSneakAttack:null,isFallingDamage:null,harmonics:null,isStandingWaveExpand:null,isTokamak:null,superBallDelay:null,isBlockExplode:null,isOverHeal:null,isDroneRadioactive:null,droneRadioDamage:null,isDroneTeleport:null,isDroneFastLook:null,isBulletTeleport:null,isResearchBoss:null,isJunkResearch:null,junkResearchNumber:null,laserColor:null,laserColorAlpha:null,isLongitudinal:null,is360Longitudinal:null,isShotgunReversed:null,wormDuplicate:null,isCloakingDamage:null,harmonicEnergy:null,isFieldHarmReduction:null,isFastTime:null,isAnthropicTech:null,isSporeWorm:null,isWormShot:null,isFoamShot:null,isIceShot:null,isNeedleShot:null,isBlockRestitution:null,isZeno:null,isFieldFree:null,wormSurviveDmg:null,isExtraGunField:null,isBigField:null,isMineStun:null,isSmartRadius:null,isFilament:null,isLargeHarpoon:null,extraHarpoons:null,ammoCap:null,isHarpoonPowerUp:null,harpoonDensity:null,isAddRemoveMaxHealth:null,removeMaxHealthOnKill:null,isSpawnExitTech:null,cloakDuplication:null,extruderRange:null,isForeverDrones:null,isMoreMobs:null,nailRecoil:null,baseJumpForce:null,baseFx:null,isNeutronium:null,isFreeWormHole:null,isRewindField:null,isCrouchRegen:null,isDarts:null,OccamDamage:null,isAxion:null,isWormholeMapIgnore:null,isLessDamageReduction:null,nailSize:null,needleTunnel:null,isBrainstorm:null,isBrainstormActive:null,brainStormDelay:null,wormSize:null,extraSuperBalls:null};
+const tech = {
+    totalCount: null,
+    setupAllTech() {
+        tech.damage = 1
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            tech.tech[i].count = 0
+            tech.tech[i].isLost = false
+            tech.tech[i].isBanished = false
+            tech.tech[i].remove();
+            if (tech.tech[i].isJunk) {
+                tech.tech[i].frequency = 0
+            } else if (tech.tech[i].frequencyDefault) {
+                tech.tech[i].frequency = tech.tech[i].frequencyDefault
+            } else {
+                tech.tech[i].frequency = 2
+            }
+        }
+        //remove lore if it's your first time playing since it's confusing
+        //also remove lore if cheating
+        lore.techCount = 0;
+        if (simulation.isCheating || localSettings.runCount < 1) { //simulation.isCommunityMaps ||
+            for (let i = 0, len = tech.tech.length; i < len; i++) {
+                if (tech.tech[i].isLore) {
+                    tech.tech[i].frequency = 0;
+                    tech.tech[i].count = 0;
+                }
+            }
+        }
+        // tech.removeJunkTechFromPool();
+        // tech.removeLoreTechFromPool();
+        // tech.addLoreTechToPool();
+        tech.extraMaxHealth = 0;
+        tech.totalCount = 0;
+        tech.junkCount = 0 //tech.countJunkTech();
+        simulation.updateTechHUD();
+    },
+    removeTech(index = 'random') {
+        if (index === 'random') {
+            const have = [] //find which tech you have
+            for (let i = 0; i < tech.tech.length; i++) {
+                if (tech.tech[i].count > 0 && !tech.tech[i].isNonRefundable) have.push(i)
+            }
+            if (have.length) {
+                index = have[Math.floor(Math.random() * have.length)]
+            } else {
+                return 0 //if none found don't remove any tech
+            }
+        } else if (isNaN(index)) { //find index by name
+            let found = false;
+            for (let i = 0; i < tech.tech.length; i++) {
+                if (index === tech.tech[i].name) {
+                    index = i;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) return 0 //if name not found don't remove any tech
+        }
+        if (tech.tech[index].count === 0) return 0
+        const totalRemoved = tech.tech[index].count
+        simulation.makeTextLog(`<span class='color-var'>tech</span>.removeTech("<span class='color-text'>${tech.tech[index].name}</span>")`, 360)
+        tech.tech[index].remove();
+        tech.tech[index].count = 0;
+        tech.totalCount -= totalRemoved
+        tech.countJunkTech();
+        simulation.updateTechHUD();
+        tech.tech[index].isLost = true
+        simulation.updateTechHUD();
+        return totalRemoved //return the total number of tech removed
+    },
+    // onclick="tech.removeTechPaused(${i}, this)"  //add this to tech elements in pause menu
+    // removeTechPaused(index, who) {
+    //     tech.tech[index].remove();
+    //     tech.tech[index].count = 0;
+    //     simulation.updateTechHUD();
+    //     who.innerHTML = "removed"
+    //     // who.style.display = "none"
+    // },
+    // removeLoreTechFromPool() {
+    //     for (let i = tech.tech.length - 1; i > 0; i--) {
+    //         if (tech.tech[i].isLore && tech.tech[i].count === 0) tech.tech.splice(i, 1)
+    //     }
+    // },
+    addJunkTechToPool(percent) { //percent is number between 0-1
+        //make an array for possible junk tech to add
+        let options = [];
+        for (let i = 0; i < tech.tech.length; i++) {
+            if (tech.tech[i].count < tech.tech[i].maxCount && tech.tech[i].isJunk) options.push(i);
+        }
+        if (options.length) {
+            let countNonJunk = 0 // count total non junk tech
+            for (let i = 0, len = tech.tech.length; i < len; i++) {
+                if (tech.tech[i].count < tech.tech[i].maxCount && tech.tech[i].allowed() && !tech.tech[i].isJunk) countNonJunk += tech.tech[i].frequency
+            }
+            const num = Math.ceil(percent * countNonJunk) //scale number added
+            for (let i = 0; i < num; i++) tech.tech[options[Math.floor(Math.random() * options.length)]].frequency++ //add random array options to tech pool
+            simulation.makeTextLog(`<span class='color-var'>tech</span>.tech.push(${num.toFixed(0)} <span class='color-text'>JUNK</span>)`)
+            return num
+        } else {
+            return 0
+        }
+    },
+    removeJunkTechFromPool(num = 1) {
+        for (let j = 0; j < num; j++) {
+            for (let i = 0; i < tech.tech.length; i++) {
+                if (tech.tech[i].isJunk && tech.tech[i].frequency > 0 && tech.tech[i].count < tech.tech[i].maxCount) {
+                    tech.tech[i].frequency--
+                    break
+                }
+            }
+        }
+    },
+    giveRandomJUNK() {
+        const list = []
+        for (let i = 0; i < tech.tech.length; i++) {
+            if (tech.tech[i].isJunk) list.push(tech.tech[i].name)
+        }
+        let name = list[Math.floor(Math.random() * list.length)]
+        tech.giveTech(name)
+        simulation.makeTextLog(`<span class='color-var'>tech</span>.giveTech("<span class='color-text'>${name}</span>")<em>`);
+    },
+
+    giveTech(index = 'random') {
+        if (index === 'random') {
+            let options = [];
+            for (let i = 0; i < tech.tech.length; i++) {
+                if (tech.tech[i].count < tech.tech[i].maxCount && tech.tech[i].allowed() && !tech.tech[i].isJunk && !tech.tech[i].isLore && !tech.tech[i].isBadRandomOption) options.push(i);
+            }
+            // give a random tech from the tech I don't have
+            if (options.length > 0) {
+                let newTech = options[Math.floor(Math.random() * options.length)]
+                tech.giveTech(newTech)
+                simulation.makeTextLog(`<span class='color-var'>tech</span>.giveTech("<span class='color-text'>${tech.tech[newTech].name}</span>")<em> //random tech</em>`);
+            }
+        } else {
+            if (isNaN(index)) { //find index by name
+                let found = false;
+                for (let i = 0; i < tech.tech.length; i++) {
+                    if (index === tech.tech[i].name) {
+                        index = i;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return //if name not found don't give any tech
+            }
+            if (tech.isMetaAnalysis && tech.tech[index].isJunk) {
+                simulation.makeTextLog(`//tech: meta-analysis replaced junk tech with random tech`);
+                tech.giveTech('random')
+                for (let i = 0; i < 2; i++) powerUps.spawn(m.pos.x + 40 * Math.random(), m.pos.y + 40 * Math.random(), "research");
+                return
+            }
+
+            if (tech.tech[index].isLost) tech.tech[index].isLost = false; //give specific tech
+            if (tech.isBanish && tech.tech[index].isBanished) tech.tech[index].isBanished = false //stops the bug where you can't gets stacks of tech you take with decoherence, I think
+            tech.tech[index].effect(); //give specific tech
+            tech.tech[index].count++
+            tech.totalCount++ //used in power up randomization
+            tech.countJunkTech();
+            simulation.updateTechHUD();
+        }
+    },
+    junkCount: 0,
+    countJunkTech() {
+        tech.junkCount = 0
+        for (let i = 0; i < tech.tech.length; i++) {
+            if (tech.tech[i].count > 0 && tech.tech[i].isJunk) tech.junkCount++
+        }
+    },
+    // setTechoNonRefundable(name) {
+    //     for (let i = 0; i < tech.tech.length; i++) {
+    //         if (tech.tech.name === name) {
+    //             tech.tech[i].isNonRefundable = true;
+    //             return
+    //         }
+    //     }
+    // },
+    setCheating() {
+        if (!simulation.isCheating) {
+            simulation.isCheating = true;
+            level.levelAnnounce();
+            lore.techCount = 0;
+            for (let i = 0, len = tech.tech.length; i < len; i++) {
+                if (tech.tech[i].isLore) {
+                    tech.tech[i].frequency = 0;
+                    tech.tech[i].count = 0;
+                }
+            }
+            console.log('cheating')
+            sound.tone(250)
+            sound.tone(300)
+            sound.tone(375)
+        }
+    },
+    haveGunCheck(name, needActive = true) {
+        // if (
+        //     !build.isExperimentSelection &&
+        //     b.inventory.length > 2 &&
+        //     name !== b.guns[b.activeGun].name &&
+        //     Math.random() > 2 - b.inventory.length * 0.5
+        // ) {
+        //     return false
+        // }
+        // for (i = 0, len = b.inventory.length; i < len; i++) {
+        //     if (b.guns[b.inventory[i]].name === name) return true
+        // }
+        // return false
+        if (build.isExperimentSelection || !needActive) {
+            for (i = 0, len = b.inventory.length; i < len; i++) {
+                if (b.guns[b.inventory[i]].name === name) return true
+            }
+            return false
+        } else { //must be holding gun, this is the standard while playing
+            return b.inventory.length > 0 && b.guns[b.activeGun].name === name
+        }
+    },
+    hasExplosiveDamageCheck() {
+        return tech.haveGunCheck("missiles") || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 1) || tech.missileBotCount > 0 || tech.isBoomBotUpgrade || tech.isIncendiary || tech.isPulseLaser || tech.isTokamak || (tech.haveGunCheck("grenades") && !tech.isNeutronBomb)
+    },
+    damage: 1, //used for tech changes to player damage that don't have complex conditions
+    damageFromTech() {
+        let dmg = tech.damage //m.fieldDamage
+        if (tech.isGunChoice && tech.buffedGun === b.inventoryGun) dmg *= 1 + 0.31 * b.inventory.length
+        if (powerUps.boost.endCycle > m.cycle) dmg *= 1 + powerUps.boost.damage
+        if (m.coupling && (m.fieldMode === 0 || m.fieldMode === 5)) dmg *= 1 + 0.15 * m.coupling
+        if (m.isSneakAttack && m.sneakAttackCycle + Math.min(120, 0.5 * (m.cycle - m.enterCloakCycle)) > m.cycle) dmg *= 4.33 * (1 + 0.33 * m.coupling)
+        if (tech.deathSkipTime) dmg *= 1 + 0.6 * tech.deathSkipTime
+        if (tech.isTechDebt) dmg *= Math.max(41 / (tech.totalCount + 21), 4 - 0.15 * tech.totalCount)
+        if (tech.isFlipFlopDamage && tech.isFlipFlopOn) dmg *= 1.555
+        if (tech.isAnthropicDamage && tech.isDeathAvoidedThisLevel) dmg *= 2.3703599
+        if (tech.isDupDamage) dmg *= 1 + Math.min(1, tech.duplicationChance())
+        if (tech.isDamageForGuns) dmg *= 1 + 0.22 * Math.max(0, b.inventory.length - 1)
+        if (tech.isOneGun && b.inventory.length < 2) dmg *= 1.25
+        if (tech.isAcidDmg && m.health > 1) dmg *= 1.35;
+        if (tech.isRerollDamage) dmg *= 1 + 0.03 * powerUps.research.count
+        if (tech.isBotDamage) dmg *= 1 + 0.06 * b.totalBots()
+        if (tech.restDamage > 1 && player.speed < 1) dmg *= tech.restDamage
+        if (tech.isLowEnergyDamage) dmg *= 1 + 0.7 * Math.max(0, 1 - m.energy)
+        if (tech.isEnergyDamage) dmg *= 1 + m.energy * 0.125;
+        if (tech.isDamageFromBulletCount) dmg *= 1 + bullet.length * 0.007
+        if (tech.isNoFireDamage && m.cycle > m.fireCDcycle + 120) dmg *= 2
+        if (tech.isSpeedDamage) dmg *= 1 + Math.min(0.66, player.speed * 0.0165)
+        if (tech.isDamageAfterKillNoRegen && m.lastKillCycle + 300 > m.cycle) dmg *= 1.6
+        if (tech.isAxion && tech.isHarmMACHO) dmg *= 2 - m.harmReduction()
+        if (tech.isHarmDamage && m.lastHarmCycle + 600 > m.cycle) dmg *= 3;
+        if (tech.lastHitDamage && m.lastHit) dmg *= 1 + tech.lastHitDamage * m.lastHit * (2 - m.harmReduction()) // if (!simulation.paused) m.lastHit = 0
+        if (tech.isLowHealthDmg) dmg *= 1 + 0.7 * Math.max(0, 1 - (tech.isEnergyHealth ? m.energy : m.health))
+        return dmg
+    },
+    duplicationChance() {
+        return Math.max(0, (tech.isPowerUpsVanish ? 0.12 : 0) + (tech.isStimulatedEmission ? 0.15 : 0) + tech.cancelCount * 0.043 + tech.duplicateChance + 0.05 * tech.isExtraGunField + m.duplicateChance + tech.fieldDuplicate + tech.cloakDuplication + (tech.isAnthropicTech && tech.isDeathAvoidedThisLevel ? 0.5 : 0) + tech.isQuantumEraserDuplication * (1 - 0.016 * (simulation.difficultyMode ** 2))) // + (m.fieldMode === 0 || m.fieldMode === 9) * 0.03 * m.coupling)
+    },
+    isScaleMobsWithDuplication: false,
+    maxDuplicationEvent() {
+        if (tech.is100Duplicate && tech.duplicationChance() > 0.99) {
+            tech.is100Duplicate = false
+            const range = 1300
+            tech.isScaleMobsWithDuplication = true
+            for (let i = 0, len = 9; i < len; i++) {
+                const angle = 2 * Math.PI * i / len
+                spawn.randomLevelBoss(m.pos.x + range * Math.cos(angle), m.pos.y + range * Math.sin(angle), spawn.nonCollideBossList);
+            }
+            spawn.historyBoss(0, 0)
+            spawn.pulsarBoss(level.exit.x, level.exit.y, 70, true)
+            spawn.blockBoss(level.enter.x, level.enter.y)
+            tech.isScaleMobsWithDuplication = false
+        }
+    },
+    setTechFrequency(name, frequency) {
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            if (tech.tech[i].name === name) tech.tech[i].frequency = frequency
+        }
+    },
+    setBotTechFrequency(f = 0) {
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            if (tech.tech[i].isBotTech) {
+                switch (tech.tech[i].name) {
+                    case "dynamo-bot":
+                        tech.tech[i].frequency = f
+                        break;
+                    case "orbital-bot":
+                        tech.tech[i].frequency = f
+                        break;
+                    case "laser-bot":
+                        tech.tech[i].frequency = f
+                        break;
+                    case "boom-bot":
+                        tech.tech[i].frequency = f
+                        break;
+                    case "foam-bot":
+                        tech.tech[i].frequency = f
+                        break;
+                    case "nail-bot":
+                        tech.tech[i].frequency = f
+                        break;
+                }
+            }
+        }
+    },
+    tech: [{
+            name: "ordnance",
+            description: "</strong>double</strong> the <strong class='flicker'>frequency</strong> of finding <strong class='color-g'>gun</strong><strong class='color-m'>tech</strong><br>spawn a <strong class='color-g'>gun</strong> and <strong>+7%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                powerUps.spawn(m.pos.x, m.pos.y, "gun");
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    if (tech.tech[i].isGunTech) tech.tech[i].frequency *= 2
+                }
+                this.refundAmount += tech.addJunkTechToPool(0.07)
+            },
+            refundAmount: 0,
+            remove() {
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "ad hoc",
+            descriptionFunction() {
+                return `spawn a ${powerUps.orb.heal()}, ${powerUps.orb.research(1)}, ${powerUps.orb.ammo(1)}, <strong class='color-f'>field</strong>, <strong class='color-g'>gun</strong>, or <strong class='color-m'>tech</strong><br>for each of your <strong class='color-g'>guns</strong>`
+            },
+            maxCount: 1, //random power up
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            allowed() {
+                return b.inventory.length > 1
+            },
+            requires: "at least 2 guns",
+            effect() {
+                for (let i = 0; i < b.inventory.length; i++) {
+                    if (Math.random() < 1 / 6) {
+                        powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "gun");
+                    } else if (Math.random() < 1 / 5) {
+                        powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "tech");
+                    } else if (Math.random() < 1 / 4) {
+                        powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "field");
+                    } else if (Math.random() < 1 / 3) {
+                        powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "heal");
+                    } else if (Math.random() < 1 / 2) {
+                        powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "ammo");
+                    } else {
+                        powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "research");
+                    }
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "applied science",
+            description: `get a random <strong class='color-g'>gun</strong><strong class='color-m'>tech</strong><br>for each of your <strong class='color-g'>guns</strong>`, //spawn ${powerUps.orb.research(1)} and 
+            maxCount: 9,
+            count: 0,
+            isNonRefundable: true,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return b.inventory.length > 1
+            },
+            requires: "at least 2 guns",
+            effect() {
+                for (let i = b.inventory.length - 1; i > -1; i--) { //backwards because some tech can remove or add guns
+                    const gunTechPool = [] //find gun tech for this gun
+                    for (let j = 0, len = tech.tech.length; j < len; j++) {
+                        // console.log(j, tech.tech[j].isGunTech, tech.tech[j].allowed(), !tech.tech[j].isJunk, !tech.tech[j].isBadRandomOption, tech.tech[j].count < tech.tech[j].maxCount)
+                        const originalActiveGunIndex = b.activeGun //set current gun to active so allowed works
+                        b.activeGun = b.inventory[i] //to make the .allowed work for guns that aren't active
+                        if (tech.tech[j].isGunTech && tech.tech[j].allowed() && !tech.tech[j].isJunk && !tech.tech[j].isBadRandomOption && tech.tech[j].count < tech.tech[j].maxCount) {
+                            const regex = tech.tech[j].requires.search(b.guns[b.inventory[i]].name) //get string index of gun name
+                            const not = tech.tech[j].requires.search(' not ') //get string index of ' not '
+                            if (regex !== -1 && (not === -1 || not > regex)) gunTechPool.push(j) //look for the gun name in the requirements, but the gun name needs to show up before the word ' not '                        
+                        }
+                        b.activeGun = originalActiveGunIndex
+                    }
+                    if (gunTechPool.length) {
+                        const index = Math.floor(Math.random() * gunTechPool.length)
+                        tech.giveTech(gunTechPool[index]) // choose from the gun pool
+                        tech.tech[gunTechPool[index]].isFromAppliedScience = true //makes it not remove properly under paradigm shift
+                        simulation.makeTextLog(`<span class='color-var'>tech</span>.giveTech("<span class='color-text'>${tech.tech[gunTechPool[index]].name}</span>")`, 360)
+                    }
+                }
+                simulation.boldActiveGunHUD();
+            },
+            remove() {}
+        },
+        {
+            name: "arsenal",
+            descriptionFunction() { return `<strong>+22%</strong> <strong class='color-d'>damage</strong> per unequipped <strong class='color-g'>gun</strong> <em>(${(22 * Math.max(0, b.inventory.length-1)).toFixed(0)}%)</em>` },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => b.inventory.length > 1,
+            requires: "at least 2 guns",
+            effect() {
+                tech.isDamageForGuns = true;
+            },
+            remove() {
+                tech.isDamageForGuns = false;
+            }
+        },
+        {
+            name: "active cooling",
+            descriptionFunction() { return `<strong>+28%</strong> <em>fire rate</em> per unequipped <strong class='color-g'>gun</strong> <em>(${(28 * Math.max(0, b.inventory.length-1)).toFixed(0)}%)</em>` }, //<br>but not including your equipped <strong class='color-g'>gun</strong>` },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => b.inventory.length > 1,
+            requires: "at least 2 guns",
+            effect() {
+                tech.isFireRateForGuns = true;
+                b.setFireCD();
+            },
+            remove() {
+                tech.isFireRateForGuns = false;
+                b.setFireCD();
+            }
+        },
+        {
+            name: "pigeonhole principle",
+            descriptionFunction() {
+                let info = ""
+                if (this.count > 0 && Number.isInteger(tech.buffedGun) && b.inventory.length) {
+                    let gun = b.guns[b.inventory[tech.buffedGun]].name
+                    info = `<br>this level: <strong>+${(31 * Math.max(0, b.inventory.length)).toFixed(0)}%</strong> <strong class='color-d'>damage</strong> for <strong class="highlight">${gun}</strong>`
+                }
+                return `
+                a new <strong class='color-g'>gun</strong> is <strong>chosen</strong> to be improved each <strong>level</strong>
+                <br><strong>+31%</strong> <strong class='color-d'>damage</strong> per <strong class='color-g'>gun</strong> for the <strong>chosen</strong> <strong class='color-g'>gun</strong>${info}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return b.inventory.length > 1
+            },
+            requires: "at least 2 guns",
+            effect() {
+                tech.isGunChoice = true
+                //switches gun on new level
+                //generalist uses the same chosen gun so they match
+            },
+            remove() {
+                tech.isGunChoice = false;
+            }
+        },
+        {
+            name: "generalist",
+            description: "spawn <strong>7</strong> <strong class='color-g'>guns</strong>, but you can't <strong>switch</strong> <strong class='color-g'>guns</strong><br>your equipped <strong class='color-g'>gun</strong> cycles after each level",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed() {
+                return b.inventory.length < b.guns.length - 5 && b.inventory.length > 1
+            },
+            requires: "at least 2 guns, at least 5 unclaimed guns",
+            effect() {
+                tech.isGunCycle = true;
+                for (let i = 0; i < 7; i++) powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "gun");
+            },
+            remove() {
+                if (!this.count) tech.isGunCycle = false; // only set to false if you don't have this tech
+                // if (tech.isGunCycle) {
+                //     for (let i = 0; i < 8; i++) {
+                //         if (b.inventory.length) b.removeGun(b.guns[b.inventory[b.inventory.length - 1]].name) //remove your last gun
+                //     }
+                //     tech.isGunCycle = false;
+                // }
+            }
+        },
+        {
+            name: "first derivative",
+            descriptionFunction() { return `while your <strong>first</strong> <strong class='color-g'>gun</strong> is equipped<br><strong>+15%</strong> <strong class='color-defense'>defense</strong> per <strong class='color-g'>gun</strong> <em>(${(100*(1-0.85 ** b.inventory.length)).toFixed(0)}%)</em>` },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isFirstDer = true
+            },
+            remove() {
+                tech.isFirstDer = false;
+            }
+        },
+        {
+            name: "integrated armament",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Weapon' class="link">integrated armament</a>`,
+            description: `<span style = 'font-size:95%;'>+<strong>25%</strong> <strong class='color-d'>damage</strong>, but new <strong class='color-g'>guns</strong><br>replace your current <strong class='color-g'>gun</strong> and convert <strong class='color-g'>gun</strong><strong class='color-m'>tech</strong></span>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return b.inventory.length === 1
+            },
+            requires: "only 1 gun",
+            effect() {
+                tech.isOneGun = true;
+            },
+            remove() {
+                tech.isOneGun = false;
+            }
+        },
+        {
+            name: "supply chain",
+            descriptionFunction() { return `double your current <strong class='color-ammo'>ammo</strong><br><strong>+4%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool` },
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = 0; i < b.guns.length; i++) {
+                    if (b.guns[i].have) b.guns[i].ammo = Math.floor(2 * b.guns[i].ammo)
+                }
+                simulation.makeGunHUD();
+                this.refundAmount += tech.addJunkTechToPool(0.04)
+            },
+            refundAmount: 0,
+            remove() {
+                for (let j = 0; j < this.count; j++) {
+                    for (let i = 0; i < b.guns.length; i++) {
+                        if (b.guns[i].have) b.guns[i].ammo = Math.floor(0.5 * b.guns[i].ammo)
+                    }
+                }
+                simulation.makeGunHUD();
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "logistics",
+            description: `${powerUps.orb.ammo()} give <strong>80%</strong> more <strong class='color-ammo'>ammo</strong>, but<br>it's only added to your current <strong class='color-g'>gun</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isEnergyNoAmmo
+            },
+            requires: "not non-renewables",
+            effect() {
+                tech.isAmmoForGun = true;
+            },
+            remove() {
+                tech.isAmmoForGun = false;
+            }
+        },
+        {
+            name: "cache",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Cache_(computing)' class="link">cache</a>`,
+            description: `${powerUps.orb.ammo()} give <strong>1500%</strong> more <strong class='color-ammo'>ammo</strong>, but<br>you can't <strong>store</strong> any more <strong class='color-ammo'>ammo</strong> than that`,
+            // ammo powerups always max out your gun,
+            // but the maximum ammo ti limited
+            // description: `${powerUps.orb.ammo()} give <strong>13x</strong> more <strong class='color-ammo'>ammo</strong>, but<br>you can't <strong>store</strong> any more <strong class='color-ammo'>ammo</strong> than that`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isEnergyNoAmmo
+            },
+            requires: "not non-renewables",
+            effect() {
+                tech.ammoCap = 15;
+                powerUps.ammo.effect()
+            },
+            remove() {
+                tech.ammoCap = 0;
+            }
+        },
+        {
+            name: "catabolism",
+            descriptionFunction() { return `if you fire while <strong>out</strong> of <strong class='color-ammo'>ammo</strong><br>spawn ${powerUps.orb.ammo(4)} and ${tech.isEnergyHealth ? "<strong>–4</strong> maximum <strong class='color-f'>energy</strong>" : "<strong>–2</strong> maximum <strong class='color-h'>health</strong>"}` },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isEnergyNoAmmo
+            },
+            requires: "not non-renewables",
+            effect() {
+                tech.isAmmoFromHealth = true;
+            },
+            remove() {
+                tech.isAmmoFromHealth = false;
+            }
+        },
+        {
+            name: "non-renewables",
+            description: `<strong>+67%</strong> <strong class='color-d'>damage</strong><br>${powerUps.orb.ammo()} can't <strong>spawn</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isAmmoFromHealth && !tech.isBoostReplaceAmmo
+            },
+            requires: "not catabolism, quasiparticles",
+            damage: 1.67,
+            effect() {
+                tech.damage *= this.damage
+                tech.isEnergyNoAmmo = true;
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.isEnergyNoAmmo = false;
+            }
+        },
+        {
+            name: "desublimated ammunition",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Deposition_(phase_transition)' class="link">desublimated ammunition</a>`,
+            description: `if <strong>crouching</strong><br>alternating shots use no <strong class='color-ammo'>ammo</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.crouchAmmoCount = true
+            },
+            remove() {
+                tech.crouchAmmoCount = false;
+            }
+        },
+        {
+            name: "gun turret",
+            description: "if <strong>crouching</strong><br><strong>+66%</strong> <strong class='color-defense'>defense</strong> ",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isTurret = true
+            },
+            remove() {
+                tech.isTurret = false;
+            }
+        },
+        {
+            name: "dead reckoning",
+            description: "if your <strong>speed</strong> is 0<br><strong>+50%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.restDamage += 0.5
+            },
+            remove() {
+                tech.restDamage = 1;
+            }
+        },
+        {
+            name: "Higgs mechanism",
+            description: "<strong>+45%</strong> <strong><em>fire rate</em></strong><br>while <strong>firing</strong> your <strong>position</strong> is fixed",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !m.isShipMode && !tech.isAlwaysFire, !tech.isGrapple
+            },
+            requires: "not ship mode, automatic, grappling hook",
+            effect() {
+                tech.isFireMoveLock = true;
+                b.setFireCD();
+                b.setFireMethod();
+            },
+            remove() {
+                if (tech.isFireMoveLock) {
+                    tech.isFireMoveLock = false
+                    b.setFireCD();
+                    b.setFireMethod();
+                }
+            }
+        },
+        {
+            name: "squirrel-cage rotor",
+            description: "<strong>+30%</strong> <strong>movement</strong> and <strong>jumping</strong><br><strong>–5%</strong> <strong class='color-defense'>defense</strong>",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() { // good with melee builds, content skipping builds
+                tech.squirrelFx += 0.25;
+                tech.squirrelJump += 0.1;
+                m.setMovement()
+            },
+            remove() {
+                tech.squirrelFx = 1;
+                tech.squirrelJump = 1;
+                m.setMovement()
+            }
+        },
+        // {
+        //     name: "coyote",
+        //     description: "",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 1,
+        //     frequencyDefault: 1,
+        //     allowed() { return true },
+        //     requires: "",
+        //     effect() { // good with melee builds, content skipping builds
+        //         tech.coyoteTime = 120
+        //         // simulation.gravity = function() {
+        //         //     function addGravity(bodies, magnitude) {
+        //         //         for (var i = 0; i < bodies.length; i++) {
+        //         //             bodies[i].force.y += bodies[i].mass * magnitude;
+        //         //         }
+        //         //     }
+        //         //     if (!m.isBodiesAsleep) {
+        //         //         addGravity(powerUp, simulation.g);
+        //         //         addGravity(body, simulation.g);
+        //         //     }
+        //         //     player.force.y += player.mass * simulation.g
+        //         // }
+        //     },
+        //     remove() {
+        //         tech.coyoteTime = 5
+        //     }
+        // },
+        {
+            name: "Newton's 1st law",
+            description: "<strong class='color-defense'>defense</strong> is proportional to your <strong>speed</strong><br>up to <strong>+66%</strong> <strong class='color-defense'>defense</strong> at <strong>40 speed</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isSpeedHarm = true //max at speed = 40
+            },
+            remove() {
+                tech.isSpeedHarm = false
+            }
+        },
+        {
+            name: "Newton's 2nd law",
+            description: "<strong class='color-d'>damage</strong> is proportional to your <strong>speed</strong><br>up to <strong>+66%</strong> <strong class='color-d'>damage</strong> at <strong>40 speed</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isSpeedDamage = true //max at speed = 40
+            },
+            remove() {
+                tech.isSpeedDamage = false
+            }
+        },
+        {
+            name: "kinetic bombardment",
+            description: "<strong class='color-d'>damage</strong> is proportional to mob <strong>distance</strong><br>up to <strong>+33%</strong> <strong class='color-d'>damage</strong> at <strong>3000</strong> displacement",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isFarAwayDmg = true; //used in mob.damage()
+            },
+            remove() {
+                tech.isFarAwayDmg = false;
+            }
+        },
+        {
+            name: "regression",
+            description: "bullet <strong>collisions</strong> increase <strong>vulnerability</strong> to<br><strong class='color-d'>damage</strong> by <strong>+5%</strong> for mobs <em>(+0.25% for bosses)</em>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isLessDamageReduction = true
+            },
+            remove() {
+                tech.isLessDamageReduction = false
+            }
+        },
+        {
+            name: "microstates",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Microstate_(statistical_mechanics)' class="link">microstates</a>`,
+            description: "for each active <strong>bullet / bot</strong><br><strong>+0.7%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isDamageFromBulletCount = true
+            },
+            remove() {
+                tech.isDamageFromBulletCount = false
+            }
+        },
+        {
+            name: "simulated annealing",
+            description: "<strong>+20%</strong> <strong class='color-d'>damage</strong><br><strong>–20%</strong> <strong><em>fire rate</em></strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            damage: 1.2,
+            effect() {
+                tech.damage *= this.damage
+                tech.slowFire = 1.2
+                b.setFireCD();
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.slowFire = 1;
+                b.setFireCD();
+            }
+        },
+        {
+            name: "heuristics",
+            description: "<strong>+25%</strong> <strong><em>fire rate</em></strong><br>spawn a <strong class='color-g'>gun</strong>",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.fireRate *= 0.75
+                b.setFireCD();
+                powerUps.spawn(m.pos.x, m.pos.y, "gun");
+            },
+            remove() {
+                tech.fireRate = 1;
+                b.setFireCD();
+            }
+        },
+
+        {
+            name: "fracture analysis",
+            description: "if a mob is <strong>stunned</strong> it takes<br><strong>+400%</strong> <strong class='color-d'>damage</strong> from bullet impacts",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isStunField || tech.oneSuperBall || tech.isCloakStun || tech.isOrbitBotUpgrade || tech.isStun
+            },
+            requires: "a stun effect",
+            effect() {
+                tech.isCrit = true;
+            },
+            remove() {
+                tech.isCrit = false;
+            }
+        },
+        {
+            name: "anti-shear topology",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Topology' class="link">anti-shear topology</a>`,
+            description: "<strong>+30%</strong> projectile <strong>duration</strong>", //<br><em style = 'font-size: 83%'>drone spore worm flea missile foam wave neutron ice</em>",
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.isBulletsLastLonger += 0.3
+            },
+            remove() {
+                tech.isBulletsLastLonger = 1;
+            }
+        },
+        {
+            name: "thermal runaway",
+            description: "after mobs <strong>die</strong><br>they <strong class='color-e'>explode</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.sporesOnDeath && !tech.nailsDeathMob && !tech.botSpawner && !tech.isMobBlockFling && !tech.iceIXOnDeath
+            },
+            requires: "no other mob death tech",
+            effect() {
+                tech.isExplodeMob = true;
+            },
+            remove() {
+                tech.isExplodeMob = false;
+            }
+        },
+        {
+            name: "shear stress",
+            description: "after mobs <strong>die</strong><br>they release a <strong>nail</strong> that targets nearby mobs",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.sporesOnDeath && !tech.isExplodeMob && !tech.botSpawner && !tech.isMobBlockFling && !tech.iceIXOnDeath
+            },
+            requires: "no other mob death tech",
+            effect() {
+                tech.nailsDeathMob++
+            },
+            remove() {
+                tech.nailsDeathMob = 0;
+            }
+        },
+        {
+            name: "zoospore vector",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Disease_vector' class="link">zoospore vector</a>`,
+            descriptionFunction() { return `after mobs <strong>die</strong><br>they have a <strong>+10%</strong> chance to grow ${b.guns[6].nameString('s')}` },
+            // description: "after mobs <strong>die</strong><br>they have a <strong>+10%</strong> chance to grow <strong class='color-p' style='letter-spacing: 2px;'>spores</strong>",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.nailsDeathMob && !tech.isExplodeMob && !tech.botSpawner && !tech.isMobBlockFling && !tech.iceIXOnDeath
+            },
+            requires: "no other mob death tech",
+            effect() {
+                tech.sporesOnDeath += 0.1;
+                // if (tech.isSporeWorm) {
+                //     for (let i = 0; i < 4; i++) b.worm(m.pos)
+                // } else {
+                //     for (let i = 0; i < 8; i++) b.spore(m.pos)
+                // }
+            },
+            remove() {
+                tech.sporesOnDeath = 0;
+            }
+        },
+        {
+            name: "bubble fusion",
+            descriptionFunction() {
+                return `after destroying a mob's natural <strong>shield</strong><br>spawn <strong>1-2</strong> ${powerUps.orb.heal()}, ${powerUps.orb.ammo()}, or ${powerUps.orb.research(1)}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isShieldAmmo = true;
+            },
+            remove() {
+                tech.isShieldAmmo = false;
+            }
+        },
+        {
+            name: "reaction inhibitor",
+            description: "<strong>-12%</strong> maximum mob <strong>health</strong>", //<strong class='color-h'>health</strong>
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return true //tech.nailsDeathMob || tech.sporesOnDeath || tech.isExplodeMob || tech.botSpawner || tech.isMobBlockFling || tech.iceIXOnDeath
+            },
+            requires: "", //"any mob death tech",
+            effect() {
+                tech.mobSpawnWithHealth++
+                mobs.setMobSpawnHealth()
+                //set all mobs at full health to 0.85
+                for (let i = 0; i < mob.length; i++) {
+                    if (mob.health > mobs.mobSpawnWithHealth) mob.health = mobs.mobSpawnWithHealth
+                }
+            },
+            remove() {
+                tech.mobSpawnWithHealth = 0
+                mobs.setMobSpawnHealth()
+            }
+        },
+        {
+            name: "propagator",
+            description: "after mobs <strong>die</strong> advance time <strong>0.5</strong> seconds<br><strong>+60%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.deathSkipTime++
+            },
+            remove() {
+                tech.deathSkipTime = 0
+            }
+        },
+        {
+            name: "decorrelation",
+            description: "if your <strong class='color-g'>gun</strong> or <strong class='color-f'>field</strong> are unused for <strong>2</strong> seconds<br><strong>+70%</strong> <strong class='color-defense'>defense</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isRewindField
+            },
+            requires: "not retrocausality",
+            effect() {
+                tech.isNoFireDefense = true
+            },
+            remove() {
+                tech.isNoFireDefense = false
+            }
+        },
+        {
+            name: "anticorrelation",
+            description: "if your <strong class='color-g'>gun</strong> or <strong class='color-f'>field</strong> are unused for <strong>2</strong> seconds<br><strong>+100%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isRewindField
+            },
+            requires: "not retrocausality",
+            effect() {
+                tech.isNoFireDamage = true
+            },
+            remove() {
+                tech.isNoFireDamage = false
+            }
+        },
+        {
+            name: "scrap bots",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Scrap' class="link">scrap bots</a>`,
+            description: "after mobs <strong>die</strong> you have a <strong>+33%</strong> chance<br>to build scrap <strong class='color-bot'>bots</strong> that operate for <strong>13</strong> seconds",
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBotTech: true,
+            allowed() {
+                return !tech.sporesOnDeath && !tech.nailsDeathMob && !tech.isExplodeMob && !tech.isMobBlockFling && !tech.iceIXOnDeath
+            },
+            requires: "no other mob death tech",
+            effect() {
+                tech.botSpawner += 0.33;
+            },
+            remove() {
+                tech.botSpawner = 0;
+            }
+        },
+        {
+            name: "scrap refit",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Scrap' class="link">scrap refit</a>`,
+            description: "after mobs <strong>die</strong><br>reset scrap <strong class='color-bot'>bots</strong> to <strong>13</strong> seconds of operation",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBotTech: true,
+            allowed() {
+                return tech.botSpawner
+            },
+            requires: "scrap bots",
+            effect() {
+                tech.isBotSpawnerReset = true;
+            },
+            remove() {
+                tech.isBotSpawnerReset = false;
+            }
+        },
+        {
+            name: "nail-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">nail-bot</a>`,
+            description: "a <strong class='color-bot'>bot</strong> fires <strong>nails</strong> at mobs in line of sight",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.nailBotCount++;
+                b.nailBot();
+            },
+            remove() {
+                if (this.count) {
+                    tech.nailBotCount -= this.count;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
+        {
+            name: "nail-bot upgrade",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">nail-bot upgrade</a>`,
+            description: "<strong>convert</strong> your bots to <strong>nail-bots</strong><br><strong>+500%</strong> <strong>fire rate</strong> and <strong>+40%</strong> nail <strong>velocity</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBotTech: true,
+            allowed() {
+                return tech.nailBotCount > 1 && !b.hasBotUpgrade()
+            },
+            requires: "2 or more nail bots and no other bot upgrade",
+            effect() {
+                tech.isNailBotUpgrade = true
+                b.convertBotsTo("nail-bot")
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType === 'nail') bullet[i].isUpgraded = true
+                }
+                tech.setBotTechFrequency()
+                tech.setTechFrequency("nail-bot", 5)
+            },
+            remove() {
+                if (this.count) {
+                    for (let i = 0; i < bullet.length; i++) {
+                        if (bullet[i].botType === 'nail') bullet[i].isUpgraded = false
+                    }
+                    tech.setBotTechFrequency(1)
+                }
+                tech.isNailBotUpgrade = false
+            }
+        },
+        {
+            name: "foam-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">foam-bot</a>`,
+            description: "a <strong class='color-bot'>bot</strong> fires <strong>foam</strong> at nearby mobs",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.foamBotCount++;
+                b.foamBot();
+            },
+            remove() {
+                if (this.count) {
+                    tech.foamBotCount -= this.count;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
+        {
+            name: "foam-bot upgrade",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">foam-bot upgrade</a>`,
+            description: "<strong>convert</strong> your bots to <strong>foam-bots</strong><br><strong>+300%</strong> foam <strong>size</strong> and <strong>fire rate</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBotTech: true,
+            allowed() {
+                return tech.foamBotCount > 1 && !b.hasBotUpgrade()
+            },
+            requires: "2 or more foam bots and no other bot upgrade",
+            effect() {
+                tech.isFoamBotUpgrade = true
+                b.convertBotsTo("foam-bot")
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType === 'foam') bullet[i].isUpgraded = true
+                }
+                tech.setBotTechFrequency()
+                tech.setTechFrequency("foam-bot", 5)
+            },
+            remove() {
+                if (this.count) {
+                    for (let i = 0; i < bullet.length; i++) {
+                        if (bullet[i].botType === 'foam') bullet[i].isUpgraded = false
+                    }
+                    tech.setBotTechFrequency(1)
+                }
+                tech.isFoamBotUpgrade = false
+            }
+        },
+        {
+            name: "boom-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">boom-bot</a>`,
+            description: "a <strong class='color-bot'>bot</strong> <strong>defends</strong> the space around you<br>ignites an <strong class='color-e'>explosion</strong> after hitting a mob",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.boomBotCount++;
+                b.boomBot();
+            },
+            remove() {
+                if (this.count) {
+                    tech.boomBotCount -= this.count;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
+        {
+            name: "boom-bot upgrade",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">boom-bot upgrade</a>`,
+            description: "<strong>convert</strong> your bots to <strong>boom-bots</strong><br><strong>+300%</strong> <strong class='color-e'>explosion</strong> <strong class='color-d'>damage</strong> and size",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBotTech: true,
+            allowed() {
+                return tech.boomBotCount > 1 && !b.hasBotUpgrade()
+            },
+            requires: "2 or more boom bots and no other bot upgrade",
+            effect() {
+                tech.isBoomBotUpgrade = true
+                b.convertBotsTo("boom-bot")
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType === 'boom') bullet[i].isUpgraded = true
+                }
+                tech.setBotTechFrequency()
+                tech.setTechFrequency("boom-bot", 5)
+            },
+            remove() {
+                if (this.count) {
+                    for (let i = 0; i < bullet.length; i++) {
+                        if (bullet[i].botType === 'boom') bullet[i].isUpgraded = false
+                    }
+                    tech.setBotTechFrequency(1)
+                }
+                tech.isBoomBotUpgrade = false
+            }
+        },
+        {
+            name: "laser-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">laser-bot</a>`,
+            description: "a <strong class='color-bot'>bot</strong> uses <strong class='color-f'>energy</strong> to emit a <strong class='color-laser'>laser</strong> beam<br>that targets nearby mobs",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() {
+                return m.maxEnergy > 0.5
+            },
+            requires: "maximum energy above 50",
+            effect() {
+                tech.laserBotCount++;
+                b.laserBot();
+            },
+            remove() {
+                if (this.count) {
+                    tech.laserBotCount -= this.count;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
+        {
+            name: "laser-bot upgrade",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">laser-bot upgrade</a>`,
+            description: "<strong>convert</strong> your bots to <strong>laser-bots</strong><br><strong>+100%</strong> <strong class='color-d'>damage</strong>, efficiency, and range",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBotTech: true,
+            allowed() {
+                return tech.laserBotCount > 1 && !b.hasBotUpgrade()
+            },
+            requires: "2 or more laser bots and no other bot upgrade",
+            effect() {
+                tech.isLaserBotUpgrade = true
+                b.convertBotsTo("laser-bot")
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType === 'laser') bullet[i].isUpgraded = true
+                }
+                tech.setBotTechFrequency()
+                tech.setTechFrequency("laser-bot", 5)
+            },
+            remove() {
+                if (this.count) {
+                    for (let i = 0; i < bullet.length; i++) {
+                        if (bullet[i].botType === 'laser') bullet[i].isUpgraded = false
+                    }
+                    tech.setBotTechFrequency(1)
+                }
+                tech.isLaserBotUpgrade = false
+            }
+        },
+        {
+            name: "orbital-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">orbital-bot</a>`,
+            description: "a <strong class='color-bot'>bot</strong> is locked in <strong>orbit</strong> around you<br><strong>stuns</strong> and <strong class='color-d'>damages</strong> mobs on <strong>contact</strong>",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                b.orbitBot();
+                tech.orbitBotCount++;
+            },
+            remove() {
+                if (this.count) {
+                    tech.orbitBotCount -= this.count;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
+        {
+            name: "orbital-bot upgrade",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">orbital-bot upgrade</a>`,
+            description: "<strong>convert</strong> your bots to <strong>orbital-bots</strong><br><strong>+300%</strong> orbital <strong class='color-d'>damage</strong> and <strong>+50%</strong> <strong>radius</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBotTech: true,
+            allowed() {
+                return tech.orbitBotCount > 1 && !b.hasBotUpgrade()
+            },
+            requires: "2 or more orbital bots and no other bot upgrade",
+            effect() {
+                tech.isOrbitBotUpgrade = true
+                b.convertBotsTo("orbital-bot")
+                const range = 190 + 120 * tech.isOrbitBotUpgrade
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType === 'orbit') {
+                        bullet[i].isUpgraded = true
+                        bullet[i].range = range
+                        bullet[i].orbitalSpeed = Math.sqrt(0.25 / range)
+                    }
+                }
+                tech.setBotTechFrequency()
+                tech.setTechFrequency("orbital-bot", 5)
+            },
+            remove() {
+                if (this.count) {
+                    const range = 190 + 100 * tech.isOrbitBotUpgrade
+                    for (let i = 0; i < bullet.length; i++) {
+                        if (bullet[i].botType === 'orbit') {
+                            bullet[i].range = range
+                            bullet[i].orbitalSpeed = Math.sqrt(0.25 / range)
+                        }
+                    }
+                    tech.setBotTechFrequency(1)
+                }
+                tech.isOrbitBotUpgrade = false
+            }
+        },
+        {
+            name: "dynamo-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">dynamo-bot</a>`,
+            description: "a <strong class='color-bot'>bot</strong> <strong class='color-d'>damages</strong> mobs while it <strong>traces</strong> your path<br>when it's near generate <strong>+7</strong> <strong class='color-f'>energy</strong> per second",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.dynamoBotCount++;
+                b.dynamoBot();
+            },
+            remove() {
+                if (this.count) {
+                    tech.dynamoBotCount -= this.count;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
+        {
+            name: "dynamo-bot upgrade",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">dynamo-bot upgrade</a>`,
+            description: "<strong>convert</strong> your bots to <strong>dynamo-bots</strong><br>when it's near generate <strong>+23</strong> <strong class='color-f'>energy</strong> per second",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBotTech: true,
+            allowed() {
+                return tech.dynamoBotCount > 1 && !b.hasBotUpgrade()
+            },
+            requires: "2 or more dynamo bots and no other bot upgrade",
+            effect() {
+                tech.isDynamoBotUpgrade = true
+                b.convertBotsTo("dynamo-bot")
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType === 'dynamo') bullet[i].isUpgraded = true
+                }
+                tech.setBotTechFrequency()
+                tech.setTechFrequency("dynamo-bot", 5)
+            },
+            remove() {
+                if (this.count) {
+                    for (let i = 0; i < bullet.length; i++) {
+                        if (bullet[i].botType === 'dynamo') bullet[i].isUpgraded = false
+                    }
+                    tech.setBotTechFrequency(1)
+                }
+                tech.isDynamoBotUpgrade = false
+            }
+        },
+        {
+            name: "bot fabrication",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">bot fabrication</a>`,
+            descriptionFunction() {
+                return `after you collect ${powerUps.orb.research(2 + Math.floor(0.1666 * b.totalBots()))}use them to build a<br>random <strong class='color-bot'>bot</strong> <em>(+1 cost every 5 bots)</em>`
+            },
+            // description: `if you collect ${powerUps.orb.research(2)}use them to build a<br>random <strong class='color-bot'>bot</strong> <em>(+1 cost every 5 bots)</em>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isBotTech: true,
+            allowed() {
+                return powerUps.research.count > 1 || build.isExperimentSelection
+            },
+            requires: "at least 2 research",
+            effect() {
+                tech.isRerollBots = true;
+                powerUps.research.changeRerolls(0)
+                simulation.makeTextLog(`<span class='color-var'>m</span>.<span class='color-r'>research</span> <span class='color-symbol'>=</span> 0`)
+            },
+            remove() {
+                tech.isRerollBots = false;
+                // this.description = `if you collect ${powerUps.orb.research(2 + Math.floor(0.2 * b.totalBots()))}use them to build a<br>random <strong class='color-bot'>bot</strong>  <em>(+1 cost every 5 bots)</em>`
+            }
+        },
+        {
+            name: "perimeter defense",
+            description: "for each permanent <strong class='color-bot'>bot</strong><br><strong>+6%</strong> <strong class='color-defense'>defense</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isBotTech: true,
+            allowed() {
+                return b.totalBots() > 1
+            },
+            requires: "at least 2 bots",
+            effect() {
+                tech.isBotArmor = true
+            },
+            remove() {
+                tech.isBotArmor = false
+            }
+        },
+        {
+            name: "network effect",
+            description: "for each permanent <strong class='color-bot'>bot</strong><br><strong>+6%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isBotTech: true,
+            allowed() {
+                return b.totalBots() > 1
+            },
+            requires: "at least 2 bots",
+            effect() {
+                tech.isBotDamage = true
+            },
+            remove() {
+                tech.isBotDamage = false
+            }
+        },
+        {
+            name: "ersatz bots",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Ersatz_good' class="link">ersatz bots</a>`,
+            description: "<strong>double</strong> your current permanent <strong class='color-bot'>bots</strong><br>remove <strong>all</strong> <strong class='color-g'>guns</strong> in your inventory",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isBotTech: true,
+            // isNonRefundable: true,
+            isBadRandomOption: true,
+            numberOfGunsLost: 0,
+            allowed() {
+                return b.totalBots() > 3 && !build.isExperimentSelection
+            },
+            requires: "NOT EXPERIMENT MODE, at least 4 bots",
+            effect() {
+                this.numberOfGunsLost = b.inventory.length
+                b.removeAllGuns();
+                simulation.makeGunHUD();
+                //double bots
+                for (let i = 0; i < tech.nailBotCount; i++) b.nailBot();
+                tech.nailBotCount *= 2
+                for (let i = 0; i < tech.laserBotCount; i++) b.laserBot();
+                tech.laserBotCount *= 2
+                for (let i = 0; i < tech.foamBotCount; i++) b.foamBot();
+                tech.foamBotCount *= 2
+                for (let i = 0; i < tech.boomBotCount; i++) b.boomBot();
+                tech.boomBotCount *= 2
+                for (let i = 0; i < tech.orbitBotCount; i++) b.orbitBot();
+                tech.orbitBotCount *= 2
+                for (let i = 0; i < tech.dynamoBotCount; i++) b.dynamoBot();
+                tech.dynamoBotCount *= 2
+                for (let i = 0; i < tech.plasmaBotCount; i++) b.plasmaBot();
+                tech.plasmaBotCount *= 2
+                for (let i = 0; i < tech.missileBotCount; i++) b.missileBot();
+                tech.missileBotCount *= 2
+            },
+            remove() {
+                if (this.count) {
+                    //return guns
+                    for (let i = 0; i < this.numberOfGunsLost; i++) powerUps.spawn(m.pos.x + 60 * (Math.random() - 0.5), m.pos.y + 60 * (Math.random() - 0.5), "gun");
+                    this.numberOfGunsLost = 0;
+
+                    //half all current guns
+                    tech.nailBotCount = Math.round(tech.nailBotCount / 2)
+                    tech.laserBotCount = Math.round(tech.laserBotCount / 2)
+                    tech.foamBotCount = Math.round(tech.foamBotCount / 2)
+                    tech.boomBotCount = Math.round(tech.boomBotCount / 2)
+                    tech.orbitBotCount = Math.round(tech.orbitBotCount / 2)
+                    tech.dynamoBotCount = Math.round(tech.dynamoBotCount / 2)
+                    tech.plasmaBotCount = Math.round(tech.plasmaBotCount / 2)
+                    tech.missileBotCount = Math.round(tech.missileBotCount / 2)
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+            }
+        },
+        // {
+        //     name: "robotics",
+        //     description: `spawn <strong>2</strong> random <strong>bots</strong><br><strong>quadruple</strong> the <strong class='flicker'>frequency</strong> of finding <strong>bot</strong> <strong class='color-m'>tech</strong>`,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 1,
+        //     frequencyDefault: 1,
+        //     isBotTech: true,
+        //     allowed() {
+        //         return b.totalBots() > 1 || build.isExperimentSelection
+        //     },
+        //     requires: "at least 2 bots",
+        //     effect: () => {
+        //         b.randomBot()
+        //         b.randomBot()
+        //         for (let i = 0, len = tech.tech.length; i < len; i++) {
+        //             if (tech.tech[i].isBotTech) tech.tech[i].frequency *= 4
+        //         }
+        //     },
+        //     remove() {
+        //         if (this.count > 0) {
+        //             b.removeBot()
+        //             b.removeBot()
+        //             b.clearPermanentBots();
+        //             b.respawnBots();
+        //             for (let i = 0, len = tech.tech.length; i < len; i++) {
+        //                 if (tech.tech[i].isBotTech) tech.tech[i].frequency = Math.ceil(tech.tech[i].frequency / 4)
+        //             }
+        //         }
+        //     }
+        // },
+        {
+            name: "robotics",
+            description: `spawn <strong>2</strong> random <strong>bots</strong><br><strong class='color-m'>tech</strong>, <strong class='color-f'>fields</strong>, and <strong class='color-g'>guns</strong> have <strong>+1</strong> bot <strong>choice</strong>`, //<strong class='color-m'>tech</strong> have an extra <strong>bot</strong> <strong class='color-m'>tech</strong> option
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBotTech: true,
+            allowed() {
+                return b.totalBots() > 1
+            },
+            requires: "at least 2 bots",
+            effect() {
+                tech.isExtraBotOption = true
+                for (let i = 0; i < 2; i++) b.randomBot()
+            },
+            remove() {
+                if (this.count > 0) {
+                    for (let i = 0; i < 2; i++) b.removeBot()
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                }
+                tech.isExtraBotOption = false
+            }
+        },
+        {
+            name: "open-source", //digital fabricator
+            description: `spawn <strong>3</strong> random <strong>bots</strong><br><strong>triple</strong> the <strong class='flicker'>frequency</strong> of finding <strong>bot</strong> <strong class='color-m'>tech</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            frequencyDefault: 0,
+            isBotTech: true,
+            allowed() {
+                return tech.isExtraBotOption
+            },
+            requires: "robotics",
+            effect() {
+                for (let i = 0; i < 3; i++) b.randomBot()
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    if (tech.tech[i].isBotTech) tech.tech[i].frequency *= 3
+                }
+            },
+            remove() {
+                if (this.count > 0) {
+                    for (let i = 0; i < 3; i++) b.removeBot()
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                    for (let i = 0, len = tech.tech.length; i < len; i++) {
+                        if (tech.tech[i].isBotTech) tech.tech[i].frequency = Math.ceil(tech.tech[i].frequency / 3)
+                    }
+                }
+            }
+        },
+        {
+            name: "mass driver",
+            description: "<strong>+300%</strong> <strong class='color-block'>block</strong> collision <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name !== "wormhole"
+            },
+            requires: "not wormhole",
+            effect() {
+                tech.blockDamage = 0.3
+            },
+            remove() {
+                tech.blockDamage = 0.075
+            }
+        },
+        {
+            name: "inflation",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Inflation_(cosmology)' class="link">inflation</a>`,
+            description: "if <strong>holding</strong> a <strong class='color-block'>block</strong> <strong>+85%</strong> <strong class='color-defense'>defense</strong><br>after <strong>throwing</strong> a <strong class='color-block'>block</strong> it expands <strong>300%</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.blockDamage > 0.075 && m.fieldUpgrades[m.fieldMode].name !== "pilot wave" && m.fieldUpgrades[m.fieldMode].name !== "wormhole" && !tech.isTokamak
+            },
+            requires: "mass driver, not pilot wave, tokamak, wormhole",
+            effect() {
+                tech.isAddBlockMass = true
+            },
+            remove() {
+                tech.isAddBlockMass = false
+            }
+        },
+        {
+            name: "restitution",
+            description: "<strong>+150%</strong> <strong class='color-block'>block</strong> collision <strong class='color-d'>damage</strong><br>after <strong>throwing</strong> a <strong class='color-block'>block</strong> it becomes very <strong>bouncy</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.blockDamage > 0.075 && m.fieldUpgrades[m.fieldMode].name !== "pilot wave" && m.fieldUpgrades[m.fieldMode].name !== "wormhole" && !tech.isTokamak
+            },
+            requires: "mass driver, not pilot wave, tokamak, wormhole",
+            effect() {
+                tech.isBlockRestitution = true
+            },
+            remove() {
+                tech.isBlockRestitution = false
+            }
+        },
+        {
+            name: "flywheel",
+            description: "<strong>+150%</strong> <strong class='color-block'>block</strong> collision <strong class='color-d'>damage</strong><br>after a mob <strong>dies</strong> its <strong class='color-block'>block</strong> is <strong>flung</strong> at mobs",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.blockDamage > 0.075 && !tech.nailsDeathMob && !tech.sporesOnDeath && !tech.isExplodeMob && !tech.botSpawner && !tech.iceIXOnDeath
+            },
+            requires: "mass driver, no other mob death tech",
+            effect() {
+                tech.isMobBlockFling = true
+            },
+            remove() {
+                tech.isMobBlockFling = false
+            }
+        },
+        // {
+        //     name: "fermions",
+        //     description: "<strong class='color-block'>blocks</strong> thrown by you or <strong>pilot wave</strong> will<br><strong>collide</strong> with <strong>intangible</strong> mobs, but not you",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 2,
+        //     frequencyDefault: 2,
+        //     allowed() {
+        //         return (tech.blockDamage > 0.075 || m.fieldUpgrades[m.fieldMode].name === "pilot wave") && !tech.isTokamak
+        //     },
+        //     requires: "mass driver or pilot wave, not tokamak",
+        //     effect() {
+        //         tech.isBlockBullets = true
+        //     },
+        //     remove() {
+        //         tech.isBlockBullets = false
+        //     }
+        // },
+        {
+            name: "buckling",
+            descriptionFunction() {
+                return `if a <strong class='color-block'>block</strong> you threw kills a mob<br>spawn either ${powerUps.orb.heal()}, ${powerUps.orb.ammo()}, or ${powerUps.orb.research(1)}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.blockDamage > 0.075 && m.fieldUpgrades[m.fieldMode].name !== "pilot wave" && !tech.isTokamak
+            },
+            requires: "mass driver, not pilot wave, tokamak",
+            effect() {
+                tech.isBlockPowerUps = true
+            },
+            remove() {
+                tech.isBlockPowerUps = false
+            }
+        },
+        {
+            name: "Pauli exclusion",
+            description: `after mob collisions<br>become <strong>invulnerable</strong> for <strong>+3</strong> seconds`,
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                m.collisionImmuneCycles += 180;
+                if (m.immuneCycle < m.cycle + m.collisionImmuneCycles) m.immuneCycle = m.cycle + m.collisionImmuneCycles; //player is immune to damage
+            },
+            remove() {
+                m.collisionImmuneCycles = 30;
+            }
+        },
+        {
+            name: "spin–statistics theorem",
+            description: `every <strong>7</strong> seconds<br>become <strong>invulnerable</strong> for <strong>+1.8</strong> seconds`,
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return true //m.collisionImmuneCycles > 30
+            },
+            requires: "",
+            effect() {
+                tech.cyclicImmunity += 108;
+            },
+            remove() {
+                tech.cyclicImmunity = 0;
+            }
+        },
+        {
+            name: "NOR gate",
+            description: "if <strong>flip-flop</strong> is <strong class='color-flop'>OFF</strong><br>become <strong>invulnerable</strong> to your next collision",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isFlipFlop
+            },
+            requires: "flip-flop",
+            effect() {
+                tech.isFlipFlopHarm = true //do you have this tech
+            },
+            remove() {
+                tech.isFlipFlopHarm = false
+            }
+        },
+        {
+            name: "shape-memory alloy",
+            descriptionFunction() {
+                return `if <strong>flip-flop</strong> is <strong class='color-flop'>ON</strong><br><strong>+400</strong> maximum <strong class='color-h'>health</strong> and <strong>+100%</strong> ${powerUps.orb.heal()} effect`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isFlipFlop
+            },
+            requires: "flip-flop",
+            effect() {
+                tech.isFlipFlopHealth = true;
+                m.setMaxHealth();
+                for (let i = 0; i < powerUp.length; i++) {
+                    if (powerUp[i].name === "heal") {
+                        const oldSize = powerUp[i].size
+                        powerUp[i].size = powerUps.heal.size() //update current heals
+                        const scale = powerUp[i].size / oldSize
+                        Matter.Body.scale(powerUp[i], scale, scale); //grow    
+                    }
+                }
+            },
+            remove() {
+                tech.isFlipFlopHealth = false;
+                m.setMaxHealth();
+                for (let i = 0; i < powerUp.length; i++) {
+                    if (powerUp[i].name === "heal") {
+                        const oldSize = powerUp[i].size
+                        powerUp[i].size = powerUps.heal.size() //update current heals
+                        const scale = powerUp[i].size / oldSize
+                        Matter.Body.scale(powerUp[i], scale, scale); //grow    
+                    }
+                }
+            }
+        },
+        {
+            name: "flip-flop",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Flip-flop_(electronics)' class="link">flip-flop</a>`,
+            description: `toggle <strong class="color-flop">ON</strong> and <strong class="color-flop">OFF</strong> after a <strong>collision</strong><br>unlock advanced <strong class='color-m'>tech</strong> that runs if <strong class="color-flop">ON</strong>`,
+            nameInfo: "<span id = 'tech-flip-flop'></span>",
+            addNameInfo() {
+                setTimeout(function() {
+                    if (document.getElementById("tech-flip-flop")) {
+                        if (tech.isFlipFlopOn) {
+                            document.getElementById("tech-flip-flop").innerHTML = ` = <strong>ON</strong>`
+                            m.eyeFillColor = m.fieldMeterColor //'#5af'
+                        } else {
+                            document.getElementById("tech-flip-flop").innerHTML = ` = <strong>OFF</strong>`
+                            m.eyeFillColor = "transparent"
+                        }
+                    }
+                }, 100);
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isRelay
+            },
+            requires: "not relay switch",
+            effect() {
+                tech.isFlipFlop = true //do you have this tech?
+                if (!tech.isFlipFlopOn) {
+                    tech.isFlipFlopOn = true //what is the state of flip-Flop?
+                    if (tech.isFlipFlopCoupling) {
+                        m.couplingChange(5)
+                        for (let i = 0; i < mob.length; i++) {
+                            if (mob[i].isDecoupling) mob[i].alive = false //remove WIMP
+                        }
+                    }
+                }
+                if (!m.isShipMode) {
+                    m.draw = m.drawFlipFlop
+                }
+            },
+            remove() {
+                tech.isFlipFlop = false
+                if (tech.isFlipFlopOn) {
+                    tech.isFlipFlopOn = false //what is the state of flip-Flop?
+                    if (tech.isFlipFlopCoupling) {
+                        m.couplingChange(5)
+                        for (let i = 0; i < mob.length; i++) {
+                            if (mob[i].isDecoupling) mob[i].alive = false //remove WIMP
+                        }
+                    }
+                }
+                m.eyeFillColor = 'transparent'
+            }
+        },
+        {
+            name: "NAND gate",
+            description: "if <strong class='color-flop'>ON</strong><br><strong>+55.5%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isFlipFlop || tech.isRelay
+            },
+            requires: "ON/OFF tech",
+            effect() {
+                tech.isFlipFlopDamage = true;
+            },
+            remove() {
+                tech.isFlipFlopDamage = false;
+            }
+        },
+        {
+            name: "integrated circuit",
+            description: "if <strong class='color-flop'>ON</strong> <strong>+7</strong> power up <strong>choices</strong><br>if <strong class='color-flop'>OFF</strong> <strong>-1</strong> power up <strong>choices</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (tech.isFlipFlop || tech.isRelay) && !tech.isDeterminism
+            },
+            requires: "ON/OFF tech, not determinism",
+            effect() {
+                tech.isFlipFlopChoices = true //do you have this tech
+            },
+            remove() {
+                tech.isFlipFlopChoices = false
+            }
+        },
+        {
+            name: "transistor",
+            description: "if <strong class='color-flop'>ON</strong> generate <strong>+20</strong> <strong class='color-f'>energy</strong> per second<br>if <strong class='color-flop'>OFF</strong> drain <strong>-1</strong> <strong class='color-f'>energy</strong> per second",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isFlipFlop || tech.isRelay
+            },
+            requires: "ON/OFF tech",
+            effect() {
+                tech.isFlipFlopEnergy = true;
+            },
+            remove() {
+                tech.isFlipFlopEnergy = false;
+            }
+        },
+        {
+            name: "decoupling",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Decoupling_(cosmology)' class="link">decoupling</a>`,
+            descriptionFunction() {
+                //<span style = 'font-size:80%;'>(${ m.couplingDescription(this.bonus)})</span>
+                return `if <strong class='color-flop'>ON</strong> <strong>+5</strong> <strong class='color-coupling'>coupling</strong><br>if <strong class='color-flop'>OFF</strong> a dangerous particle slowly <strong>chases</strong> you`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            bonus: 5, //coupling given
+            allowed() {
+                return tech.isFlipFlop || tech.isRelay
+            },
+            requires: "ON/OFF tech",
+            effect() {
+                tech.isFlipFlopCoupling = true;
+                if (tech.isFlipFlopOn) {
+                    m.couplingChange(this.bonus)
+                } else {
+                    for (let i = 0; i < mob.length; i++) {
+                        if (mob[i].isDecoupling) mob[i].alive = false //remove WIMP
+                    }
+                    spawn.WIMP()
+                    mob[mob.length - 1].isDecoupling = true //so you can find it to remove
+                }
+            },
+            remove() {
+                tech.isFlipFlopCoupling = false;
+                if (tech.isFlipFlop || tech.isRelay) {
+                    if (tech.isFlipFlopOn) {
+                        m.couplingChange(-this.bonus)
+                    } else {
+                        for (let i = 0; i < mob.length; i++) {
+                            if (mob[i].isDecoupling) mob[i].alive = false //remove WIMP
+                        }
+                    }
+                }
+            }
+        },
+        {
+            name: "relay switch",
+            description: `toggle <strong class="color-flop">ON</strong> and <strong class="color-flop">OFF</strong> after picking up a <strong>power up</strong><br>unlock advanced <strong class='color-m'>tech</strong> that runs if <strong class="color-flop">ON</strong>`,
+            nameInfo: "<span id = 'tech-switch'></span>",
+            addNameInfo() {
+                setTimeout(function() {
+                    if (document.getElementById("tech-switch")) {
+                        if (tech.isFlipFlopOn) {
+                            document.getElementById("tech-switch").innerHTML = ` = <strong>ON</strong>`
+                            m.eyeFillColor = m.fieldMeterColor //'#5af'
+                        } else {
+                            document.getElementById("tech-switch").innerHTML = ` = <strong>OFF</strong>`
+                            m.eyeFillColor = "transparent"
+                        }
+                    }
+                }, 100);
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isFlipFlop
+            },
+            requires: "not flip-flop",
+            effect() {
+                tech.isRelay = true //do you have this tech?
+                if (!tech.isFlipFlopOn) {
+                    tech.isFlipFlopOn = true //what is the state of flip-Flop?
+                    if (tech.isFlipFlopCoupling) {
+                        m.couplingChange(5)
+                        for (let i = 0; i < mob.length; i++) {
+                            if (mob[i].isDecoupling) mob[i].alive = false //remove WIMP
+                        }
+                    }
+                }
+                if (!m.isShipMode) {
+                    m.draw = m.drawFlipFlop
+                }
+            },
+            remove() {
+                tech.isRelay = false
+                if (tech.isFlipFlopOn) {
+                    tech.isFlipFlopOn = false //what is the state of flip-Flop?
+                    if (tech.isFlipFlopCoupling) {
+                        m.couplingChange(-5)
+                        for (let i = 0; i < mob.length; i++) {
+                            if (mob[i].isDecoupling) mob[i].alive = false //remove WIMP
+                        }
+                    }
+                }
+                m.eyeFillColor = 'transparent'
+            }
+        },
+        {
+            name: "lithium-ion",
+            description: "if <strong>relay switch</strong> is <strong class='color-flop'>ON</strong><br><strong>+300</strong> maximum <strong class='color-f'>energy</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isRelay
+            },
+            requires: "relay switch",
+            effect() {
+                tech.isRelayEnergy = true
+                m.setMaxEnergy()
+            },
+            remove() {
+                tech.isRelayEnergy = false
+                m.setMaxEnergy()
+            }
+        },
+        {
+            name: "thermocouple",
+            description: "if  <strong>relay switch</strong> is <strong class='color-flop'>ON</strong><br>condense <strong>4-13</strong> <strong class='color-s'>ice IX</strong> crystals per second",
+            maxCount: 9,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isRelay
+            },
+            requires: "relay switch",
+            effect() {
+                tech.relayIce++
+            },
+            remove() {
+                tech.relayIce = 0
+            }
+        },
+        {
+            name: "liquid cooling",
+            description: `after losing <strong class='color-h'>health</strong><br><strong class='color-s'>freeze</strong> all mobs for <strong>7</strong> seconds`,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isSlowFPS
+            },
+            requires: "clock gating",
+            effect() {
+                tech.isHarmFreeze = true;
+            },
+            remove() {
+                tech.isHarmFreeze = false;
+            }
+        },
+        {
+            name: "clock gating",
+            description: `after losing <strong class='color-h'>health</strong> <strong>slow</strong> <strong>time</strong> by <strong>50%</strong><br><strong>+20%</strong> <strong class='color-defense'>defense</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return simulation.fpsCapDefault > 45
+            },
+            requires: "FPS above 45",
+            effect() {
+                tech.isSlowFPS = true;
+            },
+            remove() {
+                tech.isSlowFPS = false;
+            }
+        },
+        {
+            name: "MACHO",
+            description: "a massive but compact object slowly follows you<br>if you are inside the <strong>MACHO</strong> <strong>+60%</strong> <strong class='color-defense'>defense</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isMACHO = true; //this harm reduction comes from the particle toggling  tech.isHarmMACHO
+                spawn.MACHO()
+            },
+            remove() {
+                tech.isMACHO = false;
+                tech.isHarmMACHO = false;
+                for (let i = 0, len = mob.length; i < len; i++) {
+                    if (mob[i].isMACHO) mob[i].alive = false;
+                }
+            }
+        },
+        {
+            name: "axion",
+            description: "while inside the <strong>MACHO</strong><br><strong class='color-defense'>defense</strong> increases <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isMACHO
+            },
+            requires: "MACHO",
+            effect() {
+                tech.isAxion = true
+            },
+            remove() {
+                tech.isAxion = false
+            }
+        },
+        {
+            name: "ablative drones",
+            description: "after losing <strong class='color-h'>health</strong> there is a chance<br>to rebuild your broken parts as <strong>drones</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.isDroneOnDamage = true;
+                // for (let i = 0; i < 4; i++) b.drone()
+            },
+            remove() {
+                tech.isDroneOnDamage = false;
+            }
+        },
+        {
+            name: "non-Newtonian armor",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Non-Newtonian_fluid' class="link">non-Newtonian armor</a>`,
+            description: "after mob collisions<br><strong>+66%</strong> <strong class='color-defense'>defense</strong> for <strong>10</strong> seconds",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isHarmArmor = true;
+            },
+            remove() {
+                tech.isHarmArmor = false;
+            }
+        },
+        {
+            name: "CPT symmetry",
+            // description: "<strong>charge</strong>, <strong>parity</strong>, and <strong>time</strong> invert to undo <strong class='color-defense'>defense</strong><br><strong class='color-rewind'>rewind</strong> <strong>(1.5—5)</strong> seconds for <strong>(66—220)</strong> <strong class='color-f'>energy</strong>",
+            // description: "after losing <strong class='color-h'>health</strong>, if you have <strong>full</strong> <strong class='color-f'>energy</strong><br><strong>rewind</strong> time for <strong>44</strong> <strong class='color-f'>energy</strong> per second",
+            descriptionFunction() {
+                return `after losing <strong class='color-h'>health</strong>, if you have <strong>${(100*Math.min(100,m.maxEnergy)).toFixed(0)}</strong> <strong class='color-f'>energy</strong><br><strong>rewind</strong> time for <strong>44</strong> <strong class='color-f'>energy</strong> per second`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name !== "standing wave" && !tech.isRewindField && !tech.isEnergyHealth
+            },
+            requires: "not standing wave, max energy reduction, retrocausality, mass-energy",
+            effect() {
+                tech.isRewindAvoidDeath = true;
+            },
+            remove() {
+                tech.isRewindAvoidDeath = false;
+            }
+        },
+        {
+            name: "causality bots",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Causality' class="link">causality bots</a>`,
+            description: "when you <strong class='color-rewind'>rewind</strong> build scrap <strong class='color-bot'>bots</strong><br>that protect you for about <strong>9</strong> seconds",
+            maxCount: 3,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isBotTech: true,
+            allowed() {
+                return tech.isRewindAvoidDeath || tech.isRewindField
+            },
+            requires: "CPT, retrocausality",
+            effect() {
+                tech.isRewindBot++;
+            },
+            remove() {
+                tech.isRewindBot = 0;
+            }
+        },
+        {
+            name: "causality bombs",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Causality' class="link">causality bombs</a>`,
+            description: "when you <strong class='color-rewind'>rewind</strong> drop several <strong>grenades</strong><br>become <strong>invulnerable</strong> until they <strong class='color-e'>explode</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isRewindAvoidDeath || tech.isRewindField
+            },
+            requires: "CPT, retrocausality",
+            effect() {
+                tech.isRewindGrenade = true;
+            },
+            remove() {
+                tech.isRewindGrenade = false;
+            }
+        },
+        {
+            name: "piezoelectricity",
+            description: "if you <strong>collide</strong> with a mob<br>generate <strong>+2048</strong> <strong class='color-f'>energy</strong>", //<br>reduce <strong class='color-defense'>defense</strong> by <strong>15%</strong>
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isEnergyHealth
+            },
+            requires: "not mass-energy",
+            effect() {
+                tech.isPiezo = true;
+                // if (simulation.isTextLogOpen) m.energy += 20.48;
+            },
+            remove() {
+                tech.isPiezo = false;
+            }
+        },
+        {
+            name: "mass-energy equivalence",
+            // description: "<strong class='color-f'>energy</strong> protects you instead of <strong class='color-h'>health</strong><br>√ of <strong class='color-defense'>defense</strong> <strong>reduction</strong> reduces max <strong class='color-f'>energy</strong>",
+            description: "<strong class='color-f'>energy</strong> protects you instead of <strong class='color-h'>health</strong><br>exponentially <strong>reduced</strong> <strong class='color-defense'>defense</strong> <em>(x^0.1)</em>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isPiezo && !tech.isRewindAvoidDeath && !tech.isAnnihilation //&& !tech.isAmmoFromHealth && !tech.isRewindGun
+            },
+            requires: "not piezoelectricity, CPT, annihilation",
+            effect() {
+                m.health = 0
+                document.getElementById("health").style.display = "none"
+                document.getElementById("health-bg").style.display = "none"
+                document.getElementById("dmg").style.backgroundColor = "#0cf";
+                tech.isEnergyHealth = true;
+                simulation.mobDmgColor = "rgba(14, 190, 235,0.7)" //"#0cf"
+                m.displayHealth();
+            },
+            remove() {
+                if (tech.isEnergyHealth) {
+                    tech.isEnergyHealth = false;
+                    document.getElementById("health").style.display = "inline"
+                    document.getElementById("health-bg").style.display = "inline"
+                    document.getElementById("dmg").style.backgroundColor = "#f67";
+                    m.health = Math.max(Math.min(m.maxHealth, m.energy), 0.1);
+                    simulation.mobDmgColor = "rgba(255,0,0,0.7)"
+                    m.displayHealth();
+                }
+                tech.isEnergyHealth = false;
+            }
+        },
+        {
+            name: "1st ionization energy",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Ionization_energy' class="link">1st ionization energy</a>`,
+            // description: `after you collect ${powerUps.orb.heal()}<br><strong>+${0.1 * tech.largerHeals}</strong> maximum <strong class='color-f'>energy</strong>`,
+            // descriptionFunction: `convert current and future ${powerUps.orb.heal()} into <div class="heal-circle" style = "background-color: #ff0; border: 0.5px #000 solid;"></div><br><div class="heal-circle" style = "background-color: #ff0; border: 0.5px #000 solid;"></div> give <strong>+${10 * tech.largerHeals}</strong> maximum <strong class='color-f'>energy</strong>`,
+            descriptionFunction() {
+                return `convert current and future <div class="heal-circle"></div> into <div class="heal-circle" style = "background-color: #ff0; border: 0.5px #000 solid;"></div><br><div class="heal-circle" style = "background-color: #ff0; border: 0.5px #000 solid;"></div> give <strong>+${8 * tech.largerHeals}</strong> maximum <strong class='color-f'>energy</strong>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isEnergyHealth
+            },
+            requires: "mass-energy equivalence",
+            effect() {
+                powerUps.healGiveMaxEnergy = true; //tech.healMaxEnergyBonus given from heal power up 
+                powerUps.heal.color = "#ff0" //"#0ae"
+                for (let i = 0; i < powerUp.length; i++) { //find active heal power ups and adjust color live
+                    if (powerUp[i].name === "heal") powerUp[i].color = powerUps.heal.color
+                }
+            },
+            remove() {
+                powerUps.healGiveMaxEnergy = false;
+                // tech.healMaxEnergyBonus = 0
+                powerUps.heal.color = "#0eb"
+                for (let i = 0; i < powerUp.length; i++) { //find active heal power ups and adjust color live
+                    if (powerUp[i].name === "heal") powerUp[i].color = powerUps.heal.color
+                }
+            }
+        },
+        // {
+        //     name: "weak interaction",
+        //     description: "for each unused <strong>power up</strong> at the end of a <strong>level</strong><br><strong>+10</strong> maximum <strong class='color-f'>energy</strong>", // <em>(up to 51 health per level)</em>",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 1,
+        //     frequencyDefault: 1,
+        //     allowed() {
+        //         return !tech.isDroneGrab
+        //     },
+        //     requires: "not delivery drone",
+        //     effect() {
+        //         tech.isExtraMaxEnergy = true; //tracked by  tech.extraMaxHealth
+        //     },
+        //     remove() {
+        //         tech.isExtraMaxEnergy = false;
+        //     }
+        // },
+        // {
+        //     name: "electroweak interaction",
+        //     description: "unused <strong>power ups</strong> at the end of a <strong>level</strong><br>are still activated <em>(selections are random)</em>",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 2,
+        //     frequencyDefault: 2,
+        //     allowed() {
+        //         return tech.isExtraMaxEnergy
+        //     },
+        //     requires: "weak interaction",
+        //     effect() {
+        //         tech.isEndLevelPowerUp = true;
+        //     },
+        //     remove() {
+        //         tech.isEndLevelPowerUp = false;
+        //     }
+        // },
+        {
+            name: "electronegativity",
+            descriptionFunction() {
+                return `<strong>+1%</strong> <strong class='color-d'>damage</strong> per <strong>8</strong> stored <strong class='color-f'>energy</strong> <em>(${(12.5*m.energy).toFixed(0)}%)</em>`
+            },
+            // description: "<strong>+1%</strong> <strong class='color-d'>damage</strong> per <strong>8</strong> stored <strong class='color-f'>energy</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isEnergyDamage = true
+            },
+            remove() {
+                tech.isEnergyDamage = false;
+            }
+        },
+        {
+            name: "ground state",
+            description: "<strong>+200</strong> maximum <strong class='color-f'>energy</strong><br><strong>–40%</strong> passive <strong class='color-f'>energy</strong> generation",
+            // description: "reduce <strong class='color-defense'>defense</strong> by <strong>66%</strong><br>you <strong>no longer</strong> passively regenerate <strong class='color-f'>energy</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isTimeCrystals
+            },
+            requires: "not time crystals",
+            effect() {
+                tech.isGroundState = true
+                m.setFieldRegen()
+                m.setMaxEnergy()
+            },
+            remove() {
+                tech.isGroundState = false
+                m.setFieldRegen()
+                m.setMaxEnergy()
+            }
+        },
+        {
+            name: "heat engine",
+            description: `<strong>+50%</strong> <strong class='color-d'>damage</strong><br><strong>–50</strong> maximum <strong class='color-f'>energy</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "not CPT",
+            damage: 1.5,
+            effect() {
+                tech.damage *= this.damage
+                tech.isMaxEnergyTech = true;
+                m.setMaxEnergy()
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.isMaxEnergyTech = false;
+                m.setMaxEnergy()
+            }
+        },
+        {
+            name: "exothermic process",
+            description: "<strong>+50%</strong> <strong class='color-d'>damage</strong><br>after mobs <strong>die</strong> <strong>–20%</strong> <strong class='color-f'>energy</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            damage: 1.55,
+            effect() {
+                tech.damage *= this.damage
+                tech.isEnergyLoss = true;
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.isEnergyLoss = false;
+            }
+        },
+        {
+            name: "Gibbs free energy",
+            description: `for each <strong class='color-f'>energy</strong> below <strong>100</strong><br><strong>+0.7%</strong> <strong class='color-d'>damage</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.isLowEnergyDamage = true;
+            },
+            remove() {
+                tech.isLowEnergyDamage = false;
+            }
+        },
+        {
+            name: "overcharge",
+            description: "<strong>+66</strong> maximum <strong class='color-f'>energy</strong><br><strong>+6%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.bonusEnergy += 0.66
+                m.setMaxEnergy()
+                this.refundAmount += tech.addJunkTechToPool(0.06)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.bonusEnergy = 0;
+                m.setMaxEnergy()
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "Maxwell's demon",
+            description: "<strong class='color-f'>energy</strong> above your max decays <strong>95%</strong> slower<br><strong>+5%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.energy > m.maxEnergy || build.isExperimentSelection
+            },
+            requires: "energy above your max",
+            effect() {
+                tech.overfillDrain = 0.92 //70% = 1-(1-0.75)/(1-0.15) //92% = 1-(1-0.75)/(1-0.87)
+                this.refundAmount += tech.addJunkTechToPool(0.05)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.overfillDrain = 0.7
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "inductive charging",
+            description: "if <strong>crouched</strong> <strong>+600%</strong> passive <strong class='color-f'>energy</strong> generation<br>if not <strong>crouched</strong> <strong class='color-f'>energy</strong> generation is disabled",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isDamageAfterKillNoRegen
+            },
+            requires: "not parasitism",
+            effect() {
+                tech.isCrouchRegen = true; //only used to check for requirements
+                m.regenEnergy = function() {
+                    if (m.immuneCycle < m.cycle && m.crouch) m.energy += 7 * m.fieldRegen;
+                    if (m.energy < 0) m.energy = 0
+                }
+            },
+            remove() {
+                tech.isCrouchRegen = false;
+                m.regenEnergy = m.regenEnergyDefault
+            }
+        },
+        {
+            name: "energy conservation",
+            description: "<strong>5%</strong> of <strong class='color-d'>damage</strong> done recovered as <strong class='color-f'>energy</strong>",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.energySiphon += 0.05;
+            },
+            remove() {
+                tech.energySiphon = 0;
+            }
+        },
+        {
+            name: "waste heat recovery",
+            description: "if a mob has <strong>died</strong> in the last <strong>5 seconds</strong><br>generate <strong>5%</strong> of max <strong class='color-f'>energy</strong> per second",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isEnergyRecovery = true;
+            },
+            remove() {
+                tech.isEnergyRecovery = false;
+            }
+        },
+        {
+            name: "recycling",
+            description: "if a mob has <strong>died</strong> in the last <strong>5 seconds</strong><br>recover <strong>0.5%</strong> of max <strong class='color-h'>health</strong> per second",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isHealTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isHealthRecovery = true;
+            },
+            remove() {
+                tech.isHealthRecovery = false;
+            }
+        },
+        {
+            name: "parasitism",
+            description: "if a mob has <strong>died</strong> in the last <strong>5 seconds</strong><br><strong>+60%</strong> <strong class='color-d'>damage</strong>, inhibit <strong class='color-f'>energy</strong> generation",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isCrouchRegen
+            },
+            requires: "not inductive charging",
+            effect() {
+                tech.isDamageAfterKillNoRegen = true;
+                m.regenEnergy = function() {
+                    if (m.immuneCycle < m.cycle && (m.lastKillCycle + 300 < m.cycle)) m.energy += m.fieldRegen;
+                    if (m.energy < 0) m.energy = 0
+                }
+            },
+            remove() {
+                if (this.count) m.regenEnergy = m.regenEnergyDefault
+                tech.isDamageAfterKillNoRegen = false;
+            }
+        },
+        {
+            name: "torpor",
+            description: "if a mob has <strong>not died</strong> in the last <strong>5 seconds</strong><br><strong>+66%</strong> <strong class='color-defense'>defense</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isHarmReduceNoKill = true;
+            },
+            remove() {
+                tech.isHarmReduceNoKill = false;
+            }
+        },
+        {
+            name: "Zeno's paradox",
+            descriptionFunction() {
+                return `<strong>+85%</strong> <strong class='color-defense'>defense</strong><br><strong>–5%</strong> of current ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>": "<strong class='color-h'>health</strong>"} every <strong>5</strong> seconds`
+            },
+            // description: "<strong>+85%</strong> <strong class='color-defense'>defense</strong><br><strong>–5%</strong> of current <strong class='color-h'>health</strong> every <strong>5</strong> seconds",
+            // description: "every <strong>5</strong> seconds remove <strong>1/10</strong> of your <strong class='color-h'>health</strong><br>reduce <strong class='color-defense'>defense</strong> by <strong>90%</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isZeno = true;
+            },
+            remove() {
+                tech.isZeno = false;
+            }
+        },
+        {
+            name: "negative feedback",
+            descriptionFunction() {
+                return `for each ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>": "<strong class='color-h'>health</strong>"} below <strong>100</strong><br><strong>+0.7%</strong> <strong class='color-d'>damage</strong> <em>(${(70*Math.max(0, 1 - (tech.isEnergyHealth ? m.energy : m.health))).toFixed(0)}%)</em>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return m.health < 0.6 || build.isExperimentSelection
+            },
+            requires: "health below 60",
+            effect() {
+                tech.isLowHealthDmg = true; //used in mob.damage()
+            },
+            remove() {
+                tech.isLowHealthDmg = false;
+            }
+        },
+        {
+            name: "homeostasis",
+            descriptionFunction() {
+                return `for each <strong class='color-h'>health</strong> below <strong>100</strong><br><strong>+0.8%</strong> <strong class='color-defense'>defense</strong> <em>(${(100*(Math.max(0, 1 - m.health) * 0.8)).toFixed(0)}%)</em>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return m.health < 0.6 || build.isExperimentSelection
+            },
+            requires: "health below 60",
+            effect() {
+                tech.isLowHealthDefense = true;
+            },
+            remove() {
+                tech.isLowHealthDefense = false;
+            }
+        },
+        {
+            name: "antiscience",
+            descriptionFunction() {
+                return `<strong>+66%</strong> <strong class='color-d'>damage</strong><br><strong>–10</strong> ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>": "<strong class='color-h'>health</strong>"} after picking up a <strong class='color-m'>tech</strong>`
+            },
+            // description: "<strong>+66%</strong> <strong class='color-d'>damage</strong><br><strong>–10</strong> <strong class='color-h'>health</strong> after picking up a <strong class='color-m'>tech</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            damage: 1.66,
+            effect() {
+                tech.damage *= this.damage
+                tech.isTechDamage = true;
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.isTechDamage = false;
+            }
+        },
+        {
+            name: "fluoroantimonic acid",
+            description: "if your <strong class='color-h'>health</strong> is above <strong>100</strong><br><strong>+35%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.maxHealth > 1;
+            },
+            requires: "max health above 100",
+            effect() {
+                tech.isAcidDmg = true;
+            },
+            remove() {
+                tech.isAcidDmg = false;
+            }
+        },
+        {
+            name: "tungsten carbide",
+            description: "<strong>+100</strong> maximum <strong class='color-h'>health</strong><br><strong>lose</strong> <strong class='color-h'>health</strong> after hard <strong>landings</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isFallingDamage = true;
+                m.setMaxHealth();
+                m.addHealth(1 / simulation.healScale)
+            },
+            remove() {
+                tech.isFallingDamage = false;
+                m.setMaxHealth();
+            }
+        },
+        {
+            name: "quenching",
+            descriptionFunction() {
+                return `after over healing from ${powerUps.orb.heal()}<br>gain max <strong class='color-h'>health</strong> and lose current <strong class='color-h'>health</strong>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isOverHeal = true;
+            },
+            remove() {
+                tech.isOverHeal = false;
+            }
+        },
+        {
+            name: "negative entropy",
+            descriptionFunction() {
+                return `at the start of each <strong>level</strong><br>for every <strong>33%</strong> missing ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>": "<strong class='color-h'>health</strong>"} spawn ${powerUps.orb.heal()}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isHealTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isHealLowHealth = true;
+            },
+            remove() {
+                tech.isHealLowHealth = false;
+            }
+        },
+        {
+            name: "adiabatic healing",
+            descriptionFunction() {
+                return `${powerUps.orb.heal()} have <strong>+100%</strong> effect<br><strong>+5%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool`
+            },
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isHealTech: true,
+            allowed() {
+                return (m.health / m.maxHealth) < 0.7 || build.isExperimentSelection
+            },
+            requires: "under 70% health",
+            effect() {
+                tech.largerHeals++;
+                for (let i = 0; i < powerUp.length; i++) {
+                    if (powerUp[i].name === "heal") {
+                        const oldSize = powerUp[i].size
+                        powerUp[i].size = powerUps.heal.size() //update current heals
+                        const scale = powerUp[i].size / oldSize
+                        Matter.Body.scale(powerUp[i], scale, scale); //grow    
+                    }
+                }
+                this.refundAmount += tech.addJunkTechToPool(0.05)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.largerHeals = 1;
+                for (let i = 0; i < powerUp.length; i++) {
+                    if (powerUp[i].name === "heal") {
+                        const oldSize = powerUp[i].size
+                        powerUp[i].size = powerUps.heal.size() //update current heals
+                        const scale = powerUp[i].size / oldSize
+                        Matter.Body.scale(powerUp[i], scale, scale); //grow    
+                    }
+                }
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "ergodicity",
+            descriptionFunction() {
+                return `${powerUps.orb.heal()} have <strong>-50%</strong> effect<br><strong>+66%</strong> <strong class='color-d'>damage</strong>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            damage: 1.66,
+            effect() {
+                tech.damage *= this.damage
+                tech.isHalfHeals = true;
+                for (let i = 0; i < powerUp.length; i++) {
+                    if (powerUp[i].name === "heal") {
+                        const scale = Math.sqrt(0.5)
+                        powerUp[i].size *= scale
+                        Matter.Body.scale(powerUp[i], scale, scale); //grow    
+                    }
+                }
+            },
+            remove() {
+                if (this.count) {
+                    tech.damage /= this.damage
+                    for (let i = 0; i < powerUp.length; i++) {
+                        if (powerUp[i].name === "heal") {
+                            const scale = 1 / Math.sqrt(0.5)
+                            powerUp[i].size *= scale
+                            Matter.Body.scale(powerUp[i], scale, scale); //grow    
+                        }
+                    }
+                }
+                tech.isHalfHeals = false;
+            }
+        },
+        {
+            name: "enthalpy",
+            descriptionFunction() {
+                return `doing <strong class='color-d'>damage</strong> has a chance to spawn ${powerUps.orb.heal(1)}<br><strong>–10%</strong> <strong class='color-defense'>defense</strong>`
+            },
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isHealTech: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.healthDrain += 0.02;
+            },
+            remove() {
+                tech.healthDrain = 0;
+            }
+        },
+        {
+            name: "maintenance",
+            descriptionFunction() {
+                return `</strong>double</strong> the <strong class='flicker'>frequency</strong> of finding <strong class='color-h'>healing</strong> <strong class='color-m'>tech</strong><br>spawn ${powerUps.orb.heal(13)}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = 0; i < 13; i++) powerUps.spawn(m.pos.x + 60 * (Math.random() - 0.5), m.pos.y + 60 * (Math.random() - 0.5), "heal");
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    if (tech.tech[i].isHealTech) tech.tech[i].frequency *= 2
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "anthropic principle",
+            nameInfo: "<span id = 'tech-anthropic'></span>",
+            addNameInfo() {
+                setTimeout(function() {
+                    powerUps.research.changeRerolls(0)
+                }, 1000);
+            },
+            descriptionFunction() {
+                return `once per level, instead of <strong>dying</strong><br>use ${powerUps.orb.research(1)} and spawn ${powerUps.orb.heal(5)}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isHealTech: true,
+            allowed() {
+                return powerUps.research.count > 0 || build.isExperimentSelection
+            },
+            requires: "at least 1 research",
+            effect() {
+                tech.isDeathAvoid = true;
+                tech.isDeathAvoidedThisLevel = false;
+                setTimeout(function() {
+                    powerUps.research.changeRerolls(0)
+                }, 1000);
+            },
+            remove() {
+                tech.isDeathAvoid = false;
+            }
+        },
+        {
+            name: "weak anthropic principle",
+            description: "after <strong>anthropic principle</strong> prevents your <strong>death</strong><br><strong>+50%</strong> <strong class='color-dup'>duplication</strong> chance for that level",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isDeathAvoid
+            },
+            requires: "anthropic principle",
+            effect() {
+                tech.isAnthropicTech = true
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+            },
+            remove() {
+                tech.isAnthropicTech = false
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+            }
+        },
+        {
+            name: "strong anthropic principle",
+            description: "after <strong>anthropic principle</strong> prevents your <strong>death</strong><br><strong>+137.03599%</strong> <strong class='color-d'>damage</strong> for that level",
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isDeathAvoid
+            },
+            requires: "anthropic principle",
+            effect() {
+                tech.isAnthropicDamage = true
+            },
+            remove() {
+                tech.isAnthropicDamage = false
+            }
+        },
+        {
+            name: "quantum immortality",
+            description: "<strong>+33%</strong> <strong class='color-defense'>defense</strong><br>after <strong>dying</strong>, continue in an <strong class='alt'>alternate reality</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isImmortal = true;
+            },
+            remove() {
+                tech.isImmortal = false;
+            }
+        },
+        {
+            name: "Hilbert space",
+            description: "<strong>+91%</strong> <strong class='color-d'>damage</strong><br>after a <strong>collision</strong> enter an <strong class='alt'>alternate reality</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isResearchReality && !tech.isSwitchReality
+            },
+            requires: "not Ψ(t) collapse, many-worlds",
+            damage: 1.91,
+            effect() {
+                tech.damage *= this.damage
+                tech.isCollisionRealitySwitch = true;
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.isCollisionRealitySwitch = false;
+            }
+        },
+        {
+            name: "many-worlds",
+            // description: "each <strong>level</strong> is an <strong class='alt'>alternate reality</strong>, where you<br>find a <strong class='color-m'>tech</strong> at the start of each level",
+            description: `on each new <strong>level</strong> enter an<br><strong class='alt'>alternate reality</strong> and spawn a <strong class='color-m'>tech</strong> power up`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isResearchReality && !tech.isCollisionRealitySwitch
+            },
+            requires: "not Ψ(t) collapse, Hilbert space",
+            effect() {
+                tech.isSwitchReality = true;
+            },
+            remove() {
+                tech.isSwitchReality = false;
+            }
+        },
+        {
+            name: "Ψ(t) collapse",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Wave_function_collapse' class="link">Ψ(t) collapse</a>`,
+            description: `after you <strong class='color-r'>research</strong> enter an <strong class='alt'>alternate reality</strong><br>spawn ${powerUps.orb.research(16)}`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSwitchReality && !tech.isCollisionRealitySwitch && !tech.isJunkResearch
+            },
+            requires: "not many-worlds, Hilbert space, pseudoscience",
+            bonusResearch: 16,
+            effect() {
+                tech.isResearchReality = true;
+                for (let i = 0; i < this.bonusResearch; i++) powerUps.spawn(m.pos.x + Math.random() * 60, m.pos.y + Math.random() * 60, "research", false);
+            },
+            remove() {
+                tech.isResearchReality = false;
+                if (this.count > 0) powerUps.research.changeRerolls(-this.bonusResearch)
+            }
+        },
+        {
+            name: "decoherence",
+            description: `<strong class='color-m'>tech</strong> options you don't <strong>choose</strong> won't <strong>reoccur</strong><br>spawn ${powerUps.orb.research(6)}`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSuperDeterminism
+            },
+            requires: "not superdeterminism",
+            bonusResearch: 6,
+            effect() {
+                tech.isBanish = true
+                for (let i = 0; i < this.bonusResearch; i++) powerUps.spawn(m.pos.x + 40 * (Math.random() - 0.5), m.pos.y + 40 * (Math.random() - 0.5), "research", false);
+            },
+            remove() {
+                if (tech.isBanish) {
+                    tech.isBanish = false
+                    //reset banish list
+                    for (let i = 0; i < tech.tech.length; i++) {
+                        if (tech.tech[i].isBanished) tech.tech[i].isBanished = false
+                    }
+                    powerUps.research.changeRerolls(-this.bonusResearch)
+                }
+                tech.isBanish = false
+            }
+        },
+        {
+            name: "renormalization",
+            description: `<strong>44%</strong> chance to spawn ${powerUps.orb.research(1)}<br>after consuming ${powerUps.orb.research(1)}`,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (powerUps.research.count > 3 || build.isExperimentSelection) && !tech.isSuperDeterminism
+            },
+            requires: "at least 4 research, not superdeterminism",
+            effect() {
+                tech.renormalization = true;
+            },
+            remove() {
+                tech.renormalization = false;
+            }
+        },
+        {
+            name: "perturbation theory",
+            description: `if you have no ${powerUps.orb.research(1)} in your inventory<br><strong>+60%</strong> <strong><em>fire rate</em></strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return powerUps.research.count === 0
+            },
+            requires: "no research",
+            effect() {
+                tech.isRerollHaste = true;
+                tech.researchHaste = 0.4;
+                b.setFireCD();
+            },
+            remove() {
+                tech.isRerollHaste = false;
+                tech.researchHaste = 1;
+                b.setFireCD();
+            }
+        },
+        {
+            name: "ansatz",
+            description: `after choosing a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>if you have no ${powerUps.orb.research(1)} in your inventory spawn ${powerUps.orb.research(2)}`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return powerUps.research.count === 0 && !tech.isSuperDeterminism && !tech.isRerollHaste && !tech.isResearchReality
+            },
+            requires: "no research, not superdeterminism, Ψ(t) collapse, perturbation theory",
+            effect() {
+                tech.isAnsatz = true;
+            },
+            remove() {
+                tech.isAnsatz = false;
+            }
+        },
+        {
+            name: "Bayesian statistics",
+            // description: `for each ${powerUps.orb.research(1)} in your inventory<br><strong>+3.8%</strong> <strong class='color-d'>damage</strong>`,
+            descriptionFunction() { return `<strong>+3%</strong> <strong class='color-d'>damage</strong> per ${powerUps.orb.research(1)} <em>(${(3*powerUps.research.count).toFixed(0)}%)</em><br>spawn ${powerUps.orb.research(this.bonusResearch)}` },
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return powerUps.research.count > 2 || build.isExperimentSelection
+            },
+            requires: "at least 3 research",
+            bonusResearch: 3,
+            effect() {
+                powerUps.spawnDelay("research", this.bonusResearch)
+                tech.isRerollDamage = true;
+            },
+            remove() {
+                tech.isRerollDamage = false;
+                if (this.count) {
+                    powerUps.research.changeRerolls(-this.bonusResearch)
+                }
+            }
+        },
+        {
+            name: "pseudoscience",
+            description: "<span style = 'font-size:94%;'>when <strong>selecting</strong> a power up, <strong class='color-r'>research</strong> <strong>3</strong> times</span><br>for <strong>free</strong>, but add <strong>1-4%</strong> <strong class='color-j'>JUNK</strong> to the <strong class='color-m'>tech</strong> pool",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isResearchReality && !tech.isSuperDeterminism //tech.isResearchBoss || tech.isMetaAnalysis || tech.isRerollBots || tech.isDeathAvoid || tech.isRerollDamage || build.isExperimentSelection
+            },
+            requires: "not Ψ(t) collapse, superdeterminism", //"abiogenesis, meta-analysis, bot fabrication, anthropic principle, or Bayesian statistics, not Ψ(t) collapse",
+            effect() {
+                tech.isJunkResearch = true;
+            },
+            remove() {
+                tech.isJunkResearch = false;
+            }
+        },
+        {
+            name: "brainstorming",
+            description: "<strong class='color-m'>tech</strong> choices <strong>randomize</strong><br>every <strong>2</strong> seconds for <strong>10</strong> seconds",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSuperDeterminism
+            },
+            requires: "not superdeterminism",
+            effect() {
+                tech.isBrainstorm = true
+                tech.isBrainstormActive = false
+                tech.brainStormDelay = 150 - simulation.difficultyMode * 7
+            },
+            remove() {
+                tech.isBrainstorm = false
+                tech.isBrainstormActive = false
+            }
+        },
+        {
+            name: "cross disciplinary",
+            description: "<strong class='color-m'>tech</strong> have an extra <strong class='color-f'>field</strong> or <strong class='color-g'>gun</strong> <strong>choice</strong><br><strong>+5%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isDeterminism
+            },
+            requires: "not determinism",
+            effect() {
+                tech.isExtraGunField = true;
+            },
+            remove() {
+                tech.isExtraGunField = false;
+            }
+        },
+        {
+            name: "emergence",
+            description: "<strong class='color-m'>tech</strong>, <strong class='color-f'>fields</strong>, and <strong class='color-g'>guns</strong> have <strong>+1</strong> <strong>choice</strong><br><strong>+8%</strong> <strong class='color-d'>damage</strong>",
+            // description: "<strong class='color-m'>tech</strong>, <strong class='color-f'>fields</strong>, and <strong class='color-g'>guns</strong> have <strong>+2</strong> <strong>choices</strong><br><strong>+3%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isDeterminism
+            },
+            requires: "not determinism",
+            damage: 1.08,
+            effect() {
+                tech.extraChoices += 1;
+                tech.damage *= this.damage
+                // this.refundAmount += tech.addJunkTechToPool(0.03)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.extraChoices = 0;
+                if (this.count > 0) {
+                    tech.damage /= this.damage
+                    // if (this.refundAmount > 0) tech.removeJunkTechFromPool(this.refundAmount)
+                }
+            }
+        },
+        {
+            name: "path integral",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Path_integral_formulation' class="link">path integral</a>`,
+            description: "your next <strong class='color-m'>tech</strong> choice has all possible <strong>options</strong><br><strong>+5%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            // isJunk: true,
+            allowed() { return !tech.isDeterminism },
+            requires: "not determinism",
+            effect() {
+                tech.tooManyTechChoices = 1
+                // for (let i = 0; i < this.bonusResearch; i++) powerUps.spawn(m.pos.x + 40 * (Math.random() - 0.5), m.pos.y + 40 * (Math.random() - 0.5), "research", false);
+                this.refundAmount += tech.addJunkTechToPool(0.05)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.tooManyTechChoices = 0
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "determinism",
+            description: "spawn <strong>5</strong> <strong class='color-m'>tech</strong><br>only <strong>1 choice</strong> for <strong class='color-m'>tech</strong>, <strong class='color-f'>fields</strong>, and <strong class='color-g'>guns</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBadRandomOption: true,
+            isNonRefundable: true,
+            allowed() {
+                return !tech.extraChoices && !tech.isExtraGunField && !tech.isFlipFlopChoices
+            },
+            requires: "not emergence, cross disciplinary, integrated circuit",
+            effect() {
+                tech.isDeterminism = true;
+                //if you change the number spawned also change it in Born rule
+                for (let i = 0; i < 5; i++) powerUps.spawn(m.pos.x + 60 * (Math.random() - 0.5), m.pos.y + 60 * (Math.random() - 0.5), "tech");
+            },
+            remove() {
+                if (!this.count) tech.isDeterminism = false;
+            }
+        },
+        {
+            name: "superdeterminism",
+            description: `spawn <strong>5</strong> <strong class='color-m'>tech</strong><br>you have <strong>no cancel</strong> and ${powerUps.orb.research(1)} no longer <strong>spawn</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBadRandomOption: true,
+            isNonRefundable: true,
+            allowed() {
+                return tech.isDeterminism && !tech.isAnsatz && !tech.isJunkResearch && !tech.isBrainstorm
+            },
+            requires: "determinism, not ansatz, pseudoscience, brainstorming",
+            effect() {
+                tech.isSuperDeterminism = true;
+                //if you change the number spawned also change it in Born rule
+                for (let i = 0; i < 5; i++) powerUps.spawn(m.pos.x + 60 * (Math.random() - 0.5), m.pos.y + 60 * (Math.random() - 0.5), "tech");
+            },
+            remove() {
+                tech.isSuperDeterminism = false;
+            }
+        },
+        {
+            name: "technical debt", // overengineering
+            descriptionFunction() {
+                return `<strong>+300%</strong> <strong class='color-d'>damage</strong> <strong>–15%</strong> <strong class='color-d'>damage</strong><br>for each <strong class='color-m'>tech</strong> you have learned <em>(${Math.floor(100*(Math.max(41 / (tech.totalCount + 21), 4 - 0.15 * tech.totalCount) ))-100}%)</em>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isTechDebt = true;
+            },
+            remove() {
+                tech.isTechDebt = false;
+            }
+        },
+        {
+            name: "abiogenesis",
+            // description: `use ${powerUps.orb.research(4)}(or <strong>49%</strong> <strong class='color-j'>JUNK</strong> to the <strong class='color-m'>tech</strong> pool if you can't) to add a 2nd <strong>boss</strong> to each level`,
+            description: `<span style = 'font-size:94%;'>as a level begins spawn a 2nd <strong>boss</strong> using ${powerUps.orb.research(4)}<br>(<strong>+49%</strong> <strong class='color-j'>JUNK</strong> to the <strong class='color-m'>tech</strong> pool if you can't pay)</span>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (build.isExperimentSelection || powerUps.research.count > 3) && !tech.isDuplicateBoss
+            },
+            requires: "at least 4 research, not parthenogenesis",
+            effect() {
+                tech.isResearchBoss = true;
+            },
+            remove() {
+                tech.isResearchBoss = false;
+            }
+        },
+        {
+            name: "meta-analysis",
+            description: `if you choose a <strong class='color-j'>JUNK</strong><strong class='color-m'>tech</strong> you instead get a<br>random normal <strong class='color-m'>tech</strong> and spawn ${powerUps.orb.research(2)}`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return tech.junkCount > 0 },
+            requires: "some JUNK tech",
+            effect() {
+                tech.isMetaAnalysis = true
+            },
+            remove() {
+                tech.isMetaAnalysis = false
+            }
+        },
+        {
+            name: "dark patterns",
+            description: "<strong>+38%</strong> <strong class='color-d'>damage</strong><br><strong>+53%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() { return true },
+            requires: "",
+            damage: 1.38,
+            effect() {
+                tech.damage *= this.damage
+                this.refundAmount += tech.addJunkTechToPool(0.53)
+            },
+            refundAmount: 0,
+            remove() {
+                if (this.count > 0) {
+                    tech.damage /= this.damage
+                    if (this.refundAmount > 0) tech.removeJunkTechFromPool(this.refundAmount)
+                }
+            }
+        },
+        {
+            name: "exciton",
+            descriptionFunction() {
+                return `<span style = 'font-size:94%;'>after mobs <strong>die</strong> they have a <strong>16%</strong> chance to<br>spawn ${powerUps.orb.boost(1)} that give <strong>+${(powerUps.boost.damage*100).toFixed(0)}%</strong> <strong class='color-d'>damage</strong> for <strong>${(powerUps.boost.duration/60).toFixed(0)}</strong> seconds</span>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.isBoostPowerUps = true
+            },
+            remove() {
+                tech.isBoostPowerUps = false
+            }
+        },
+        {
+            name: "band gap",
+            descriptionFunction() {
+                return `${powerUps.orb.boost(1)} give <strong>+77%</strong> <strong class='color-d'>damage</strong><br>but their duration is reduced by <strong>1</strong> second`
+            },
+            maxCount: 9,
+            count: 1,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isBoostPowerUps || tech.isBoostReplaceAmmo
+            },
+            requires: "exciton, quasiparticles",
+            effect() {
+                powerUps.boost.duration -= 60
+                powerUps.boost.damage += 0.77
+            },
+            remove() {
+                powerUps.boost.duration = 600
+                powerUps.boost.damage = 1.25
+            }
+        },
+        {
+            name: "eternalism",
+            description: "<strong>+34%</strong> <strong class='color-d'>damage</strong><br><strong>time</strong> can't be <strong>paused</strong> <em>(time can be dilated)</em>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isPauseSwitchField && !tech.isPauseEjectTech && !tech.isWormHolePause
+            },
+            requires: "not unified field theory, paradigm shift, invariant",
+            damage: 1.34,
+            effect() {
+                tech.damage *= this.damage
+                tech.isNoDraftPause = true
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.isNoDraftPause = false
+            }
+        },
+        {
+            name: "paradigm shift",
+            description: `<strong>clicking</strong> <strong class='color-m'>tech</strong> while paused <strong>ejects</strong> them<br><strong>20%</strong> chance to remove without <strong>ejecting</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSuperDeterminism && !tech.isNoDraftPause
+            },
+            requires: "not superdeterminism, eternalism",
+            effect() {
+                tech.isPauseEjectTech = true;
+            },
+            remove() {
+                tech.isPauseEjectTech = false;
+            }
+        },
+        {
+            name: "unified field theory",
+            description: `<span style = 'font-size:90%;'><strong>clicking</strong> the <strong class='color-f'>field</strong> box when <strong>paused</strong> cycles your <strong class='color-f'>field</strong><br><strong>double</strong> the <strong class='flicker'>frequency</strong> of finding <strong class='color-f'>field</strong><strong class='color-m'>tech</strong></span>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSuperDeterminism && !tech.isNoDraftPause
+            },
+            requires: "not superdeterminism, eternalism",
+            effect() {
+                tech.isPauseSwitchField = true;
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    if (tech.tech[i].isFieldTech) tech.tech[i].frequency *= 2
+                }
+            },
+            remove() {
+                tech.isPauseSwitchField = false;
+                if (this.count > 1) {
+                    for (let i = 0, len = tech.tech.length; i < len; i++) {
+                        if (tech.tech[i].isFieldTech) tech.tech[i].frequency /= 2
+                    }
+                }
+            }
+        },
+        {
+            name: "field coupling",
+            descriptionFunction() {
+                return `spawn ${powerUps.orb.coupling(10)}<br>that each give <strong>+0.1</strong> <strong class='color-coupling'>coupling</strong><br>${ m.couplingDescription(1)} ${m.fieldMode === 0 ? "" : "per <strong class='color-coupling'>coupling</strong>"}`
+            },
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (build.isExperimentSelection || powerUps.research.count > 1)
+            },
+            requires: "",
+            effect() {
+                powerUps.spawnDelay("coupling", 10)
+            },
+            remove() {
+                if (this.count) {
+                    m.couplingChange(-this.count)
+                }
+            }
+        },
+        {
+            name: "quintessence",
+            descriptionFunction() {
+                let converted = powerUps.research.count * this.couplingToResearch * 10
+                if (this.count) converted = this.researchUsed * this.couplingToResearch * 10
+
+                let orbText
+                if (converted > 15) {
+                    orbText = `${converted} ${powerUps.orb.coupling()}`
+                } else {
+                    orbText = powerUps.orb.coupling(converted)
+                }
+                return `use all your ${powerUps.orb.research(1)} to spawn <strong>${orbText}</strong><br>that each give <strong>+0.1</strong> <strong class='color-coupling'>coupling</strong><br>${ m.couplingDescription(1)} ${m.fieldMode === 0 ? "" : "per <strong class='color-coupling'>coupling</strong>"}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return powerUps.research.count > 3
+            },
+            requires: "",
+            researchUsed: 0,
+            couplingToResearch: 0.25,
+            effect() {
+                let count = 0
+                while (powerUps.research.count > 0 && powerUps.research.count !== Infinity) {
+                    powerUps.research.changeRerolls(-1)
+                    count += 2.5
+                    this.researchUsed++
+                }
+                powerUps.spawnDelay("coupling", Math.floor(count))
+            },
+            remove() {
+                if (this.count) {
+                    m.couplingChange(-this.researchUsed * this.couplingToResearch)
+                    powerUps.research.changeRerolls(this.researchUsed)
+                    this.researchUsed = 0
+                }
+            }
+        },
+        {
+            name: "virtual particles",
+            descriptionFunction() {
+                return `after mobs <strong>die</strong> they have a <strong>17%</strong> chance to<br>spawn ${powerUps.orb.coupling(1)} that each give <strong>+0.1</strong> <strong class='color-coupling'>coupling</strong><br>${m.couplingDescription(1)} ${m.fieldMode === 0 ? "" : "per <strong class='color-coupling'>coupling</strong>"}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.isCouplingPowerUps = true //about 20-30 mobs per level so at 16% and 0.1 coupling that's about 25 * 0.16 * 0.1 = 0.4 coupling per level with out duplication
+            },
+            remove() {
+                tech.isCouplingPowerUps = false
+            }
+        },
+        {
+            name: "fine-structure constant",
+            descriptionFunction() {
+                return `spawn ${this.value} ${powerUps.orb.coupling(1)} that each give <strong>+0.1</strong> <strong class='color-coupling'>coupling</strong><br><strong>-0.5</strong> <strong class='color-coupling'>coupling</strong> after mob <strong>collisions</strong><br>${m.couplingDescription(1)} ${m.fieldMode === 0 ? "" : "per <strong class='color-coupling'>coupling</strong>"}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            value: 60,
+            effect() {
+                tech.isCouplingNoHit = true
+                powerUps.spawnDelay("coupling", this.value)
+            },
+            remove() {
+                if (this.count) {
+                    m.couplingChange(-this.value)
+                }
+                tech.isCouplingNoHit = false
+            }
+        },
+        {
+            name: "residual dipolar coupling",
+            descriptionFunction() {
+                return `clicking <strong style = 'font-size:150%;'>×</strong> to <strong>cancel</strong> a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>spawns ${powerUps.orb.coupling(5)}that each give <strong>+0.1</strong> <strong class='color-coupling'>coupling</strong><br>${ m.couplingDescription(1)} ${m.fieldMode === 0 ? "" : "per <strong class='color-coupling'>coupling</strong>"}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSuperDeterminism
+            },
+            requires: "not superdeterminism",
+            effect() {
+                tech.isCancelCouple = true
+            },
+            remove() {
+                tech.isCancelCouple = false
+            }
+        },
+        {
+            name: "commodities exchange",
+            descriptionFunction() {
+                return `clicking <strong style = 'font-size:150%;'>×</strong> to <strong>cancel</strong> a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>spawns <strong>5-10</strong> ${powerUps.orb.heal()}, ${powerUps.orb.ammo()}, or ${powerUps.orb.research(1)}`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSuperDeterminism
+            },
+            requires: "not superdeterminism",
+            effect() {
+                tech.isCancelRerolls = true
+            },
+            remove() {
+                tech.isCancelRerolls = false
+            }
+        },
+        {
+            name: "options exchange",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Option_(finance)' class="link">options exchange</a>`,
+            description: `clicking <strong style = 'font-size:150%;'>×</strong> for a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong> has a <strong>85%</strong><br>chance to randomize <strong>choices</strong> and not <strong>cancel</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isSuperDeterminism //&& (tech.isCancelRerolls || tech.isCancelDuplication)
+            },
+            requires: "not superdeterminism", //futures exchange, commodities exchange, 
+            effect() {
+                tech.isCancelTech = true
+            },
+            remove() {
+                tech.isCancelTech = false
+            }
+        },
+        {
+            name: "futures exchange",
+            description: "clicking <strong style = 'font-size:150%;'>×</strong> to <strong>cancel</strong> a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>gives <strong>+4.3%</strong> power up <strong class='color-dup'>duplication</strong> chance",
+            // descriptionFunction() {
+            //     return `clicking <strong style = 'font-size:150%;'>×</strong> to <strong>cancel</strong> a <strong class='color-f'>field</strong>, <strong class='color-m'>tech</strong>, or <strong class='color-g'>gun</strong><br>gives <strong>+${4.9 - 0.15*simulation.difficultyMode}%</strong> power up <strong class='color-dup'>duplication</strong> chance`
+            // },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.duplicationChance() < 1 && !tech.isSuperDeterminism
+            },
+            requires: "below 100% duplication chance, not superdeterminism",
+            effect() {
+                tech.isCancelDuplication = true //search for tech.cancelCount  to balance
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+            },
+            remove() {
+                tech.isCancelDuplication = false
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+            }
+        },
+        {
+            name: "replication",
+            description: "<strong>+10%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br><strong>+33%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.duplicationChance() < 1.
+            },
+            requires: "below 100% duplication chance",
+            effect() {
+                tech.duplicateChance += 0.1
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+                if (!build.isExperimentSelection && !simulation.isTextLogOpen) simulation.circleFlare(0.11);
+                this.refundAmount += tech.addJunkTechToPool(0.33)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.duplicateChance = 0
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "stimulated emission",
+            description: "<strong>+15%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br>but, after a <strong>collision</strong> eject <strong>1</strong> <strong class='color-m'>tech</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.duplicationChance() < 1
+            },
+            requires: "below 1% duplication chance",
+            effect() {
+                tech.isStimulatedEmission = true
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+                if (!build.isExperimentSelection && !simulation.isTextLogOpen) simulation.circleFlare(0.15);
+            },
+            remove() {
+                tech.isStimulatedEmission = false
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+            }
+        },
+        {
+            name: "metastability",
+            description: "<strong>+12%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br><strong class='color-dup'>duplicates</strong> <strong class='color-e'>explode</strong> with a <strong>3</strong> second <strong>half-life</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.duplicationChance() < 1
+            },
+            requires: "below 100% duplication chance",
+            effect() {
+                tech.isPowerUpsVanish = true
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+                if (!build.isExperimentSelection && !simulation.isTextLogOpen) simulation.circleFlare(0.11);
+            },
+            remove() {
+                tech.isPowerUpsVanish = false
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+            }
+        },
+        {
+            name: "correlated damage",
+            description: "<strong class='color-dup'>duplication</strong> increases <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.duplicationChance() > 0.15
+            },
+            requires: "duplication chance > 15%",
+            effect() {
+                tech.isDupDamage = true;
+            },
+            remove() {
+                tech.isDupDamage = false;
+            }
+        },
+        {
+            name: "parthenogenesis",
+            description: "your <strong class='color-dup'>duplication</strong> has a chance to<br><strong class='color-dup'>duplicate</strong> <strong>mobs</strong> and <strong>bosses</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.duplicationChance() > 0 && !tech.isResearchBoss
+            },
+            requires: "some duplication chance, not abiogenesis",
+            effect() {
+                tech.isDuplicateBoss = true;
+            },
+            remove() {
+                tech.isDuplicateBoss = false;
+            }
+        },
+        {
+            name: "apomixis",
+            description: `when you reach <strong>100%</strong> <strong class='color-dup'>duplication</strong><br>spawn <strong>11 bosses</strong> with <strong>100%</strong> more <strong>durability</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isNonRefundable: true,
+            allowed() {
+                return tech.duplicationChance() > 0.5
+            },
+            requires: "duplication chance above 50%",
+            effect() {
+                tech.is100Duplicate = true;
+                tech.maxDuplicationEvent()
+            },
+            remove() {
+                tech.is100Duplicate = false;
+            }
+        },
+        {
+            name: "Born rule",
+            description: "<strong>remove</strong> all current <strong class='color-m'>tech</strong><br>spawn new <strong class='color-m'>tech</strong> to replace them",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed() {
+                return (tech.totalCount > 6)
+            },
+            requires: "more than 6 tech",
+            effect() {
+                //remove active bullets  //to get rid of bots
+                for (let i = 0; i < bullet.length; ++i) Matter.Composite.remove(engine.world, bullet[i]);
+                bullet = [];
+                let count = 1 //count tech
+                for (let i = 0, len = tech.tech.length; i < len; i++) { // spawn new tech power ups
+                    if (!tech.tech[i].isNonRefundable) count += tech.tech[i].count
+                }
+                if (tech.isDeterminism) count -= 4 //remove the bonus tech 
+                if (tech.isSuperDeterminism) count -= 4 //remove the bonus tech 
+
+                tech.setupAllTech(); // remove all tech
+                if (simulation.isCheating) tech.setCheating();
+                lore.techCount = 0;
+                // tech.addLoreTechToPool();
+                for (let i = 0; i < count; i++) powerUps.spawn(m.pos.x + 100 * (Math.random() - 0.5), m.pos.y + 100 * (Math.random() - 0.5), "tech"); // spawn new tech power ups
+                //have state is checked in m.death()
+            },
+            remove() {}
+        },
+
+        {
+            name: "Occam's razor",
+            descriptionFunction() {
+                return `randomly remove <strong>half</strong> your <strong class='color-m'>tech</strong><br>for each removed <strong>+${this.damagePerRemoved * 100 }%</strong> <strong class='color-d'>damage</strong> <em>(~${(this.count === 0) ? this.damagePerRemoved * 50 * tech.totalCount : this.damage*100}%)</em>`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed() {
+                return (tech.totalCount > 6)
+            },
+            requires: "more than 6 tech",
+            // removePercent: 0.5,
+            damagePerRemoved: 0.5,
+            damage: null,
+            effect() {
+                let pool = []
+                for (let i = 0, len = tech.tech.length; i < len; i++) { // spawn new tech power ups
+                    if (tech.tech[i].count && !tech.tech[i].isNonRefundable && !tech.tech[i].isFromAppliedScience) pool.push(i)
+                }
+                pool = shuffle(pool); //shuffles order of maps
+                let removeCount = 0
+                for (let i = 0, len = pool.length * this.damagePerRemoved; i < len; i++) removeCount += tech.removeTech(pool[i])
+                this.damage = 1 + this.damagePerRemoved * removeCount
+                tech.damage *= this.damage
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+            }
+        },
+        {
+            name: "exchange symmetry",
+            description: "remove <strong>1</strong> random <strong class='color-m'>tech</strong><br>spawn <strong>2</strong> new <strong class='color-g'>guns</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed() {
+                return (tech.totalCount > 3) && !tech.isSuperDeterminism
+            },
+            requires: "at least 4 tech, not superdeterminism",
+            effect() {
+                const have = [] //find which tech you have
+                for (let i = 0; i < tech.tech.length; i++) {
+                    if (tech.tech[i].count > 0 && !tech.tech[i].isNonRefundable) have.push(i)
+                }
+                const choose = have[Math.floor(Math.random() * have.length)]
+                simulation.makeTextLog(`<span class='color-var'>tech</span>.removeTech("<span class='color-text'>${tech.tech[choose].name}</span>")`, 360)
+                for (let i = 0; i < tech.tech[choose].count; i++) {
+                    powerUps.spawn(m.pos.x, m.pos.y, "gun");
+                }
+                powerUps.spawn(m.pos.x, m.pos.y, "gun");
+                // powerUps.spawn(m.pos.x, m.pos.y, "gun");
+                tech.tech[choose].count = 0;
+                tech.tech[choose].remove(); // remove a random tech form the list of tech you have
+                tech.tech[choose].isLost = true
+                simulation.updateTechHUD();
+            },
+            remove() {}
+        },
+        {
+            name: "monte carlo experiment",
+            description: "remove <strong>1</strong> random <strong class='color-m'>tech</strong><br>spawn <strong>2</strong> <strong class='color-m'>tech</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed() {
+                return (tech.totalCount > 3) && tech.duplicationChance() > 0 && !tech.isSuperDeterminism
+            },
+            requires: "some duplication, at least 4 tech, not superdeterminism",
+            effect() {
+                const removeTotal = tech.removeTech()
+                for (let i = 0; i < removeTotal + 1; i++) powerUps.spawn(m.pos.x + 60 * (Math.random() - 0.5), m.pos.y + 60 * (Math.random() - 0.5), "tech");
+            },
+            remove() {}
+        },
+        {
+            name: "strange attractor",
+            descriptionFunction() { return `use ${powerUps.orb.research(2)} to spawn <strong>1</strong> <strong class='color-m'>tech</strong> with<br><strong>double</strong> your <strong class='color-dup'>duplication</strong> chance <em>(${(2*tech.duplicationChance()*100).toFixed(0)}%)</em>` },
+            // description: `use ${powerUps.orb.research(2)} to spawn <strong>1</strong> <strong class='color-m'>tech</strong> with <strong>double</strong><br>your <strong class='color-dup'>duplication</strong> chance <em>(${(2*tech.duplicationChance()*100).toFixed(0)}%)</em>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isNonRefundable: true,
+            isBadRandomOption: true,
+            allowed() {
+                return !tech.isSuperDeterminism && tech.duplicationChance() > 0 && powerUps.research.count > 1
+            },
+            requires: "some duplication, not superdeterminism",
+            effect() {
+                powerUps.research.changeRerolls(-2)
+                simulation.makeTextLog(`<span class='color-var'>m</span>.<span class='color-r'>research</span> <span class='color-symbol'>-=</span> 2`)
+                powerUps.directSpawn(m.pos.x, m.pos.y, "tech");
+                if (Math.random() < tech.duplicationChance() * 2) powerUps.directSpawn(m.pos.x + 10, m.pos.y + 5, "tech");
+            },
+            remove() {}
+        },
+        {
+            name: "reinforcement learning",
+            description: "increase the <strong class='flicker'>frequency</strong> of finding copies of<br>your current <strong class='color-m'>tech</strong> by <strong>1000%</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.totalCount > 9
+            },
+            requires: "at least 10 tech",
+            effect() {
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    if (tech.tech[i].count > 0) tech.tech[i].frequency *= 10
+                }
+            },
+            remove() {
+                if (this.count) {
+                    for (let i = 0, len = tech.tech.length; i < len; i++) {
+                        if (tech.tech[i].count > 0 && tech.tech[i].frequency > 1) tech.tech[i].frequency /= 10
+                    }
+                }
+            }
+        },
+        // {
+        //     name: "backward induction",
+        //     descriptionFunction() {
+        //         if (build.isExperimentSelection || powerUps.tech.choiceLog.length < 10) return `use ${powerUps.orb.research(2)} to <strong>choose</strong> all the unchosen <strong class='color-m'>tech</strong><br>from your last selection`
+
+        //         text = ``
+        //         let num = 3
+        //         if (tech.extraChoices) num = 5
+        //         if (tech.isDeterminism) num = 1
+        //         for (let i = 0; i < num; i++) {
+        //             const index = powerUps.tech.choiceLog[powerUps.tech.choiceLog.length - i - 1]
+        //             if (index !== powerUps.lastTechIndex && tech.tech[index].count < tech.tech[index].maxCount && tech.tech[index].allowed() && tech.tech[index].name !== "backward induction") {
+        //                 text += `${tech.tech[index].name}, `
+        //             }
+        //         }
+        //         text = text.slice(0, -2);
+        //         return `use ${powerUps.orb.research(2)}to <strong>choose</strong> the unchosen<br><strong class='color-m'>tech</strong> from your previous selection:<br><em style = 'font-size:${num===5 ? 70 : 85}%;'>${text}</em>`
+        //     },
+        //     // description: `use ${powerUps.orb.research(2)}to <strong>choose</strong> all the unchosen<br> <strong class='color-m'>tech</strong> from your previous <strong class='color-m'>tech</strong> selection`,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 100,
+        //     frequencyDefault: 100,
+        //     isNonRefundable: true,
+        //     isBadRandomOption: true,
+        //     allowed() {
+        //         return powerUps.tech.choiceLog.length > 10 && !tech.isDeterminism && powerUps.research.count > 1
+        //     },
+        //     requires: "NOT EXPERIMENT MODE, rejected an option in the last tech selection, at least 2 research, not determinism",
+        //     effect: () => {
+        //         powerUps.research.changeRerolls(-2)
+        //         let num = 3
+        //         if (tech.extraChoices) num = 5
+        //         if (tech.isDeterminism) num = 1
+        //         for (let i = 0; i < num; i++) {
+        //             const index = powerUps.tech.choiceLog[powerUps.tech.choiceLog.length - i - 1]
+        //             if (index !== powerUps.lastTechIndex && tech.tech[index].count < tech.tech[index].maxCount && tech.tech[index].allowed() && tech.tech[index].name !== "backward induction") {
+        //                 tech.giveTech(index)
+        //                 simulation.makeTextLog(`<span class='color-var'>tech</span>.giveTech("<span class='color-text'>${tech.tech[index].name}</span>") <em> //backward induction</em>`);
+        //             }
+        //         }
+        //     },
+        //     remove() {}
+        // },
+        //************************************************** 
+        //************************************************** gun
+        //************************************************** tech
+        //**************************************************
+        {
+            name: "needle ice",
+            description: `after <strong>needles</strong> impact walls<br>they chip off <strong>1-2</strong> freezing <strong class='color-s'>ice IX</strong> crystals`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.isNeedles || tech.isNeedles) && !tech.needleTunnel
+            },
+            requires: "nail gun, needle gun, not nanowires",
+            effect() {
+                tech.isNeedleIce = true
+            },
+            remove() {
+                tech.isNeedleIce = false
+            }
+        },
+        {
+            name: "nanowires",
+            description: `<strong>needles</strong> tunnel through <strong class='color-block'>blocks</strong> and <strong>map</strong><br><strong>+20%</strong> needle <strong class='color-d'>damage</strong>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return ((tech.haveGunCheck("nail gun") && tech.isNeedles) || (tech.isNeedles && tech.haveGunCheck("shotgun"))) && !tech.isNeedleIce
+            },
+            requires: "nail gun, needle gun, not needle ice",
+            effect() {
+                tech.needleTunnel = true
+            },
+            remove() {
+                tech.needleTunnel = false
+            }
+        },
+        {
+            name: "needle gun",
+            description: "<strong>nail gun</strong> and <strong>shotgun</strong> fire mob piercing <strong>needles</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return ((tech.haveGunCheck("nail gun") && !tech.nailInstantFireRate && !tech.nailRecoil && !tech.isRicochet) || (tech.haveGunCheck("shotgun") && !tech.isNailShot && !tech.isFoamShot && !tech.isSporeWorm && !tech.isSporeFlea)) && !tech.isRivets && !tech.isIncendiary && !tech.isIceCrystals && !tech.isIceShot
+            },
+            requires: "nail gun, shotgun, not ice crystal, rivets, rotary cannon, or pneumatic, incendiary, nail-shot, rivets, foam-shot, worm-shot, ice-shot",
+            effect() {
+                tech.isNeedles = true
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "nail gun") {
+                        b.guns[i].ammo = Math.ceil(b.guns[i].ammo / 3);
+                        b.guns[i].ammoPack = Math.ceil(b.guns[i].defaultAmmoPack / 3);
+                        b.guns[i].chooseFireMethod()
+                        simulation.updateGunHUD();
+                        break
+                    }
+                }
+            },
+            remove() {
+                if (tech.isNeedles) {
+                    tech.isNeedles = false
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "nail gun") {
+                            b.guns[i].chooseFireMethod()
+                            b.guns[i].ammo = Math.ceil(b.guns[i].ammo * 3);
+                            b.guns[i].ammoPack = b.guns[i].defaultAmmoPack;
+                            simulation.updateGunHUD();
+                            break
+                        }
+                    }
+                }
+            }
+        },
+        {
+            name: "rivet gun",
+            description: "<strong>nail gun</strong> and <strong>shotgun</strong> slowly lob a heavy <strong>rivet</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return ((tech.haveGunCheck("nail gun") && !tech.nailInstantFireRate && !tech.isRicochet) || (tech.haveGunCheck("shotgun") && !tech.isNailShot && !tech.isFoamShot && !tech.isSporeWorm && !tech.isSporeFlea)) && !tech.isNeedles && !tech.isIceCrystals && !tech.isIceShot
+            },
+            requires: "nail gun, shotgun, not ice crystal, needles, or pneumatic actuator",
+            effect() {
+                tech.isRivets = true
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "nail gun") {
+                        b.guns[i].chooseFireMethod()
+                        break
+                    }
+                }
+            },
+            remove() {
+                if (tech.isRivets) {
+                    tech.isRivets = false
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "nail gun") {
+                            b.guns[i].chooseFireMethod()
+                            break
+                        }
+                    }
+                }
+                tech.isRivets = false
+            }
+        },
+        {
+            name: "caliber",
+            description: `<strong>rivets</strong>, <strong>needles</strong>, <strong>super balls</strong>, and <strong>nails</strong><br>have <strong>+30%</strong> mass and physical <strong class='color-d'>damage</strong>`,
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isMineDrop + tech.isNailBotUpgrade + tech.fragments + tech.nailsDeathMob + (tech.haveGunCheck("super balls") + (tech.haveGunCheck("mine") && !(tech.isLaserMine || tech.isFoamMine)) + (tech.haveGunCheck("nail gun")) + tech.isNeedles + tech.isNailShot + tech.isRivets) * 2 > 1
+            },
+            requires: "nails, nail gun, rivets, shotgun, super balls, mine",
+            effect() {
+                tech.bulletSize = 1 + 0.25 * Math.pow(this.count + 1, 0.5)
+            },
+            remove() {
+                tech.bulletSize = 1;
+            }
+        },
+        {
+            name: "ricochet",
+            description: "after <strong>nails</strong> hit a mob they <strong>rebound</strong> towards<br>a new mob with <strong>+180%</strong> <strong class='color-d'>damage</strong> per bounce",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                // return (tech.haveGunCheck("nail gun") && !tech.isRivets && !tech.isNeedles) || (tech.haveGunCheck("mines"))
+                return tech.isMineDrop || tech.isNailBotUpgrade || tech.fragments || tech.nailsDeathMob || (tech.haveGunCheck("mine") && !(tech.isLaserMine || tech.isFoamMine)) || (tech.haveGunCheck("nail gun") && !tech.isRivets && !tech.isNeedles) || (tech.haveGunCheck("shotgun") && (tech.isNeedles || tech.isNailShot) && !tech.isRivets && !tech.isNeedles)
+            },
+            //
+            requires: "nail gun, not rotary cannon, rivets, or needles",
+            effect() {
+                tech.isRicochet = true
+            },
+            remove() {
+                tech.isRicochet = false
+            }
+        },
+        {
+            name: "pneumatic actuator",
+            description: "<strong>nail gun</strong> takes <strong>no</strong> time to ramp up<br>to its fastest <strong><em>fire rate</em></strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("nail gun") && !tech.isRivets && !tech.isNeedles && !tech.nailRecoil
+            },
+            requires: "nail gun, not rotary cannon, rivets, or needles",
+            effect() {
+                tech.nailInstantFireRate = true
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "nail gun") b.guns[i].chooseFireMethod()
+                }
+            },
+            remove() {
+                if (tech.nailInstantFireRate) {
+                    tech.nailInstantFireRate = false
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "nail gun") b.guns[i].chooseFireMethod()
+                    }
+                }
+            }
+        },
+        {
+            name: "ice crystal nucleation",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Nucleation' class="link">ice crystal nucleation</a>`,
+            description: "<strong>nail gun</strong> uses <strong class='color-f'>energy</strong> to condense<br>unlimited <strong class='color-s'>freezing</strong> <strong>ice shards</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("nail gun") && !tech.isRivets && !tech.isNeedles // && !tech.isNailRadiation && !tech.isNailCrit
+            },
+            requires: "nail gun, not rivets, needles",
+            effect() {
+                tech.isIceCrystals = true;
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "nail gun") {
+                        b.guns[i].ammoPack = Infinity
+                        b.guns[i].recordedAmmo = b.guns[i].ammo
+                        b.guns[i].ammo = Infinity
+                        simulation.updateGunHUD();
+                        break;
+                    }
+                }
+            },
+            remove() {
+                if (tech.isIceCrystals) {
+                    tech.isIceCrystals = false;
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "nail gun") {
+                            b.guns[i].ammoPack = b.guns[i].defaultAmmoPack;
+                            if (b.guns[i].recordedAmmo) b.guns[i].ammo = b.guns[i].recordedAmmo
+                            simulation.updateGunHUD();
+                            break;
+                        }
+                    }
+                }
+            }
+        },
+        {
+            name: "rotary cannon",
+            description: "<strong>nail gun</strong> has increased muzzle <strong>speed</strong>,<br>maximum <strong>fire rate</strong>, <strong>accuracy</strong>, and <strong>recoil</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("nail gun") && !tech.nailInstantFireRate && !tech.isNeedles
+            },
+            requires: "nail gun, not pneumatic actuator, needle gun",
+            effect() {
+                tech.nailRecoil = true
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "nail gun") b.guns[i].chooseFireMethod()
+                }
+            },
+            remove() {
+                if (tech.nailRecoil) {
+                    tech.nailRecoil = false
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "nail gun") b.guns[i].chooseFireMethod()
+                    }
+                }
+            }
+        },
+        {
+            name: "stress concentration",
+            description: "mobs below <strong>50%</strong> durability <strong>die</strong> after you shoot<br>them near their <strong>center</strong> with <strong>needles</strong> or <strong>rivets</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.isNeedles || tech.isRivets) && !tech.isNailCrit && !tech.isIncendiary
+            },
+            requires: "needles, rivets, not incendiary, supercritical fission",
+            effect() {
+                tech.isCritKill = true
+            },
+            remove() {
+                tech.isCritKill = false
+            }
+        },
+        {
+            name: "supercritical fission",
+            description: "if <strong>nails</strong>, <strong>needles</strong>, or <strong>rivets</strong> strike mobs<br>near their <strong>center</strong> they can <strong class='color-e'>explode</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.isNailShot || tech.isNeedles || tech.isNailBotUpgrade || tech.haveGunCheck("nail gun") || tech.isRivets) && !tech.isIncendiary && !tech.isCritKill
+            },
+            requires: "nail gun, needles, nails, rivets, not incendiary, stress concentration",
+            effect() {
+                tech.isNailCrit = true
+            },
+            remove() {
+                tech.isNailCrit = false
+            }
+        },
+        {
+            name: "irradiated nails",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Irradiation' class="link">irradiated nails</a>`,
+            description: "<strong>nails</strong>, <strong>needles</strong>, and <strong>rivets</strong> are <strong class='color-p'>radioactive</strong><br>about <strong>+90%</strong> <strong class='color-d'>damage</strong> over <strong>3</strong> seconds",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isMineDrop || tech.isNailBotUpgrade || tech.fragments || tech.nailsDeathMob || (tech.haveGunCheck("mine") && !(tech.isLaserMine || tech.isFoamMine)) || (tech.haveGunCheck("nail gun") && !tech.isShieldPierce) || (tech.haveGunCheck("shotgun") && (tech.isNeedles || tech.isNailShot))
+            },
+            requires: "nail gun, nails, rivets, mine, not ceramic needles",
+            effect() {
+                tech.isNailRadiation = true;
+            },
+            remove() {
+                tech.isNailRadiation = false;
+            }
+        },
+        {
+            name: "6s half-life",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Half-life' class="link">6s half-life</a>`,
+            description: "<span style = 'font-size:90%;'><strong>nails</strong>, <strong>needles</strong>, <strong>rivets</strong> are made of <strong class='color-p'>plutonium-238</strong></span><br><strong class='color-p'>radioactive</strong> <strong class='color-d'>damage</strong> lasts <strong>+3</strong>  seconds",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isNailRadiation && !tech.isFastRadiation
+            },
+            requires: "nail gun, mine, irradiated nails, not 1s half-life",
+            effect() {
+                tech.isSlowRadiation = true;
+            },
+            remove() {
+                tech.isSlowRadiation = false;
+            }
+        },
+        {
+            name: "1s half-life",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Half-life' class="link">1s half-life</a>`,
+            description: "<span style = 'font-size:95%;'><strong>nails</strong>, <strong>needles</strong>, <strong>rivets</strong> are made of <strong class='color-p'>lithium-8</strong><br><strong>+300%</strong> <strong class='color-p'>radioactive</strong> <strong class='color-d'>damage</strong> for <strong>1</strong> second</span>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isNailRadiation && !tech.isSlowRadiation
+            },
+            requires: "nail gun, mine, irradiated nails, not 6s half-life",
+            effect() {
+                tech.isFastRadiation = true;
+            },
+            remove() {
+                tech.isFastRadiation = false;
+            }
+        },
+        {
+            name: "spin-statistics",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Spin%E2%80%93statistics_theorem' class="link">spin-statistics</a>`,
+            description: "after firing the <strong>shotgun</strong> you are <strong>invulnerable</strong><br>shotgun has <strong>50%</strong> fewer shots",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("shotgun")
+            },
+            requires: "shotgun",
+            effect() {
+                tech.isShotgunImmune = true;
+
+                //cut current ammo by 1/2
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "shotgun") {
+                        b.guns[i].ammo = Math.ceil(b.guns[i].ammo * 0.5);
+                        b.guns[i].ammoPack = b.guns[i].defaultAmmoPack * 0.5
+                        break;
+                    }
+                }
+                simulation.updateGunHUD();
+            },
+            remove() {
+                if (tech.isShotgunImmune) {
+                    tech.isShotgunImmune = false;
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "shotgun") {
+                            b.guns[i].ammoPack = b.guns[i].defaultAmmoPack;
+                            b.guns[i].ammo = Math.ceil(b.guns[i].ammo * 2);
+                            break;
+                        }
+                    }
+                    simulation.updateGunHUD();
+                }
+            }
+        },
+        {
+            name: "Newton's 3rd law",
+            description: "<strong>+66%</strong> <strong>shotgun</strong> <strong><em>fire rate</em></strong> and <strong>recoil</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("shotgun") && !tech.isShotgunReversed
+            },
+            requires: "shotgun, not Noether violation",
+            effect() {
+                tech.isShotgunRecoil = true;
+            },
+            remove() {
+                tech.isShotgunRecoil = false;
+            }
+        },
+        {
+            name: "Noether violation",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Noether%27s_theorem' class="link">Noether violation</a>`,
+            description: "<strong>+50%</strong> <strong>shotgun</strong> <strong class='color-d'>damage</strong><br><strong>shotgun</strong> <strong>recoil</strong> is <strong>reversed</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (tech.haveGunCheck("shotgun")) && !tech.isShotgunRecoil
+            },
+            requires: "shotgun, not Newton's 3rd law",
+            effect() {
+                tech.isShotgunReversed = true;
+            },
+            remove() {
+                tech.isShotgunReversed = false;
+            }
+        },
+        {
+            name: "nail-shot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Nail_(fastener)' class="link">nail-shot</a>`,
+            description: "<strong>shotgun</strong> drives a long clip of <strong>nails</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("shotgun") && !tech.isIncendiary && !tech.isRivets && !tech.isIceShot && !tech.isFoamShot && !tech.isSporeWorm && !tech.isSporeFlea && !tech.isNeedles
+            },
+            requires: "shotgun, not incendiary, rivets, foam-shot, worm-shot, ice-shot, needles",
+            effect() {
+                tech.isNailShot = true;
+            },
+            remove() {
+                tech.isNailShot = false;
+            }
+        },
+        {
+            name: "foam-shot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Foam' class="link">foam-shot</a>`,
+            description: "<strong>shotgun</strong> sprays sticky <strong>foam</strong> bubbles",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("shotgun") && !tech.isNailShot && !tech.isIncendiary && !tech.isRivets && !tech.isIceShot && !tech.isSporeWorm && !tech.isSporeFlea && !tech.isNeedles
+            },
+            requires: "shotgun, not incendiary, nail-shot, rivet, worm-shot, ice-shot, needle",
+            effect() {
+                tech.isFoamShot = true;
+            },
+            remove() {
+                tech.isFoamShot = false;
+            }
+        },
+        {
+            name: "ice-shot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Ice-nine_(disambiguation)' class="link">ice-shot</a>`,
+            description: "<strong>shotgun</strong> grows freezing <strong class='color-s'>ice IX</strong> crystals",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("shotgun") && !tech.isNailShot && !tech.isIncendiary && !tech.isRivets && !tech.isFoamShot && !tech.isSporeWorm && !tech.isSporeFlea && !tech.isNeedles
+            },
+            requires: "shotgun, not incendiary, nail-shot, rivet, foam-shot, worm-shot",
+            effect() {
+                tech.isIceShot = true;
+            },
+            remove() {
+                tech.isIceShot = false;
+            }
+        },
+        {
+            name: "freezer burn",
+            description: "mobs <strong class='color-s'>frozen</strong> while below <strong>33%</strong> durability <strong>die</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isIceCrystals || tech.isSporeFreeze || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 2) || tech.isIceShot || tech.relayIce || tech.isNeedleIce || (m.coupling && m.fieldMode < 3)
+            },
+            requires: "a freeze effect",
+            effect() {
+                tech.isIceKill = true
+            },
+            remove() {
+                tech.isIceKill = false
+            }
+        },
+        {
+            name: "flash freeze",
+            description: "mobs <strong class='color-s'>frozen</strong> while above <strong>66%</strong> durability<br>have their durability reduced to <strong>66%</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isIceCrystals || tech.isSporeFreeze || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 2) || tech.isIceShot || tech.relayIce || tech.isNeedleIce || (m.coupling && m.fieldMode < 3)
+            },
+            requires: "a freeze effect",
+            effect() {
+                tech.isIceMaxHealthLoss = true
+            },
+            remove() {
+                tech.isIceMaxHealthLoss = false
+            }
+        },
+        {
+            name: "crystallizer",
+            description: "after <strong class='color-s'>frozen</strong> mobs <strong>die</strong> they<br>shatter into <strong class='color-s'>ice IX</strong> crystals",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.isIceCrystals || tech.isSporeFreeze || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 2) || tech.isIceShot || tech.relayIce || tech.isNeedleIce || (m.coupling && m.fieldMode < 3)) && !tech.sporesOnDeath && !tech.isExplodeMob && !tech.botSpawner && !tech.isMobBlockFling && !tech.nailsDeathMob
+            },
+            requires: "a localized freeze effect, no other mob death tech",
+            effect() {
+                tech.iceIXOnDeath++
+            },
+            remove() {
+                tech.iceIXOnDeath = 0
+            }
+        },
+        {
+            name: "thermoelectric effect",
+            description: "after <strong>killing</strong> mobs with <strong class='color-s'>ice IX</strong><br><strong>+100</strong> <strong class='color-f'>energy</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 2) || tech.relayIce || tech.isNeedleIce || (m.coupling && m.fieldMode < 3) || tech.iceIXOnDeath || tech.isIceShot
+            },
+            requires: "ice IX",
+            effect() {
+                tech.iceEnergy++
+            },
+            remove() {
+                tech.iceEnergy = 0;
+            }
+        },
+        {
+            name: "superfluidity",
+            description: "<strong class='color-s'>freeze</strong> effects are applied<br>to a small area around the target",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isIceCrystals || tech.isSporeFreeze || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 2) || tech.relayIce || tech.isNeedleIce || (m.coupling && m.fieldMode < 3) || tech.iceIXOnDeath || tech.isIceShot
+            },
+            requires: "a localized freeze effect",
+            effect() {
+                tech.isAoESlow = true
+            },
+            remove() {
+                tech.isAoESlow = false
+            }
+        },
+        {
+            name: "incendiary ammunition",
+            description: "<strong>shotgun</strong>, <strong>rivets</strong>, <strong>super balls</strong>, and <strong>drones</strong><br>are loaded with <strong class='color-e'>explosives</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (tech.haveGunCheck("shotgun") && !tech.isNailShot && !tech.isIceShot && !tech.isRivets && !tech.isFoamShot && !tech.isSporeWorm && !tech.isSporeFlea && !tech.isNeedles) || (tech.haveGunCheck("super balls") && !tech.isFoamBall) || (tech.isRivets && !tech.isNailCrit) || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 3) || (tech.haveGunCheck("drones") && !tech.isForeverDrones && !tech.isDroneRadioactive && !tech.isDroneTeleport)
+            },
+            requires: "shotgun, super balls, rivets, drones, not irradiated drones, burst drones, polyurethane",
+            effect() {
+                tech.isIncendiary = true
+            },
+            remove() {
+                tech.isIncendiary = false;
+            }
+        },
+        {
+            name: "autocannon",
+            description: "fire <strong>+1</strong> extra <strong>super ball</strong><br><strong>balls</strong> are quickly released in same direction",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("super balls") && !tech.oneSuperBall
+            },
+            requires: "super balls, but not the tech super ball",
+            effect() {
+                tech.superBallDelay = true
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "super balls") b.guns[i].chooseFireMethod()
+                }
+            },
+            remove() {
+                if (tech.superBallDelay) {
+                    tech.superBallDelay = false;
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "super balls") b.guns[i].chooseFireMethod()
+                    }
+                }
+            }
+        },
+        {
+            name: "super duper",
+            description: `randomly fire <strong>+0</strong>, <strong>+1</strong>, or <strong>+2</strong> extra <strong>super balls</strong>`,
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("super balls") && !tech.oneSuperBall
+            },
+            requires: "super balls, not super ball",
+            effect() {
+                tech.extraSuperBalls += 3
+            },
+            remove() {
+                tech.extraSuperBalls = 0;
+            }
+        },
+        {
+            name: "super ball",
+            description: "fire just <strong>1 large</strong> super <strong>ball</strong><br>that <strong>stuns</strong> mobs for <strong>3</strong> second",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("super balls") && !tech.extraSuperBalls && !tech.superBallDelay
+            },
+            requires: "super balls, not super duper or autocannon",
+            effect() {
+                tech.oneSuperBall = true;
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "super balls") b.guns[i].chooseFireMethod()
+                }
+            },
+            remove() {
+                if (tech.oneSuperBall) {
+                    tech.oneSuperBall = false;
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "super balls") b.guns[i].chooseFireMethod()
+                    }
+                }
+            }
+        },
+        {
+            name: "polyurethane foam",
+            description: "<strong>super balls</strong> and <strong>harpoons</strong> colliding with <strong>mobs</strong><br>catalyzes a reaction that yields <strong>foam</strong> bubbles",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("super balls") || (tech.haveGunCheck("harpoon") && !tech.fragments)
+            },
+            requires: "super balls, harpoon, not fragmentation",
+            effect() {
+                tech.isFoamBall = true;
+            },
+            remove() {
+                tech.isFoamBall = false;
+            }
+        },
+        // 
+        {
+            name: "phase velocity",
+            description: "wave particles <strong>propagate</strong> faster as <strong>solids</strong><br><strong>+35%</strong> wave <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("wave")
+            },
+            requires: "wave",
+            effect() {
+                tech.isPhaseVelocity = true;
+            },
+            remove() {
+                tech.isPhaseVelocity = false;
+            }
+        },
+        {
+            name: "amplitude",
+            description: "<strong>+37%</strong> wave <strong class='color-d'>damage</strong><br><strong>+37%</strong> wave particle <strong>amplitude</strong>",
+            isGunTech: true,
+            maxCount: 3,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("wave")
+            },
+            requires: "wave",
+            effect() {
+                tech.waveFrequency *= 0.66
+                tech.wavePacketDamage *= 1.37
+            },
+            remove() {
+                tech.waveFrequency = 0.2
+                tech.wavePacketDamage = 1
+            }
+        },
+        {
+            name: "propagation",
+            description: "<strong>–25%</strong> wave packet propagation <strong>speed</strong><br><strong>+37%</strong> wave <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("wave")
+            },
+            requires: "wave",
+            effect() {
+                tech.waveBeamSpeed *= 0.8;
+                tech.waveBeamDamage += 1.55 * 0.37 //this sets base  wave damage
+            },
+            remove() {
+                tech.waveBeamSpeed = 12;
+                tech.waveBeamDamage = 1.55 //this sets base  wave damage
+            }
+        },
+        {
+            name: "bound state",
+            description: "wave packets <strong>reflect</strong> backwards <strong>2</strong> times<br><strong>–20%</strong> <strong>range</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("wave")
+            },
+            requires: "wave",
+            effect() {
+                tech.waveReflections += 2
+            },
+            remove() {
+                tech.waveReflections = 1
+            }
+        },
+        {
+            name: "frequency",
+            description: `<strong>wave</strong> has unlimited <strong class='color-ammo'>ammo</strong><br><strong>-50%</strong> wave <strong><em>fire rate</em></strong>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed: () => tech.haveGunCheck("wave"),
+            requires: "wave",
+            effect() {
+                tech.infiniteWaveAmmo = 2
+                b.guns[3].savedAmmo = b.guns[3].ammo
+                b.guns[3].ammo = Infinity
+                simulation.updateGunHUD();
+            },
+            remove() {
+                tech.infiniteWaveAmmo = 1
+                if (this.count > 0 && b.guns[3].savedAmmo !== undefined) {
+                    b.guns[3].ammo = b.guns[3].savedAmmo
+                    simulation.updateGunHUD();
+                }
+            }
+        },
+        {
+            name: "phonon", //longitudinal  //gravitational wave?
+            description: "waves are low <strong>frequency</strong>, high <strong class='color-d'>damage</strong><br><strong>expanding arcs</strong> that propagate through <strong>solids</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.haveGunCheck("wave")
+            },
+            requires: "wave",
+            ammoScale: 11,
+            effect() {
+                tech.isLongitudinal = true;
+                b.guns[3].chooseFireMethod()
+                b.guns[3].ammoPack = b.guns[3].defaultAmmoPack / this.ammoScale
+                if (tech.infiniteWaveAmmo === 1) {
+                    b.guns[3].ammo = Math.ceil(b.guns[3].ammo / this.ammoScale);
+                } else {
+                    b.guns[3].savedAmmo = Math.ceil(b.guns[3].savedAmmo / this.ammoScale); //used with low frequency
+                }
+                simulation.updateGunHUD();
+            },
+            remove() {
+                if (tech.isLongitudinal) {
+                    tech.isLongitudinal = false;
+                    b.guns[3].chooseFireMethod()
+                    b.guns[3].ammoPack = b.guns[3].defaultAmmoPack
+                    if (tech.infiniteWaveAmmo === 1) {
+                        b.guns[3].ammo = Math.ceil(b.guns[3].ammo * this.ammoScale);
+                    } else {
+                        b.guns[3].savedAmmo = Math.ceil(b.guns[3].savedAmmo * this.ammoScale); //used with low frequency
+                    }
+                    simulation.updateGunHUD();
+                }
+                tech.isLongitudinal = false;
+            }
+        },
+        {
+            name: "isotropic",
+            description: "<strong>waves</strong> expand in <strong>all</strong> directions<br><strong>–40%</strong> <strong>range</strong> and <strong>+50%</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return tech.isLongitudinal && tech.haveGunCheck("wave") && !tech.isBulletTeleport
+            },
+            requires: "wave, phonon, not uncertainty principle",
+            effect() {
+                tech.is360Longitudinal = true;
+                b.guns[3].chooseFireMethod()
+            },
+            remove() {
+                tech.is360Longitudinal = false;
+                b.guns[3].chooseFireMethod()
+            }
+        },
+        {
+            name: "mechanical resonance",
+            description: "after a <strong class='color-block'>block</strong> gets vibrated by a <strong>phonon</strong><br>there is a chance it's <strong>flung</strong> at nearby mobs",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isLongitudinal && tech.haveGunCheck("wave")
+            },
+            requires: "wave, phonon",
+            effect() {
+                tech.isPhononBlock = true
+            },
+            remove() {
+                tech.isPhononBlock = false
+            }
+        },
+        {
+            name: "sympathetic resonance",
+            description: "after a <strong>mob</strong> gets vibrated by a <strong>phonon</strong><br>a new <strong>resonance wave</strong> expands",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isLongitudinal && tech.haveGunCheck("wave")
+            },
+            requires: "wave, phonon",
+            effect() {
+                tech.isPhononWave = true
+            },
+            remove() {
+                tech.isPhononWave = false
+            }
+        },
+        {
+            name: "cruise missile",
+            description: "<strong>+100%</strong> <strong>missile</strong> <strong class='color-e'>explosive</strong> <strong class='color-d'>damage</strong>, radius<br><strong>–50%</strong> <strong>missile</strong> speed",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.haveGunCheck("missiles") && tech.missileFireCD === 45) || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 1) || tech.missileBotCount
+            },
+            requires: "missiles, not launch system",
+            effect() {
+                tech.isMissileBig = true
+            },
+            remove() {
+                tech.isMissileBig = false
+            }
+        },
+        {
+            name: "ICBM",
+            description: "<strong>+75%</strong> <strong>missile</strong> <strong class='color-e'>explosive</strong> <strong class='color-d'>damage</strong>, radius<br><strong>–50%</strong> <strong>missile</strong> speed",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.haveGunCheck("missiles") || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 1)) && tech.isMissileBig
+            },
+            requires: "missiles, cruise missile",
+            effect() {
+                tech.isMissileBiggest = true
+            },
+            remove() {
+                tech.isMissileBiggest = false
+            }
+        },
+        {
+            name: "launch system",
+            description: `<strong>+500%</strong> <strong>missile</strong> <strong><em>fire rate</em></strong><br><strong>+20%</strong> missile <strong class='color-ammo'>ammo</strong> per ${powerUps.orb.ammo(1)}`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("missiles") && !tech.isMissileBig
+            },
+            requires: "missiles, not cruise missile",
+            ammoBonus: 1.2,
+            effect() {
+                tech.missileFireCD = 10
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "missiles") {
+                        b.guns[i].ammoPack *= this.ammoBonus;
+                        b.guns[i].ammo = Math.ceil(b.guns[i].ammo * this.ammoBonus);
+                        simulation.updateGunHUD();
+                        break
+                    }
+                }
+            },
+            remove() {
+                if (tech.missileFireCD !== 45) {
+                    tech.missileFireCD = 45;
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "missiles") {
+                            b.guns[i].ammoPack = 5;
+                            b.guns[i].ammo = Math.ceil(b.guns[i].ammo / this.ammoBonus);
+                            simulation.updateGunHUD();
+                            break
+                        }
+                    }
+                }
+            }
+        },
+        {
+            name: "missile-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">missile-bot</a>`,
+            description: `use ${powerUps.orb.research(1)}to trade your <strong>missile</strong> <strong class='color-g'>gun</strong><br>for a <strong class='color-bot'>bot</strong> that fires <strong>missiles</strong>`,
+            isGunTech: true,
+            isRemoveGun: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            allowed() {
+                return tech.haveGunCheck("missiles", false) && tech.missileFireCD === 45 && (build.isExperimentSelection || powerUps.research.count > 0)
+            },
+            requires: "missiles, not launch system",
+            effect() {
+                tech.missileBotCount++;
+                b.missileBot();
+                if (tech.haveGunCheck("missiles", false)) b.removeGun("missiles") //remove your last gun
+                for (let i = 0; i < 1; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                if (this.count) {
+                    tech.missileBotCount = 0;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                    if (!tech.haveGunCheck("missiles", false)) b.giveGuns("missiles")
+                    powerUps.research.changeRerolls(1)
+                }
+            }
+        },
+        {
+            name: "iridium-192",
+            description: "<strong class='color-e'>explosions</strong> release <strong class='color-p'>gamma radiation</strong><br><strong>+100%</strong> <strong class='color-d'>damage</strong> over <strong>4</strong>  seconds",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isImmuneExplosion && tech.explosiveRadius === 1 && !tech.isSmallExplosion && !tech.isBlockExplode && !tech.fragments && (tech.haveGunCheck("missiles") || tech.missileBotCount || tech.isIncendiary || (tech.haveGunCheck("grenades") && !tech.isNeutronBomb) || tech.isPulseLaser || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 1) || tech.isBoomBotUpgrade || tech.isTokamak)
+            },
+            requires: "an explosive damage source, not ammonium nitrate, nitroglycerin, chain reaction, fragmentation, electric armor",
+            effect() {
+                tech.isExplodeRadio = true; //iridium-192
+            },
+            remove() {
+                tech.isExplodeRadio = false;
+            }
+        },
+        {
+            name: "fragmentation",
+            description: "some <strong class='color-e'>detonations</strong> and collisions eject <strong>nails</strong><br><em style = 'font-size: 90%'>blocks, grenades, missiles, rivets, harpoon</em>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return !tech.isExplodeRadio && ((tech.haveGunCheck("harpoon") && !tech.isFoamBall) || (tech.haveGunCheck("grenades") && !tech.isNeutronBomb) || tech.haveGunCheck("missiles") || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 1) || tech.missileBotCount || tech.isRivets || tech.blockDamage > 0.075)
+            },
+            requires: "grenades, missiles, rivets, harpoon, or mass driver, not iridium-192, not polyurethane foam",
+            effect() {
+                tech.fragments++
+            },
+            remove() {
+                tech.fragments = 0
+            }
+        },
+        {
+            name: "ammonium nitrate",
+            description: "<strong>+24%</strong> <strong class='color-e'>explosive</strong> <strong class='color-d'>damage</strong>, radius",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return !tech.isExplodeRadio && tech.hasExplosiveDamageCheck()
+            },
+            requires: "an explosive damage source, not iridium-192",
+            effect() {
+                tech.explosiveRadius += 0.24;
+            },
+            remove() {
+                tech.explosiveRadius = 1;
+            }
+        },
+        {
+            name: "nitroglycerin",
+            description: "<strong>+66%</strong> <strong class='color-e'>explosive</strong> <strong class='color-d'>damage</strong><br><strong>–33%</strong> <strong class='color-e'>explosive</strong> <strong>radius</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return !tech.isExplodeRadio && tech.hasExplosiveDamageCheck() && !tech.isExplosionHarm
+            },
+            requires: "an explosive damage source, not iridium-192, acetone peroxide",
+            effect() {
+                tech.isSmallExplosion = true;
+            },
+            remove() {
+                tech.isSmallExplosion = false;
+            }
+        },
+        {
+            name: "acetone peroxide",
+            description: "<strong>+70%</strong> <strong class='color-e'>explosive</strong> <strong>radius</strong><br><strong>–40%</strong> <strong class='color-e'>explosive</strong> <strong class='color-defense'>defense</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isBadRandomOption: true,
+            allowed() {
+                return tech.hasExplosiveDamageCheck() && !tech.isSmallExplosion
+            },
+            requires: "an explosive damage source, not nitroglycerin",
+            effect() {
+                tech.isExplosionHarm = true;
+            },
+            remove() {
+                tech.isExplosionHarm = false;
+            }
+        },
+        {
+            name: "shock wave",
+            description: "<strong>mines</strong> and <strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> <strong>stun</strong> for <strong>3-5</strong> seconds<br><strong class='color-e'>explosions</strong> <strong>stun</strong> for <strong>0.5</strong> seconds",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.haveGunCheck("spores") || tech.haveGunCheck("mine") || (!tech.isExplodeRadio && tech.hasExplosiveDamageCheck())
+            },
+            requires: "mine, spores, an explosive damage source, not iridium-192",
+            effect() {
+                tech.isStun = true;
+            },
+            remove() {
+                tech.isStun = false;
+            }
+        },
+        {
+            name: "shaped charge",
+            description: `use ${powerUps.orb.research(3)} to dynamically <strong>reduce</strong><br>all <strong class='color-e'>explosions</strong> to prevent <strong class='color-h'>health</strong> loss`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return !tech.isImmuneExplosion && (build.isExperimentSelection || powerUps.research.count > 2) && (tech.haveGunCheck("missiles") || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 1) || tech.missileBotCount > 0 || tech.isIncendiary || tech.isPulseLaser || tech.isTokamak || (tech.haveGunCheck("grenades") && !tech.isNeutronBomb))
+            },
+            requires: "an explosive damage source, not electric reactive armor",
+            effect() {
+                tech.isSmartRadius = true;
+                for (let i = 0; i < 3; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.isSmartRadius = false;
+                if (this.count > 0) powerUps.research.changeRerolls(3)
+            }
+        },
+        {
+            name: "electric armor",
+            // description: "<strong class='color-e'>explosions</strong> do no <strong class='color-defense'>defense</strong><br> while your <strong class='color-f'>energy</strong> is above <strong>98%</strong>",
+            description: "instead of causing <strong class='color-h'>health</strong> loss, <strong class='color-e'>explosions</strong><br>drain <strong>12</strong> <strong class='color-f'>energy</strong> and have more knockback",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return !tech.isSmartRadius && !tech.isExplodeRadio && tech.hasExplosiveDamageCheck()
+            },
+            requires: "an explosive damage source, not iridium-192",
+            effect() {
+                tech.isImmuneExplosion = true;
+            },
+            remove() {
+                tech.isImmuneExplosion = false;
+            }
+        },
+        {
+            name: "MIRV",
+            description: "fire <strong>+1</strong> <strong>missile</strong> or <strong>grenade</strong> per shot<br><strong>–12%</strong> <strong class='color-e'>explosion</strong> <strong class='color-d'>damage</strong> and <strong>radius</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("missiles") || tech.missileBotCount || tech.haveGunCheck("grenades")
+            },
+            requires: "missiles, grenades",
+            effect() {
+                tech.missileCount++;
+            },
+            remove() {
+                tech.missileCount = 1;
+            }
+        },
+        {
+            name: "rocket-propelled grenade",
+            description: "<strong>grenades</strong> rapidly <strong>accelerate</strong> forward<br>map <strong>collisions</strong> trigger an <strong class='color-e'>explosion</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("grenades")
+            },
+            requires: "grenades",
+            effect() {
+                tech.isRPG = true;
+                b.setGrenadeMode()
+            },
+            remove() {
+                tech.isRPG = false;
+                b.setGrenadeMode()
+            }
+        },
+        {
+            name: "vacuum bomb",
+            description: "<strong>grenades</strong> fire slower, <strong class='color-e'>explode</strong> bigger,<br>and <strong>suck</strong> everything towards them",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("grenades") && !tech.isNeutronBomb && !tech.isBlockExplode
+            },
+            requires: "grenades, not neutron bomb, chain reaction",
+            effect() {
+                tech.isVacuumBomb = true;
+                b.setGrenadeMode()
+            },
+            remove() {
+                tech.isVacuumBomb = false;
+                b.setGrenadeMode()
+            }
+        },
+        {
+            name: "chain reaction",
+            description: "<strong>+33%</strong> <strong>grenade</strong> radius and <strong class='color-d'>damage</strong><br><strong class='color-block'>blocks</strong> caught in <strong class='color-e'>explosions</strong> also <strong class='color-e'>explode</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("grenades") && !tech.isExplodeRadio && !tech.isNeutronBomb && !tech.isVacuumBomb
+            },
+            requires: "grenades, not iridium-192, neutron bomb, vacuum bomb",
+            effect() {
+                tech.isBlockExplode = true; //chain reaction
+            },
+            remove() {
+                tech.isBlockExplode = false;
+            }
+        },
+        {
+            name: "flame test",
+            description: "after <strong>grenades</strong> detonate they release<br>a colorful <strong>cluster</strong> of small <strong class='color-e'>explosions</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("grenades") && !tech.isNeutronBomb && !tech.isCircleExplode && !tech.isPetalsExplode
+            },
+            requires: "grenades, not neutron bomb, pyrotechnics, fireworks",
+            effect() {
+                tech.isClusterExplode = true;
+            },
+            remove() {
+                tech.isClusterExplode = false;
+            }
+        },
+        {
+            name: "pyrotechnics",
+            description: "after <strong>grenades</strong> detonate they release<br>a colorful <strong>circle</strong> of <strong class='color-e'>explosions</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("grenades") && !tech.isNeutronBomb && !tech.isClusterExplode && !tech.isPetalsExplode
+            },
+            requires: "grenades, not neutron bomb, flame test, fireworks",
+            effect() {
+                tech.isCircleExplode = true;
+            },
+            remove() {
+                tech.isCircleExplode = false;
+            }
+        },
+        {
+            name: "fireworks",
+            description: "after <strong>grenades</strong> detonate they release<br>colorful <strong>petals</strong> of <strong class='color-e'>explosions</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("grenades") && !tech.isNeutronBomb && !tech.isClusterExplode && !tech.isCircleExplode
+            },
+            requires: "grenades, not neutron bomb, pyrotechnics, flame test",
+            effect() {
+                tech.isPetalsExplode = true;
+            },
+            remove() {
+                tech.isPetalsExplode = false;
+            }
+        },
+        {
+            name: "neutron bomb",
+            description: "<strong>grenades</strong> are <strong class='color-p'>irradiated</strong> with <strong class='color-p'>Cf-252</strong><br>does <strong class='color-p'>radioactive</strong> <strong class='color-d'>damage</strong> over time",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("grenades") && !tech.fragments && !tech.isVacuumBomb && !tech.isExplodeRadio && !tech.isBlockExplode && !tech.isClusterExplode && !tech.isPetalsExplode && !tech.isCircleExplode
+            },
+            requires: "grenades, not fragmentation, vacuum bomb, iridium-192, pyrotechnics, fireworks, flame test, chain reaction",
+            effect() {
+                tech.isNeutronBomb = true;
+                b.setGrenadeMode()
+            },
+            remove() {
+                tech.isNeutronBomb = false;
+                b.setGrenadeMode()
+            }
+        },
+        {
+            name: "vacuum permittivity",
+            description: "<strong>+20%</strong> <strong class='color-p'>radioactive</strong> range<br>objects in range of the bomb are <strong>slowed</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isNeutronBomb
+            },
+            requires: "grenades, neutron bomb",
+            effect() {
+                tech.isNeutronSlow = true
+            },
+            remove() {
+                tech.isNeutronSlow = false
+            }
+        },
+        {
+            name: "radioactive contamination",
+            description: "after a mob or shield <strong>dies</strong>,<br>leftover <strong class='color-p'>radiation</strong> <strong>spreads</strong> to a nearby mob",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isNailRadiation || tech.isWormholeDamage || tech.isNeutronBomb || tech.isExplodeRadio || tech.isBlockRadiation
+            },
+            requires: "radiation damage source",
+            effect() {
+                tech.isRadioactive = true
+            },
+            remove() {
+                tech.isRadioactive = false
+            }
+        },
+        {
+            name: "nuclear transmutation",
+            description: "<strong>+47%</strong> <strong class='color-p'>radiation</strong> <strong class='color-d'>damage</strong><br><em>nail, drone, neutron bomb, iridium, string, deflect</em>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isNailRadiation || tech.isWormholeDamage || tech.isNeutronBomb || tech.isExplodeRadio || tech.isBlockRadiation || tech.isDroneRadioactive
+            },
+            requires: "radiation damage source",
+            effect() {
+                tech.radioactiveDamage += 1.47
+            },
+            remove() {
+                tech.radioactiveDamage = 1
+            }
+        },
+        {
+            name: "water shielding",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Radiation_protection#Radiation_shielding' class="link">water shielding</a>`,
+            description: "<strong class='color-p'>radioactive</strong> effects on you are reduced by 75%<br><em>neutron bomb, drones, explosions, slime</em>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isNeutronBomb || tech.isDroneRadioactive || tech.isExplodeRadio
+            },
+            requires: "neutron bomb, irradiated drones, iridium-192",
+            effect() {
+                tech.isRadioactiveResistance = true
+            },
+            remove() {
+                tech.isRadioactiveResistance = false
+            }
+        },
+        {
+            name: "booby trap",
+            description: "<strong>60%</strong> chance to drop a <strong>mine</strong> from <strong>power ups</strong><br><strong>+46%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("mine")
+            },
+            requires: "mines",
+            effect() {
+                tech.isMineDrop = true;
+                if (tech.isMineDrop) b.mine(m.pos, { x: 0, y: 0 }, 0)
+                this.refundAmount += tech.addJunkTechToPool(0.46)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.isMineDrop = false;
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        {
+            name: "elephant's toothpaste",
+            description: "<strong>mines</strong> catalyze a reaction<br>that yields <strong>foam</strong> bubbles",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("mine") && !tech.isMineSentry
+            },
+            requires: "mines, not sentry",
+            effect() {
+                tech.isFoamMine = true;
+            },
+            remove() {
+                tech.isFoamMine = false;
+            }
+        },
+        {
+            name: "laser-mines",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Laser' class="link">laser-mines</a>`,
+            description: "<strong>mines</strong> laid while you are <strong>crouched</strong><br>use <strong class='color-f'>energy</strong> to emit <strong>3</strong> unaimed <strong class='color-laser'>lasers</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("mine")
+            },
+            requires: "mines",
+            effect() {
+                tech.isLaserMine = true;
+            },
+            remove() {
+                tech.isLaserMine = false;
+            }
+        },
+        {
+            name: "sentry",
+            description: "instead of detonating, <strong>mines</strong> <strong>target</strong> mobs<br>with a stream of nails for about <strong>17</strong> seconds",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("mine") && !tech.isFoamMine
+            },
+            requires: "mines, not elephant's toothpaste",
+            effect() {
+                tech.isMineSentry = true;
+            },
+            remove() {
+                tech.isMineSentry = false;
+            }
+        },
+        {
+            name: "mycelial fragmentation",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Fungus' class="link">mycelial fragmentation</a>`,
+            description: "during their <strong>growth</strong> phase<br><strong>+70%</strong> <strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> discharge",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("spores")
+            },
+            requires: "spores",
+            effect() {
+                tech.isSporeGrowth = true
+            },
+            remove() {
+                tech.isSporeGrowth = false
+            }
+        },
+        {
+            name: "colony",
+            description: "<strong>+50%</strong> <strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> discharge<br><strong>40%</strong> chance to discharge something different",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Colony_(biology)' class="link">colony</a>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("spores")
+            },
+            requires: "spores",
+            effect() {
+                tech.isSporeColony = true
+            },
+            remove() {
+                tech.isSporeColony = false
+            }
+        },
+        {
+            name: "cryodesiccation",
+            descriptionFunction() { return `<strong>+25%</strong> <strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> discharge<br> ${b.guns[6].nameString('s')} <strong class='color-s'>freeze</strong> mobs for <strong>1.5</strong> second` },
+            // description: "<strong>+25%</strong> <strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> discharge<br><strong class='color-p' style='letter-spacing: 2px;'>spores</strong> <strong class='color-s'>freeze</strong> mobs for <strong>1.5</strong> second",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("spores") || tech.sporesOnDeath > 0 || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 0) || tech.isSporeWorm || tech.isSporeFlea
+            },
+            requires: "spores",
+            effect() {
+                tech.isSporeFreeze = true
+            },
+            remove() {
+                tech.isSporeFreeze = false
+            }
+        },
+        {
+            name: "flagella",
+            descriptionFunction() { return `<strong>+50%</strong> ${b.guns[6].nameString()} acceleration<br>if they can't find a target ${b.guns[6].nameString('s')} follow you` },
+            // description: "<strong>+50%</strong> <strong class='color-p' style='letter-spacing: 2px;'>spore</strong> acceleration<br>if they can't find a target <strong class='color-p' style='letter-spacing: 2px;'>spores</strong> follow you",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("spores") || tech.sporesOnDeath > 0 || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 0) || tech.isSporeWorm || tech.isSporeFlea
+            },
+            requires: "spores",
+            effect() {
+                tech.isSporeFollow = true
+            },
+            remove() {
+                tech.isSporeFollow = false
+            }
+        },
+        {
+            name: "junk DNA",
+            descriptionFunction() { return `<strong>+53%</strong> ${b.guns[6].nameString()} <strong class='color-d'>damage</strong> per <strong class='color-j'>JUNK</strong><strong class='color-m'>tech</strong> <em>(${(53*tech.junkCount).toFixed(0)}%)</em><br><strong>+50%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool` },
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("spores") || tech.sporesOnDeath > 0 || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 0) || tech.isSporeWorm || tech.isSporeFlea
+            },
+            requires: "spores",
+            effect() {
+                tech.isJunkDNA = true
+                this.refundAmount += tech.addJunkTechToPool(0.5)
+            },
+            refundAmount: 0,
+            remove() {
+                tech.isJunkDNA = false
+                if (this.count > 0 && this.refundAmount > 0) {
+                    tech.removeJunkTechFromPool(this.refundAmount)
+                    this.refundAmount = 0
+                }
+            }
+        },
+        // {
+        //     name: "junk DNA",
+        //     //increase damage by 10% for each JUNK tech percent in the tech pool, remove all JUNK tech,
+        //     descriptionFunction() { return `<strong>+50%</strong> ${b.guns[6].nameString()} <strong class='color-d'>damage</strong><br><strong>+15%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool` },
+        //     isGunTech: true,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 3,
+        //     frequencyDefault: 3,
+        //     allowed() {
+        //         return tech.haveGunCheck("spores") || tech.sporesOnDeath > 0 || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 0) || tech.isSporeWorm || tech.isSporeFlea
+        //     },
+        //     requires: "spores",
+        //     effect() {
+        //         tech.isSporeWorm = true
+        //         this.refundAmount += tech.addJunkTechToPool(0.15)
+        //     },
+        //     refundAmount: 0,
+        //     remove() {
+        //         tech.isSporeWorm = false
+        //         if (this.count > 0 && this.refundAmount > 0) {
+        //             tech.removeJunkTechFromPool(this.refundAmount)
+        //             this.refundAmount = 0
+        //         }
+        //     }
+        // },
+        {
+            name: "mutualism",
+            descriptionFunction() { return `<strong>+150%</strong> ${b.guns[6].nameString()} <strong class='color-d'>damage</strong><br>${b.guns[6].nameString('s')} borrow <strong>0.5</strong> <strong class='color-h'>health</strong> until they <strong>die</strong>` },
+            // description: `<strong>+150%</strong> ${b.guns[6].name()} <strong class='color-d'>damage</strong><br><strong class='color-p' style='letter-spacing: 2px;'>spores</strong> borrow <strong>0.5</strong> <strong class='color-h'>health</strong> until they <strong>die</strong>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.haveGunCheck("spores") || tech.sporesOnDeath > 0 || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 0)) || tech.isSporeWorm || tech.isSporeFlea
+            },
+            requires: "spores",
+            effect() {
+                tech.isMutualism = true
+            },
+            remove() {
+                tech.isMutualism = false
+            }
+        },
+        {
+            name: "siphonaptera",
+            description: "<strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> and <strong>shotgun</strong> hatch <strong class='color-p' style='letter-spacing: -0.8px;'>fleas</strong>", //<br><strong class='color-p' style='letter-spacing: 2px;'>spore</strong> <strong class='color-m'>tech</strong> applies to <strong class='color-p' style='letter-spacing: -0.8px;'>fleas</strong>
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (tech.haveGunCheck("spores") || tech.sporesOnDeath > 0 || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 0) || (tech.haveGunCheck("shotgun") && !tech.isIncendiary && !tech.isRivets && !tech.isIceShot && !tech.isFoamShot && !tech.isNeedles && !tech.isNailShot)) && !tech.isSporeWorm
+            },
+            requires: "spores, not worms",
+            effect() {
+                tech.isSporeFlea = true
+            },
+            remove() {
+                tech.isSporeFlea = false
+
+            }
+        },
+        {
+            name: "nematodes",
+            description: "<strong>shotgun</strong> and <strong class='color-p' style='letter-spacing: 2px;'>sporangium</strong> hatch <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong>", //<br><strong class='color-p' style='letter-spacing: 2px;'>spore</strong> <strong class='color-m'>tech</strong> applies to <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong>
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (tech.haveGunCheck("spores") || tech.sporesOnDeath > 0 || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 0) || (tech.haveGunCheck("shotgun") && !tech.isIncendiary && !tech.isRivets && !tech.isIceShot && !tech.isFoamShot && !tech.isNeedles && !tech.isNailShot)) && !tech.isSporeFlea
+            },
+            requires: "spores, not fleas",
+            effect() {
+                tech.isSporeWorm = true
+            },
+            remove() {
+                tech.isSporeWorm = false
+            }
+        },
+        {
+            name: "K-selection",
+            description: "<strong>+37%</strong> size and <strong class='color-d'>damage</strong><br>for <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong> and <strong class='color-p' style='letter-spacing: -0.8px;'>fleas</strong>",
+            isGunTech: true,
+            maxCount: 3,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isSporeWorm || tech.isSporeFlea
+            },
+            requires: "spores, shotgun, worms, fleas",
+            effect() {
+                tech.wormSize++
+            },
+            remove() {
+                tech.wormSize = 0
+            }
+        },
+        {
+            name: "path integration",
+            description: "<strong>drones</strong>, <strong class='color-p' style='letter-spacing: 2px;'>spores</strong>, <strong class='color-p' style='letter-spacing: -0.8px;'>fleas</strong>, and <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong><br>travel with you through <strong>levels</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.isSporeFollow && (tech.haveGunCheck("spores") || (tech.haveGunCheck("shotgun") && tech.isSporeWorm))) || tech.haveGunCheck("drones") || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && (simulation.molecularMode === 0 || simulation.molecularMode === 3))
+            },
+            requires: "spores, worms, flagella, drones",
+            effect() {
+                tech.isDronesTravel = true
+            },
+            remove() {
+                tech.isDronesTravel = false
+            }
+        },
+        {
+            name: "reduced tolerances",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Engineering_tolerance' class="link">reduced tolerances</a>`,
+            description: `<strong>+66%</strong> <strong>drones</strong> per ${powerUps.orb.ammo()} and <strong class='color-f'>energy</strong><br><strong>–40%</strong> drone <strong>duration</strong>`,
+            isGunTech: true,
+            maxCount: 3,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return !tech.isDroneRadioactive && (tech.haveGunCheck("drones") || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 3))
+            },
+            requires: "drones, not irradiated drones",
+            effect() {
+                tech.droneCycleReduction = Math.pow(0.6, 1 + this.count)
+                tech.droneEnergyReduction = Math.pow(0.333, 1 + this.count)
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "drones") {
+                        const scale = Math.pow(3, this.count + 1)
+                        b.guns[i].ammoPack = b.guns[i].defaultAmmoPack * scale
+                    }
+                }
+            },
+            remove() {
+                tech.droneCycleReduction = 1
+                tech.droneEnergyReduction = 1
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "drones") b.guns[i].ammoPack = b.guns[i].defaultAmmoPack
+                }
+            }
+        },
+        {
+            name: "delivery drone",
+            description: "if a <strong>drone</strong> picks up a <strong>power up</strong>,<br>it becomes <strong>larger</strong>, <strong>faster</strong>, and more <strong>durable</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("drones") || tech.isForeverDrones || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 3)
+            },
+            requires: "drones",
+            effect() {
+                tech.isDroneGrab = true
+            },
+            remove() {
+                tech.isDroneGrab = false
+            }
+        },
+        {
+            name: "drone repair",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Unmanned_aerial_vehicle' class="link">drone repair</a>`,
+            description: "after a <strong>drone</strong> expires it <strong>redeploys</strong><br>for a <strong>20%</strong> chance to use <strong>1</strong> <strong>drone</strong> <strong class='color-ammo'>ammo</strong>",
+            // description: "broken <strong>drones</strong> <strong>repair</strong> if the drone <strong class='color-g'>gun</strong> is active<br><strong>repairing</strong> has a <strong>25%</strong> chance to use <strong>1</strong> <strong>drone</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("drones")
+            },
+            requires: "drones",
+            effect() {
+                tech.isDroneRespawn = true
+            },
+            remove() {
+                tech.isDroneRespawn = false
+            }
+        },
+        {
+            name: "brushless motor",
+            description: "<strong>drones</strong> rapidly <strong>rush</strong> towards their target<br><strong>+33%</strong> <strong>drone</strong> collision <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (tech.haveGunCheck("drones") || tech.isForeverDrones || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 3)) && !tech.isDroneRadioactive && !tech.isIncendiary
+            },
+            requires: "drones, molecular assembler, not irradiated drones, incendiary",
+            effect() {
+                tech.isDroneTeleport = true
+            },
+            remove() {
+                tech.isDroneTeleport = false
+            }
+        },
+        {
+            name: "axial flux motor",
+            description: "<strong>+66%</strong> <strong>drones</strong> <strong>rush</strong> frequency<br><strong>+44%</strong> <strong>drone</strong> collision <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isDroneTeleport
+            },
+            requires: "drones, brushless motor",
+            effect() {
+                tech.isDroneFastLook = true
+            },
+            remove() {
+                tech.isDroneFastLook = false
+            }
+        },
+        {
+            name: "irradiated drones",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Irradiation' class="link">irradiated drones</a>`,
+            description: `the space around <strong>drones</strong> is <strong class='color-p'>irradiated</strong><br><strong>–75%</strong> <strong>drones</strong> per ${powerUps.orb.ammo()} and <strong class='color-f'>energy</strong>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.droneCycleReduction === 1 && !tech.isIncendiary && !tech.isDroneTeleport && (tech.haveGunCheck("drones") || tech.isForeverDrones || (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && simulation.molecularMode === 3))
+            },
+            requires: "drones, not reduced tolerances, incendiary, torque bursts",
+            effect() {
+                tech.isDroneRadioactive = true
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "drones") {
+                        b.guns[i].ammoPack = b.guns[i].defaultAmmoPack * 0.25
+                        b.guns[i].ammo = Math.ceil(b.guns[i].ammo * 0.25)
+                        simulation.makeGunHUD();
+                    }
+                }
+            },
+            remove() {
+                if (tech.isDroneRadioactive) {
+                    tech.isDroneRadioactive = false
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "drones") {
+                            b.guns[i].ammoPack = b.guns[i].defaultAmmoPack
+                            b.guns[i].ammo = b.guns[i].ammo * 4
+                            simulation.makeGunHUD();
+                        }
+                    }
+                }
+            }
+        },
+        {
+            name: "beta radiation", //"control rod ejection",
+            description: "<strong>–50%</strong> <strong>drone</strong> duration<br><strong>+100%</strong> <strong>drone</strong> <strong class='color-p'>radiation</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isDroneRadioactive
+            },
+            requires: "drones, irradiated drones",
+            effect() {
+                tech.droneRadioDamage = 2
+            },
+            remove() {
+                tech.droneRadioDamage = 1
+            }
+        },
+        {
+            name: "orthocyclic winding",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Coil_winding_technology' class="link">orthocyclic winding</a>`,
+            description: "<strong>+66%</strong> <strong>drone</strong> acceleration<br><strong>+33%</strong> <strong class='color-p'>radiation</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.isDroneRadioactive
+            },
+            requires: "drones, irradiated drones",
+            effect() {
+                tech.isFastDrones = true
+            },
+            remove() {
+                tech.isFastDrones = false
+            }
+        },
+        {
+            name: "fault tolerance",
+            description: `use ${powerUps.orb.research(2)}to trade your <strong>drone</strong> <strong class='color-g'>gun</strong><br>for <strong>5</strong> <strong>drones</strong> that last <strong>forever</strong>`,
+            isGunTech: true,
+            isRemoveGun: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.haveGunCheck("drones", false) && !tech.isDroneRespawn && tech.isBulletsLastLonger === 1 && !tech.isDronesTravel && (build.isExperimentSelection || powerUps.research.count > 1)
+            },
+            requires: "drones, not drone repair, anti-shear topology, autonomous navigation",
+            effect() {
+                const num = 5
+                tech.isForeverDrones += num
+                if (tech.haveGunCheck("drones", false)) b.removeGun("drones")
+                //spawn drones
+                if (tech.isDroneRadioactive) {
+                    for (let i = 0; i < num * 0.25; i++) {
+                        b.droneRadioactive({ x: m.pos.x + 30 * (Math.random() - 0.5), y: m.pos.y + 30 * (Math.random() - 0.5) }, 5)
+                        bullet[bullet.length - 1].endCycle = Infinity
+                    }
+                } else {
+                    for (let i = 0; i < num; i++) {
+                        b.drone({ x: m.pos.x + 30 * (Math.random() - 0.5), y: m.pos.y + 30 * (Math.random() - 0.5) }, 5)
+                        bullet[bullet.length - 1].endCycle = Infinity
+                    }
+                }
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.isForeverDrones = 0
+                if (this.count && !tech.haveGunCheck("drones", false)) b.giveGuns("drones")
+                if (this.count > 0) powerUps.research.changeRerolls(2)
+            }
+        },
+        {
+            name: "surfactant",
+            description: `use ${powerUps.orb.research(2)}to trade your <strong>foam</strong> <strong class='color-g'>gun</strong><br>for <strong>3</strong> <strong class='color-bot'>foam-bots</strong> and <strong>foam-bot upgrade</strong>`,
+            isGunTech: true,
+            isRemoveGun: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBot: true,
+            isBotTech: true,
+            isNonRefundable: true,
+            requires: "foam gun, bot upgrades, fractionation, pressure vessel",
+            allowed() {
+                return tech.haveGunCheck("foam", false) && !b.hasBotUpgrade() && !tech.isAmmoFoamSize && !tech.isFoamPressure && (build.isExperimentSelection || powerUps.research.count > 1)
+            },
+            effect() {
+                tech.giveTech("foam-bot upgrade")
+                for (let i = 0; i < 2; i++) {
+                    b.foamBot()
+                    tech.foamBotCount++;
+                }
+                simulation.makeTextLog(`tech.isFoamBotUpgrade = true`)
+                if (tech.haveGunCheck("foam", false)) b.removeGun("foam")
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                // if (this.count) {
+                //     b.clearPermanentBots();
+                //     b.respawnBots();
+                //     if (!tech.haveGunCheck("foam")) b.giveGuns("foam")
+                // }
+                // if (this.count > 0) powerUps.research.changeRerolls(2)
+            }
+        },
+        {
+            name: "electrostatic induction",
+            description: "<strong>foam</strong> bubbles are electrically charged<br>causing <strong>attraction</strong> to nearby <strong>mobs</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return !tech.isBulletTeleport && (tech.haveGunCheck("foam") || tech.isFoamBotUpgrade || tech.isFoamShot || tech.isFoamBall || tech.isFoamMine)
+            },
+            requires: "foam, not uncertainty",
+            effect() {
+                tech.isFoamAttract = true
+            },
+            remove() {
+                tech.isFoamAttract = false
+            }
+        },
+        {
+            name: "uncertainty principle",
+            description: "<strong>foam</strong> and <strong>wave</strong> positions are erratic<br><strong>+53%</strong> <strong>foam</strong> and <strong>wave</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (!tech.isFoamAttract && (tech.haveGunCheck("foam") || tech.isFoamBotUpgrade || tech.isFoamShot || tech.isFoamBall || tech.isFoamMine)) || (tech.haveGunCheck("wave") && !tech.is360Longitudinal)
+            },
+            requires: "foam, wave, not isotropic, electrostatic induction",
+            effect() {
+                tech.isBulletTeleport = true
+            },
+            remove() {
+                tech.isBulletTeleport = false;
+            }
+        },
+        {
+            name: "necrophage",
+            description: "if <strong>foam</strong>, <strong class='color-p' style='letter-spacing: -0.8px;'>fleas</strong>, or <strong class='color-p' style='letter-spacing: -0.8px;'>worms</strong> <strong>kill</strong> their target<br>they grow 3 <strong>copies</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("foam") || tech.isFoamBall || tech.isFoamBotUpgrade || tech.isFoamShot || tech.isSporeWorm || tech.isSporeFlea || tech.isFoamMine
+            },
+            requires: "foam, spores, worms, fleas",
+            effect() {
+                tech.isSpawnBulletsOnDeath = true
+            },
+            remove() {
+                tech.isSpawnBulletsOnDeath = false;
+            }
+        },
+        {
+            name: "aerogel",
+            description: "<strong>–50%</strong> <strong>foam</strong> duration and <strong>foam</strong> bubbles <strong>float</strong><br><strong>+180%</strong> <strong>foam</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("foam") || tech.isFoamBotUpgrade || tech.isFoamShot || tech.isFoamBall || tech.isFoamMine
+            },
+            requires: "foam",
+            effect() {
+                tech.isFastFoam = true
+                tech.foamGravity = -0.0003
+            },
+            remove() {
+                tech.isFastFoam = false;
+                tech.foamGravity = 0.00008
+            }
+        },
+        {
+            name: "surface tension",
+            description: "<strong>+43%</strong> <strong>foam</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("foam") || tech.isFoamBotUpgrade || tech.isFoamShot || tech.isFoamBall || tech.isFoamMine
+            },
+            requires: "foam",
+            effect() {
+                tech.foamDamage += 0.011 * 0.43
+            },
+            remove() {
+                tech.foamDamage = 0.011;
+            }
+        },
+        {
+            name: "foam fractionation",
+            description: "if you have below <strong>300</strong> <strong class='color-ammo'>ammo</strong><br><strong>+100%</strong> <strong>foam</strong> <strong class='color-g'>gun</strong> bubble <strong>size</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("foam")
+            },
+            requires: "foam",
+            effect() {
+                tech.isAmmoFoamSize = true
+            },
+            remove() {
+                tech.isAmmoFoamSize = false;
+            }
+        },
+        {
+            name: "ideal gas law",
+            description: `remove <strong>all</strong> current <strong>foam</strong> <strong class='color-ammo'>ammo</strong><br><strong>+1200%</strong> <strong>foam</strong> <strong class='color-ammo'>ammo</strong> per ${powerUps.orb.ammo(1)}`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("foam") && !tech.isEnergyNoAmmo
+            },
+            requires: "foam, not non-renewables",
+            ammoLost: 0,
+            effect() {
+                b.guns[8].ammoPack = b.guns[8].ammoPack * 12;
+                this.ammoLost = b.guns[8].ammo
+                b.guns[8].ammo = 0
+                simulation.updateGunHUD()
+            },
+            remove() {
+                b.guns[8].ammoPack = 24
+                if (this.count) {
+                    b.guns[8].ammo += this.ammoLost
+                    simulation.updateGunHUD()
+                }
+            }
+        },
+        {
+            name: "pressure vessel",
+            description: "build up <strong>charge</strong> while firing <strong>foam</strong> <strong class='color-g'>gun</strong><br>after firing <strong>discharge</strong> <strong>foam</strong> bubbles",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("foam")
+            },
+            requires: "foam",
+            effect() {
+                tech.isFoamPressure = true;
+                b.guns[8].chooseFireMethod()
+            },
+            remove() {
+                tech.isFoamPressure = false;
+                b.guns[8].chooseFireMethod()
+            }
+        },
+        {
+            name: "capacitor bank",
+            // description: "<strong>charge</strong> effects build up almost <strong>instantly</strong><br><em style = 'font-size:97%;'>throwing <strong class='color-block'>blocks</strong>, foam, railgun, pulse, tokamak</em>",
+            descriptionFunction() { return `<strong>charge</strong> effects build up almost <strong>instantly</strong><br><em style = 'font-size:93%;'>throwing, ${tech.haveGunCheck("foam", false) ? "<strong>foam</strong>" : "foam"}, ${tech.isPlasmaBall ? "<strong>plasma ball</strong>" : "plasma ball"}, ${tech.isRailGun ? "<strong>railgun</strong>" : "railgun"}, ${tech.isPulseLaser ? "<strong>pulse</strong>" : "pulse"}, ${tech.isTokamak ? "<strong>tokamak</strong>" : "tokamak"}</em>` },
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.blockDamage > 0.075 || tech.isRailGun || (tech.haveGunCheck("foam") && tech.isFoamPressure) || tech.isTokamak || tech.isPulseLaser || tech.isPlasmaBall
+            },
+            requires: "mass driver, railgun, foam, pressure vessel, pulse, tokamak, plasma ball",
+            effect() {
+                tech.isCapacitor = true;
+            },
+            remove() {
+                tech.isCapacitor = false;
+            }
+        },
+        {
+            name: "Bitter electromagnet",
+            descriptionFunction() { return `<strong>railgun</strong> charges <strong>+33%</strong> slower<br><strong>+100%</strong> <strong>harpoon</strong> density and <strong class='color-d'>damage</strong>` },
+            isGunTech: true,
+            maxCount: 3,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && tech.isRailGun
+            },
+            requires: "harpoon, railgun",
+            effect() {
+                tech.railChargeRate *= 1.06
+                tech.harpoonDensity += 0.0065
+            },
+            remove() {
+                tech.railChargeRate = 0.97;
+                tech.harpoonDensity = 0.0065
+            }
+        },
+        {
+            name: "railgun",
+            description: `<strong>harpoons</strong> can't <strong>retract</strong>, hold fire to charge<br><strong>+50%</strong> <strong>harpoon</strong> density and <strong class='color-d'>damage</strong>`,
+            // description: `<strong>+900%</strong> <strong>harpoon</strong> <strong class='color-ammo'>ammo</strong>, but it can't <strong>retract</strong><br><strong>+50%</strong> <strong>harpoon</strong> density and <strong class='color-d'>damage</strong>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && !tech.isFilament && !tech.isHarpoonPowerUp && !tech.isGrapple && !tech.isBoostReplaceAmmo
+            },
+            requires: "harpoon, not UHMWPE, induction furnace, grappling hook, quasiparticles",
+            ammoBonus: 9,
+            effect() {
+                tech.isRailGun = true;
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "harpoon") {
+                        b.guns[i].chooseFireMethod()
+                        b.guns[i].ammoPack = this.ammoBonus;
+                        b.guns[i].ammo = b.guns[i].ammo * this.ammoBonus;
+                        simulation.updateGunHUD();
+                        break
+                    }
+                }
+            },
+            remove() {
+                if (tech.isRailGun) {
+                    tech.isRailGun = false;
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "harpoon") {
+                            b.guns[i].chooseFireMethod()
+                            b.guns[i].ammoPack = 0.6;
+                            b.guns[i].ammo = Math.ceil(b.guns[i].ammo / this.ammoBonus);
+                            simulation.updateGunHUD();
+                            break
+                        }
+                    }
+                }
+            }
+        },
+        {
+            name: "grappling hook",
+            description: `<strong>harpoons</strong> attach to the <strong>map</strong> and pull you<br>your <strong>rope</strong> extends while holding <strong>fire</strong>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && !tech.isFilament && !tech.isHarpoonPowerUp && !tech.isRailGun && !tech.isFireMoveLock
+            },
+            requires: "harpoon, not railgun, UHMWPE, induction furnace, Higgs mechanism",
+            effect() {
+                tech.isGrapple = true;
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "harpoon") b.guns[i].chooseFireMethod()
+                }
+            },
+            remove() {
+                if (tech.isGrapple) {
+                    tech.isGrapple = false;
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "harpoon") b.guns[i].chooseFireMethod()
+                    }
+                }
+            }
+        },
+        {
+            name: "bulk modulus",
+            description: `while <strong>grappling</strong> become <strong>invulnerable</strong><br>drain <strong class='color-f'>energy</strong>`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && tech.isGrapple && !tech.isRailEnergy
+            },
+            requires: "grappling hook, not alternator",
+            effect() {
+                tech.isImmuneGrapple = true;
+            },
+            remove() {
+                tech.isImmuneGrapple = false
+            }
+        },
+        {
+            name: "alternator",
+            description: "<strong>+80%</strong> <strong>harpoon</strong> <strong class='color-f'>energy</strong> efficiency",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && !tech.isImmuneGrapple
+            },
+            requires: "harpoon, not bulk modulus",
+            effect() {
+                tech.isRailEnergy = true;
+            },
+            remove() {
+                tech.isRailEnergy = false;
+            }
+        },
+        {
+            name: "ceramics",
+            description: `<strong>needles</strong> and <strong>harpoons</strong> pierce <strong>shields</strong><br>directly <strong class='color-d'>damaging</strong> shielded mobs`,
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (!tech.isLargeHarpoon && tech.haveGunCheck("harpoon")) || tech.isNeedles
+            },
+            requires: "needle gun, harpoon, not Bessemer process",
+            effect() {
+                tech.isShieldPierce = true
+            },
+            remove() {
+                tech.isShieldPierce = false
+            }
+        },
+        {
+            name: "Bessemer process",
+            descriptionFunction() {
+                return `+${(10 * Math.sqrt(b.guns[9].ammo)).toFixed(0)}% <strong>harpoon</strong> size and <strong class='color-d'>damage</strong><br><em>(1/10 √ harpoon <strong class='color-ammo'>ammo</strong>)</em>`
+            },
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && !tech.isShieldPierce
+            },
+            requires: "harpoon, not ceramics",
+            effect() {
+                tech.isLargeHarpoon = true;
+            },
+            remove() {
+                tech.isLargeHarpoon = false;
+            }
+        },
+        {
+            name: "smelting",
+            descriptionFunction() { return `forge <strong>${this.removeAmmo()}</strong> <strong class='color-ammo'>ammo</strong> into a new harpoon<br>fire <strong>+1</strong> <strong>harpoon</strong> with each shot` },
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            ammoRemoved: 0,
+            removeAmmo() {
+                return (tech.isRailGun ? 5 : 1) * (2 + 2 * this.count)
+            },
+            allowed() {
+                return tech.haveGunCheck("harpoon") && b.returnGunAmmo('harpoon') >= this.removeAmmo()
+            },
+            requires: "harpoon",
+            effect() {
+                for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                    if (b.guns[i].name === "harpoon") {
+                        const removeAmmo = this.removeAmmo()
+                        this.ammoRemoved += removeAmmo
+                        b.guns[i].ammo -= removeAmmo
+                        if (b.guns[i].ammo < 0) b.guns[i].ammo = 0
+                        simulation.updateGunHUD();
+                        tech.extraHarpoons++;
+                        break
+                    }
+                }
+            },
+            remove() {
+                if (tech.extraHarpoons) {
+                    for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+                        if (b.guns[i].name === "harpoon") {
+                            b.guns[i].ammo += this.ammoRemoved
+                            simulation.updateGunHUD();
+                            break
+                        }
+                    }
+                }
+                this.ammoRemoved = 0
+                tech.extraHarpoons = 0;
+            }
+        },
+        {
+            name: "UHMWPE",
+            descriptionFunction() {
+                return `+${(b.guns[9].ammo).toFixed(0)}% <strong>harpoon</strong> <strong>rope</strong> <strong>length</strong><br><em>(1/80 of harpoon <strong class='color-ammo'>ammo</strong>)</em>`
+            },
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && !tech.isRailGun && !tech.isGrapple
+            },
+            requires: "harpoon, not grappling hook, railgun",
+            effect() {
+                tech.isFilament = true;
+            },
+            remove() {
+                tech.isFilament = false;
+            }
+        },
+        {
+            name: "induction furnace",
+            description: "after using <strong>harpoon</strong> to collect a <strong>power up</strong><br><strong>+600%</strong> <strong>harpoon</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("harpoon") && !tech.isRailGun && !tech.isGrapple
+            },
+            requires: "harpoon, not grappling hook, railgun",
+            effect() {
+                tech.isHarpoonPowerUp = true
+            },
+            remove() {
+                tech.isHarpoonPowerUp = false
+            }
+        },
+        {
+            name: "quasiparticles",
+            descriptionFunction() {
+                return `convert current and future ${powerUps.orb.ammo(1)} into ${powerUps.orb.boost(1)} which<br>give <strong>+${(powerUps.boost.damage*100).toFixed(0)}%</strong> <strong class='color-d'>damage</strong> for <strong>${(powerUps.boost.duration/60).toFixed(0)}</strong> seconds`
+            },
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return ((tech.haveGunCheck("wave") && tech.infiniteWaveAmmo !== 1) || tech.haveGunCheck("laser") || (tech.haveGunCheck("harpoon") && !tech.isRailGun)) && !tech.isEnergyNoAmmo
+            },
+            requires: "harpoon, laser, wave, frequency, not railgun, non-renewables",
+            effect() {
+                tech.isBoostReplaceAmmo = true
+                for (let i = powerUp.length - 1; i > -1; i--) {
+                    if (powerUp[i].name === "ammo") {
+                        powerUps.spawn(powerUp[i].position.x + 50 * (Math.random() - 0.5), powerUp[i].position.y + 50 * (Math.random() - 0.5), "boost");
+                        Matter.Composite.remove(engine.world, powerUp[i]);
+                        powerUp.splice(i, 1);
+                    }
+                }
+
+            },
+            remove() {
+                tech.isBoostReplaceAmmo = false
+            }
+        },
+        {
+            name: "optical amplifier",
+            description: "gain <strong>3</strong> random <strong class='color-laser'>laser</strong> <strong class='color-g'>gun</strong><strong class='color-m'>tech</strong><br><strong class='color-laser'>laser</strong> only turns <strong>off</strong> if you have no <strong class='color-f'>energy</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isNonRefundable: true,
+            allowed() {
+                return tech.haveGunCheck("laser") && !tech.isPulseLaser
+            },
+            requires: "laser gun, not pulse",
+            effect() {
+                let techGiven = 0
+                for (let j = 0; j < 3; j++) {
+                    const names = ["quasiparticles", "lens", "compound lens", "arc length", "infrared diode", "free-electron laser", "dye laser", "relativistic momentum", "specular reflection", "diffraction grating", "diffuse beam", "output coupler", "slow light", "laser-bot", "laser-bot upgrade"]
+                    //convert names into indexes
+                    const options = []
+                    for (let i = 0; i < names.length; i++) {
+                        for (let k = 0; k < tech.tech.length; k++) {
+                            if (tech.tech[k].name === names[i]) {
+                                options.push(k)
+                                break
+                            }
+                        }
+                    }
+                    //remove options that don't meet requirements
+                    for (let i = options.length - 1; i > -1; i--) {
+                        const index = options[i]
+                        if (!(tech.tech[index].count < tech.tech[index].maxCount) || !tech.tech[index].allowed()) {
+                            options.splice(i, 1);
+                        }
+                    }
+                    //pick one option
+                    if (options.length) {
+                        const index = options[Math.floor(Math.random() * options.length)]
+                        simulation.makeTextLog(`<span class='color-var'>tech</span>.giveTech("<span class='color-text'>${tech.tech[index].name}</span>") <em>//optical amplifier</em>`, 360);
+                        tech.giveTech(index)
+                        techGiven++
+                    }
+                }
+                if (techGiven > 0) {
+                    tech.isStuckOn = true
+                } else { //eject if none found
+                    simulation.makeTextLog(`0 <span class='color-var'>tech</span> found <em>//optical amplifier</em>`);
+                    const loop = () => {
+                        if (!simulation.paused && m.alive) {
+                            for (let i = 0; i < tech.tech.length; i++) {
+                                if (tech.tech[i].name === this.name) powerUps.ejectTech(i)
+                            }
+                            return
+                        }
+                        requestAnimationFrame(loop);
+                    }
+                    requestAnimationFrame(loop);
+                }
+            },
+            remove() {
+                tech.isStuckOn = false
+            }
+        },
+        {
+            name: "relativistic momentum",
+            description: "<strong class='color-laser'>lasers</strong> push <strong>mobs</strong> and <strong class='color-block'>blocks</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.haveGunCheck("laser") && !tech.isPulseLaser) || tech.isLaserBotUpgrade
+            },
+            requires: "laser, not pulse",
+            effect() {
+                tech.isLaserPush = true;
+            },
+            remove() {
+                tech.isLaserPush = false;
+            }
+        },
+        {
+            name: "iridescence",
+            // description: "if a <strong class='color-laser'>laser</strong> hits a mob at a low angle of illumination<br><strong>+66%</strong> <strong class='color-laser'>laser</strong> <strong class='color-d'>damage</strong>",
+            description: "if <strong class='color-laser'>laser</strong> beams hit mobs near their <strong>center</strong><br><strong>+100%</strong> <strong class='color-laser'>laser</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.haveGunCheck("laser") && !tech.isPulseLaser) || tech.isLaserBotUpgrade || tech.isLaserMine
+            },
+            requires: "laser, not pulse",
+            effect() {
+                tech.laserCrit += 1;
+            },
+            remove() {
+                tech.laserCrit = 0;
+            }
+        },
+        {
+            name: "lens",
+            description: "<strong>+150%</strong> <strong class='color-laser'>laser</strong> <strong class='color-g'>gun</strong> <strong class='color-d'>damage</strong> if it passes<br>through a revolving <strong>90°</strong> arc circular lens", //<span style='font-size: 125%;'>π</span> / 2</strong>
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("laser")
+            },
+            requires: "laser",
+            effect() {
+                tech.isLaserLens = true
+                b.guns[11].chooseFireMethod()
+                // if (this.count > 0) b.guns[11].lensDamageOn += 20 * Math.PI / 180
+                // b.guns[11].arcRange = 0.78
+            },
+            remove() {
+                tech.isLaserLens = false
+                b.guns[11].chooseFireMethod()
+                // b.guns[11].lensDamageOn = 2.5 // 100% + 150%
+                // b.guns[11].arcRange = 0
+            }
+        },
+        {
+            name: "compound lens",
+            description: "<strong>+50%</strong> <strong class='color-laser'>laser</strong> lens <strong class='color-d'>damage</strong><br><strong>+15°</strong> lens arc",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("laser") && tech.isLaserLens
+            },
+            requires: "lens",
+            effect() {
+                b.guns[11].arcRange += 15 * Math.PI / 180 / 2
+                b.guns[11].lensDamageOn += 0.5
+            },
+            remove() {
+                b.guns[11].arcRange = 90 * Math.PI / 180 / 2 //0.78 divded by 2 because of how it's drawn
+                b.guns[11].lensDamageOn = 2.5
+            }
+        },
+        {
+            name: "specular reflection",
+            description: "<strong>+2</strong> <strong class='color-laser'>laser</strong> beam reflections",
+            isGunTech: true,
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (tech.haveGunCheck("laser") || tech.isLaserMine || tech.isLaserBotUpgrade) && !tech.isWideLaser && !tech.isPulseLaser && !tech.historyLaser
+            },
+            requires: "laser, not diffuse beam, pulse, or slow light",
+            effect() {
+                tech.laserReflections += 2;
+            },
+            remove() {
+                tech.laserReflections = 2;
+            }
+        },
+        {
+            name: "diffraction grating",
+            description: `<strong>+1</strong> diverging <strong class='color-laser'>laser</strong> <strong class='color-g'>gun</strong> beam`,
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.haveGunCheck("laser") && !tech.isWideLaser && !tech.isPulseAim && !tech.historyLaser
+            },
+            requires: "laser gun, not neocognitron, diffuse beam, or slow light",
+            effect() {
+                tech.beamSplitter++
+                b.guns[11].chooseFireMethod()
+            },
+            remove() {
+                if (tech.beamSplitter !== 0) {
+                    tech.beamSplitter = 0
+                    b.guns[11].chooseFireMethod()
+                }
+            }
+        },
+        {
+            name: "diffuse beam",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Diffuser_(optics)' class="link">diffuse beam</a>`,
+            description: "<strong class='color-laser'>laser</strong> <strong class='color-g'>gun</strong> beam is <strong>wider</strong> and doesn't <strong>reflect</strong><br><strong>+220%</strong> <strong class='color-laser'>laser</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("laser") && tech.laserReflections < 3 && !tech.beamSplitter && !tech.isPulseLaser && !tech.historyLaser
+            },
+            requires: "laser gun, not specular reflection, diffraction grating, slow light, pulse",
+            effect() {
+                if (tech.wideLaser === 0) tech.wideLaser = 3
+                tech.isWideLaser = true;
+                b.guns[11].chooseFireMethod()
+            },
+            remove() {
+                if (tech.isWideLaser) {
+                    // tech.wideLaser = 0
+                    tech.isWideLaser = false;
+                    b.guns[11].chooseFireMethod()
+                }
+            }
+        },
+        {
+            name: "output coupler",
+            description: "<strong>+30%</strong> <strong class='color-laser'>laser</strong> <strong class='color-g'>gun</strong> beam <strong>width</strong><br><strong>+30%</strong> <strong class='color-laser'>laser</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("laser") && tech.isWideLaser
+            },
+            requires: "laser gun, diffuse beam",
+            effect() {
+                tech.wideLaser += 2
+                b.guns[11].chooseFireMethod()
+            },
+            remove() {
+                if (tech.isWideLaser) {
+                    tech.wideLaser = 3
+                } else {
+                    tech.wideLaser = 0
+                }
+                b.guns[11].chooseFireMethod()
+            }
+        },
+        {
+            name: "slow light",
+            description: "<strong class='color-laser'>laser</strong> <strong class='color-g'>gun</strong> beam is <strong>spread</strong> into your recent <strong>past</strong><br><strong>+300%</strong> total beam <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return tech.haveGunCheck("laser") && tech.laserReflections < 3 && !tech.beamSplitter && !tech.isWideLaser
+            },
+            requires: "laser gun, not specular reflection, diffraction grating, diffuse beam",
+            effect() {
+                // this.description = `add 5 more <strong>laser</strong> beams into into your past`
+                tech.historyLaser++
+                b.guns[11].chooseFireMethod()
+            },
+            remove() {
+                if (tech.historyLaser) {
+                    tech.historyLaser = 0
+                    b.guns[11].chooseFireMethod()
+                }
+            }
+        },
+        {
+            name: "infrared diode",
+            description: "<strong>+60%</strong> <strong class='color-laser'>laser</strong> <strong class='color-f'>energy</strong> efficiency<br><em>infrared light is outside visual perception</em>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (tech.haveGunCheck("laser") || tech.isLaserBotUpgrade || tech.isLaserMine) && !tech.isPulseLaser && tech.laserDrain === 0.0018
+            },
+            requires: "laser, not free-electron, pulse",
+            effect() {
+                tech.laserDrain *= 0.4; //100%-50%
+                tech.laserColor = "transparent" //"rgb(255,0,20,0.02)"
+                // tech.laserColorAlpha = "rgba(255,0,20,0.05)"
+            },
+            remove() {
+                tech.laserDrain = 0.0018;
+                tech.laserColor = "#f02"
+                tech.laserColorAlpha = "rgba(255, 0, 0, 0.5)"
+            }
+        },
+        {
+            name: "dye laser",
+            description: "<strong>+25%</strong> <strong class='color-laser'>laser</strong> <strong class='color-f'>energy</strong> efficiency<br><strong>+25%</strong> <strong class='color-laser'>laser</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (tech.haveGunCheck("laser") || tech.isLaserMine || tech.isLaserBotUpgrade) && !tech.isPulseLaser && tech.laserDrain === 0.0018
+            },
+            requires: "laser, not pulse, infrared diode",
+            effect() {
+                tech.laserDrain *= 0.75
+                tech.laserDamage *= 1.25
+                tech.laserColor = "rgb(0, 11, 255)"
+                tech.laserColorAlpha = "rgba(0, 11, 255,0.5)"
+            },
+            remove() {
+                tech.laserDrain = 0.0018;
+                tech.laserDamage = 0.18; //used in check on pulse and diode: tech.laserDamage === 0.18
+                tech.laserColor = "#f00"
+                tech.laserColorAlpha = "rgba(255, 0, 0, 0.5)"
+            }
+        },
+        {
+            name: "free-electron laser",
+            description: "<strong>–250%</strong> <strong class='color-laser'>laser</strong> <strong class='color-f'>energy</strong> efficiency<br><strong>+200%</strong> <strong class='color-laser'>laser</strong> <strong class='color-d'>damage</strong>",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return (tech.haveGunCheck("laser") || tech.isLaserMine || tech.isLaserBotUpgrade) && !tech.isPulseLaser && tech.laserDrain === 0.0018
+            },
+            requires: "laser, not pulse, infrared diode",
+            effect() {
+                tech.laserDrain *= 1 + 2.5 //250% more drain
+                tech.laserDamage *= 1 + 2 //190% more damage
+                tech.laserColor = "#83f"
+                tech.laserColorAlpha = "rgba(136, 51, 255,0.5)"
+            },
+            remove() {
+                tech.laserDrain = 0.0018;
+                tech.laserDamage = 0.18; //used in check on pulse and diode: tech.laserDamage === 0.18
+                tech.laserColor = "#f00"
+                tech.laserColorAlpha = "rgba(255, 0, 0, 0.5)"
+            }
+        },
+        {
+            name: "pulse",
+            description: "charge your <strong class='color-f'>energy</strong> and release it as a<br><strong class='color-laser'>laser</strong> pulse that initiates an <strong class='color-e'>explosion</strong> cluster",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("laser") && tech.laserReflections < 3 && !tech.isWideLaser && tech.laserDrain === 0.0018 && !tech.isStuckOn
+            },
+            requires: "laser gun, not specular reflection, diffuse, free-electron laser, optical amplifier",
+            effect() {
+                tech.isPulseLaser = true;
+                b.guns[11].chooseFireMethod()
+            },
+            remove() {
+                if (tech.isPulseLaser) {
+                    tech.isPulseLaser = false;
+                    b.guns[11].chooseFireMethod()
+                }
+            }
+        },
+        {
+            name: "neocognitron",
+            description: "<strong class='color-laser'>pulse</strong> automatically <strong>aims</strong> at a nearby mob",
+            isGunTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return tech.haveGunCheck("laser") && tech.isPulseLaser && !tech.beamSplitter
+            },
+            requires: "laser gun, pulse, not diffraction grating",
+            effect() {
+                tech.isPulseAim = true;
+            },
+            remove() {
+                tech.isPulseAim = false;
+            }
+        },
+        //************************************************** 
+        //************************************************** field
+        //************************************************** tech
+        //**************************************************
+        {
+            name: "zero point energy",
+            description: `use ${powerUps.orb.research(2)}<br><strong>+100</strong> maximum <strong class='color-f'>energy</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "standing wave" || m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "time dilation") && (build.isExperimentSelection || powerUps.research.count > 1)
+            },
+            requires: "standing wave, pilot wave, time dilation",
+            effect() {
+                tech.harmonicEnergy = 1
+                m.setMaxEnergy()
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.harmonicEnergy = 0;
+                m.setMaxEnergy()
+                if (this.count > 0) powerUps.research.changeRerolls(2)
+            }
+        },
+        {
+            name: "spherical harmonics",
+            description: "<strong>+40%</strong> <strong>standing wave</strong> deflection efficiency<br>no longer deactivates on mob <strong>shields</strong>", //<strong>standing wave</strong> oscillates in a 3rd dimension<br>
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "standing wave"
+            },
+            requires: "standing wave",
+            effect() {
+                tech.harmonics++
+                m.fieldShieldingScale = (tech.isStandingWaveExpand ? 0.9 : 1.3) * Math.pow(0.6, (tech.harmonics - 2))
+                m.harmonicShield = m.harmonicAtomic
+            },
+            remove() {
+                tech.harmonics = 2
+                m.fieldShieldingScale = (tech.isStandingWaveExpand ? 0.9 : 1.3) * Math.pow(0.6, (tech.harmonics - 2))
+                m.harmonicShield = m.harmonic3Phase
+            }
+        },
+        {
+            name: "expansion",
+            description: "<strong>+40%</strong> <strong>standing wave</strong> deflection efficiency<br>using <strong>standing wave</strong> field <strong>expands</strong> its <strong>radius</strong>",
+            // description: "use <strong class='color-f'>energy</strong> to <strong>expand</strong> <strong>standing wave</strong><br>the field slowly <strong>contracts</strong> when not used",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "standing wave"
+            },
+            requires: "standing wave",
+            effect() {
+                tech.isStandingWaveExpand = true
+                m.fieldShieldingScale = (tech.isStandingWaveExpand ? 0.9 : 1.3) * Math.pow(0.6, (tech.harmonics - 2))
+            },
+            remove() {
+                tech.isStandingWaveExpand = false
+                m.fieldShieldingScale = (tech.isStandingWaveExpand ? 0.9 : 1.3) * Math.pow(0.6, (tech.harmonics - 2))
+                m.harmonicRadius = 1
+            }
+        },
+        {
+            name: "bremsstrahlung",
+            description: "<strong>deflecting</strong> and thrown <strong class='color-block'>blocks</strong><br>do braking <strong class='color-d'>damage</strong> to mobs",
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "standing wave" || m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism" || m.fieldUpgrades[m.fieldMode].name === "pilot wave"
+            },
+            requires: "standing wave, perfect diamagnetism, pilot wave",
+            effect() {
+                tech.blockDmg += 3 //if you change this value also update the for loop in the electricity graphics in m.pushMass
+            },
+            remove() {
+                tech.blockDmg = 0;
+            }
+        },
+        {
+            name: "cherenkov radiation", //<strong>deflecting</strong> and <strong class='color-block'>blocks</strong>
+            description: "bremsstrahlung's effects are <strong class='color-p'>radioactive</strong><br><strong>+300%</strong> <strong class='color-d'>damage</strong> over <strong>6</strong> seconds",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "standing wave" || m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism" || m.fieldUpgrades[m.fieldMode].name === "pilot wave") && tech.blockDmg
+            },
+            requires: "bremsstrahlung",
+            effect() {
+                tech.isBlockRadiation = true
+            },
+            remove() {
+                tech.isBlockRadiation = false;
+            }
+        },
+        {
+            name: "triple point",
+            descriptionFunction() {
+                return `<strong>+1.5</strong> second <strong class='color-s'>ice IX</strong> freeze effect<br>spawn ${powerUps.orb.coupling(10)} that each give <strong>+0.1</strong> <strong class='color-coupling'>coupling</strong><br>${ m.couplingDescription(1)} ${m.fieldMode === 0 ? "" : "per <strong class='color-coupling'>coupling</strong>"}`
+            },
+            isFieldTech: true,
+            maxCount: 3,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "standing wave" || m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism"
+            },
+            requires: "standing wave, perfect diamagnetism",
+            effect() {
+                tech.iceIXFreezeTime += 90
+                powerUps.spawnDelay("coupling", 10)
+            },
+            remove() {
+                tech.iceIXFreezeTime = 150
+                if (this.count) {
+                    m.couplingChange(-this.count)
+                }
+            }
+        },
+        {
+            name: "flux pinning",
+            description: "after <strong>deflecting</strong> a mob<br>it is <strong>stunned</strong> for up to <strong>4</strong> seconds",
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism" || m.fieldUpgrades[m.fieldMode].name === "standing wave" || m.fieldUpgrades[m.fieldMode].name === "molecular assembler"
+            },
+            requires: "a field that can block",
+            effect() {
+                tech.isStunField += 240;
+            },
+            remove() {
+                tech.isStunField = 0;
+            }
+        },
+        {
+            name: "eddy current brake",
+            description: "perfect diamagnetism <strong class='color-s'>slows</strong> nearby mobs<br>effect <strong>radius</strong> scales with stored <strong class='color-f'>energy</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism"
+            },
+            requires: "perfect diamagnetism",
+            effect() {
+                tech.isPerfectBrake = true;
+            },
+            remove() {
+                tech.isPerfectBrake = false;
+            }
+        },
+        {
+            name: "Meissner effect",
+            description: "<strong>+55%</strong> perfect diamagnetism <strong>radius</strong><br><strong>+22°</strong> perfect diamagnetism circular <strong>arc</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism"
+            },
+            requires: "perfect diamagnetism",
+            effect() {
+                tech.isBigField = true;
+            },
+            remove() {
+                tech.isBigField = false;
+            }
+        },
+        {
+            name: "tessellation",
+            description: `use ${powerUps.orb.research(2)}<br><strong>+50%</strong> <strong class='color-defense'>defense</strong>`,
+            // description: "use <strong>4</strong> <strong class='color-r'>research</strong><br>reduce <strong class='color-defense'>defense</strong> by <strong>50%</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism" || m.fieldUpgrades[m.fieldMode].name === "negative mass") && (build.isExperimentSelection || powerUps.research.count > 3)
+            },
+            requires: "perfect diamagnetism, negative mass, pilot wave",
+            effect() {
+                tech.isFieldHarmReduction = true
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.isFieldHarmReduction = false
+                if (this.count > 0) powerUps.research.changeRerolls(2)
+            }
+        },
+        {
+            name: "radiative equilibrium",
+            description: "after losing <strong class='color-h'>health</strong><br><strong>+200%</strong> <strong class='color-d'>damage</strong> for <strong>10</strong> seconds",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "negative mass"
+            },
+            requires: "negative mass, pilot wave",
+            effect() {
+                tech.isHarmDamage = true;
+            },
+            remove() {
+                tech.isHarmDamage = false;
+            }
+        },
+        {
+            name: "dynamic equilibrium",
+            descriptionFunction() { return `increase <strong class='color-d'>damage</strong> by your <strong class='color-defense'>defense</strong> and<br><strong>5%</strong> of your last ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>" : "<strong class='color-h'>health</strong>"} loss &nbsp; <em style = 'font-size:94%;'>(+${(100*tech.lastHitDamage * m.lastHit * (2 - m.harmReduction())).toFixed(0)}% damage)</em>` }, // = <strong>+${10*m.harmReduction()}%</strong>
+            // descriptionFunction() { return `increase <strong class='color-d'>damage</strong> by your last ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>" : "<strong class='color-h'>health</strong>"} loss<br><strong style = 'font-size:90%;'>(${(tech.lastHitDamage).toFixed(0)}%)(${(100*m.lastHit).toFixed(0)} ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>" : "<strong class='color-h'>health</strong>"})(${2 - m.harmReduction()} <strong class='color-defense'>defense</strong>) = ${(100*tech.lastHitDamage * m.lastHit * (2 - m.harmReduction())).toFixed(0)}% <strong class='color-d'>damage</strong></strong> ` }, // = <strong>+${10*m.harmReduction()}%</strong>
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "negative mass" || m.fieldUpgrades[m.fieldMode].name === "standing wave") && !tech.isCloakHealLastHit
+            },
+            requires: "negative mass, pilot wave, standing wave, not patch",
+            effect() {
+                tech.lastHitDamage += 5;
+            },
+            remove() {
+                tech.lastHitDamage = 0;
+            }
+        },
+        {
+            name: "neutronium",
+            description: `<strong>move</strong> and <strong>jump</strong> <strong>20%</strong> <strong>slower</strong><br>if your <strong class='color-f'>field</strong> is active <strong>+90%</strong> <strong class='color-defense'>defense</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "negative mass"
+            },
+            requires: "negative mass",
+            effect() {
+                tech.isNeutronium = true
+                tech.baseFx *= 0.8
+                tech.baseJumpForce *= 0.8
+                m.setMovement()
+            },
+            //also removed in m.setHoldDefaults() if player switches into a bad field
+            remove() {
+                tech.isNeutronium = false
+                if (!tech.isFreeWormHole) {
+                    tech.baseFx = 0.08
+                    tech.baseJumpForce = 10.5
+                    m.setMovement()
+                }
+            }
+        },
+        {
+            name: "annihilation",
+            description: "after <strong>colliding</strong> with non-boss mobs<br>they are <strong>annihilated</strong> and <strong>–33%</strong> <strong class='color-f'>energy</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "negative mass" && !tech.isEnergyHealth
+            },
+            requires: "negative mass, not mass-energy",
+            effect() {
+                tech.isAnnihilation = true
+            },
+            remove() {
+                tech.isAnnihilation = false;
+            }
+        },
+        {
+            name: "inertial mass",
+            description: "<strong>negative mass</strong> is larger and <strong>faster</strong><br><strong class='color-block'>blocks</strong> also move <strong>horizontally</strong> with the field",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "negative mass"
+            },
+            requires: "negative mass",
+            effect() {
+                tech.isFlyFaster = true
+            },
+            remove() {
+                tech.isFlyFaster = false;
+            }
+        },
+        // {
+        //     name: "Bose Einstein condensate",
+        //     description: "use <strong class='color-f'>energy</strong> to <strong class='color-s'>freeze</strong> <strong>mobs</strong> in your <strong class='color-f'>field</strong><br><em style = 'font-size: 100%'>pilot wave, negative mass, time dilation</em>",
+        //     isFieldTech: true,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 2,
+        //     frequencyDefault: 2,
+        //     allowed() {
+        //         return m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "negative mass" || (m.fieldUpgrades[m.fieldMode].name === "time dilation" && !tech.isRewindField)
+        //     },
+        //     requires: "pilot wave, negative mass, time dilation, not retrocausality",
+        //     effect() {
+        //         tech.isFreezeMobs = true
+        //     },
+        //     remove() {
+        //         tech.isFreezeMobs = false
+        //     }
+        // },
+        {
+            name: "bot manufacturing",
+            description: `use ${powerUps.orb.research(2)} to build<br><strong>3</strong> random <strong class='color-bot'>bots</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBotTech: true,
+            isNonRefundable: true,
+            allowed() {
+                return powerUps.research.count > 1 && (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" || m.fieldUpgrades[m.fieldMode].name === "pilot wave")
+            },
+            requires: "molecular assembler, pilot wave",
+            effect() {
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+                m.energy = 0.01;
+                b.randomBot()
+                b.randomBot()
+                b.randomBot()
+            },
+            remove() {}
+        },
+        {
+            name: "bot prototypes",
+            description: `use ${powerUps.orb.research(3)}to build <strong>2</strong> random <strong class='color-bot'>bots</strong><br>and <strong>upgrade</strong> all <strong class='color-bot'>bots</strong> to that type`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            isBotTech: true,
+            isNonRefundable: true,
+            allowed() {
+                return powerUps.research.count > 2 && (m.fieldUpgrades[m.fieldMode].name === "molecular assembler" || m.fieldUpgrades[m.fieldMode].name === "pilot wave")
+            },
+            requires: "molecular assembler, pilot wave",
+            effect() {
+                for (let i = 0; i < 3; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+                //fill array of available bots
+                const notUpgradedBots = []
+                const num = 2
+                notUpgradedBots.push(() => {
+                    tech.giveTech("nail-bot upgrade")
+                    for (let i = 0; i < num; i++) {
+                        b.nailBot()
+                        tech.nailBotCount++;
+                    }
+                    simulation.makeTextLog(`tech.isNailBotUpgrade = true`)
+                })
+                notUpgradedBots.push(() => {
+                    tech.giveTech("foam-bot upgrade")
+                    for (let i = 0; i < num; i++) {
+                        b.foamBot()
+                        tech.foamBotCount++;
+                    }
+                    simulation.makeTextLog(`tech.isFoamBotUpgrade = true`)
+                })
+                notUpgradedBots.push(() => {
+                    tech.giveTech("boom-bot upgrade")
+                    for (let i = 0; i < num; i++) {
+                        b.boomBot()
+                        tech.boomBotCount++;
+                    }
+                    simulation.makeTextLog(`tech.isBoomBotUpgrade = true`)
+                })
+                notUpgradedBots.push(() => {
+                    tech.giveTech("laser-bot upgrade")
+                    for (let i = 0; i < num; i++) {
+                        b.laserBot()
+                        tech.laserBotCount++;
+                    }
+                    simulation.makeTextLog(`tech.isLaserBotUpgrade = true`)
+                })
+                notUpgradedBots.push(() => {
+                    tech.giveTech("orbital-bot upgrade")
+                    for (let i = 0; i < num; i++) {
+                        b.orbitBot()
+                        tech.orbitBotCount++;
+                    }
+                    simulation.makeTextLog(`tech.isOrbitalBotUpgrade = true`)
+                })
+                for (let i = 0; i < 2; i++) { //double chance for dynamo-bot, since it's very good for assembler
+                    notUpgradedBots.push(() => {
+                        tech.giveTech("dynamo-bot upgrade")
+                        for (let i = 0; i < num; i++) {
+                            b.dynamoBot()
+                            tech.dynamoBotCount++;
+                        }
+                        simulation.makeTextLog(`tech.isDynamoBotUpgrade = true`)
+                    })
+                }
+                notUpgradedBots[Math.floor(Math.random() * notUpgradedBots.length)]() //choose random function from the array and run it
+            },
+            remove() {}
+        },
+        // {
+        //     name: "mycelium manufacturing",
+        //     link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Mycelium' class="link">mycelium manufacturing</a>`,
+        //     // description: `use ${powerUps.orb.research(1)}to repurpose <strong>molecular assembler</strong><br>excess <strong class='color-f'>energy</strong> used to grow <strong class='color-p' style='letter-spacing: 2px;'>spores</strong>`,
+        //     descriptionFunction() { return `use ${powerUps.orb.research(1)}to repurpose <strong>molecular assembler</strong><br>excess <strong class='color-f'>energy</strong> used to grow ${b.guns[6].nameString('s')}` },
+        //     isFieldTech: true,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 3,
+        //     frequencyDefault: 3,
+        //     allowed() {
+        //         return (build.isExperimentSelection || powerUps.research.count > 0) && m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && !(tech.isMissileField || tech.isIceField || tech.isFastDrones || tech.isDroneGrab || tech.isDroneRadioactive || tech.isDroneTeleport)
+        //     },
+        //     requires: "molecular assembler, no other manufacturing, no drone tech",
+        //     effect() {
+        //         if (!build.isExperimentSelection) {
+        //             for (let i = 0; i < 1; i++) {
+        //                 if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+        //             }
+        //         }
+        //         tech.isSporeField = true;
+        //     },
+        //     remove() {
+        //         tech.isSporeField = false;
+        //         if (this.count > 0) powerUps.research.changeRerolls(1)
+        //     }
+        // },
+        // {
+        //     name: "missile manufacturing",
+        //     link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Missile' class="link">missile manufacturing</a>`,
+        //     description: `use ${powerUps.orb.research(1)}to repurpose <strong>molecular assembler</strong><br>excess <strong class='color-f'>energy</strong> used to construct <strong>missiles</strong>`,
+        //     // description: "use <strong>3</strong> <strong class='color-r'>research</strong> to repurpose <strong>assembler</strong><br>excess <strong class='color-f'>energy</strong> used to construct <strong>missiles</strong>",
+        //     isFieldTech: true,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 3,
+        //     frequencyDefault: 3,
+        //     allowed() {
+        //         return (build.isExperimentSelection || powerUps.research.count > 0) && m.maxEnergy > 0.5 && m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && !(tech.isSporeField || tech.isIceField || tech.isFastDrones || tech.isDroneGrab || tech.isDroneRadioactive || tech.isDroneTeleport || tech.isDronesTravel)
+        //     },
+        //     requires: "molecular assembler, no other manufacturing, no drone tech",
+        //     effect() {
+        //         if (!build.isExperimentSelection) {
+        //             for (let i = 0; i < 1; i++) {
+        //                 if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+        //             }
+        //         }
+        //         tech.isMissileField = true;
+        //     },
+        //     remove() {
+        //         tech.isMissileField = false;
+        //         if (this.count > 0) powerUps.research.changeRerolls(1)
+        //     }
+        // },
+        // {
+        //     name: "ice IX manufacturing",
+        //     link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Ice-nine_(disambiguation)' class="link">ice IX manufacturing</a>`,
+        //     description: `use ${powerUps.orb.research(1)}to repurpose <strong>molecular assembler</strong><br>excess <strong class='color-f'>energy</strong> used to condense <strong class='color-s'>ice IX</strong>`,
+        //     // description: "use <strong>3</strong> <strong class='color-r'>research</strong> to repurpose <strong>assembler</strong><br>excess <strong class='color-f'>energy</strong> used to condense <strong class='color-s'>ice IX</strong>",
+        //     isFieldTech: true,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 3,
+        //     frequencyDefault: 3,
+        //     allowed() {
+        //         return (build.isExperimentSelection || powerUps.research.count > 0) && m.fieldUpgrades[m.fieldMode].name === "molecular assembler" && !(tech.isSporeField || tech.isMissileField || tech.isFastDrones || tech.isDroneGrab || tech.isDroneRadioactive || tech.isDroneTeleport || tech.isDronesTravel)
+        //     },
+        //     requires: "molecular assembler, no other manufacturing, no drone tech",
+        //     effect() {
+        //         if (!build.isExperimentSelection) {
+        //             for (let i = 0; i < 1; i++) {
+        //                 if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+        //             }
+        //         }
+        //         tech.isIceField = true;
+        //     },
+        //     remove() {
+        //         tech.isIceField = false;
+        //         if (this.count > 0) powerUps.research.changeRerolls(1)
+        //     }
+        // },
+        {
+            name: "pair production",
+            description: "after picking up a <strong>power up</strong><br><strong>+200</strong> <strong class='color-f'>energy</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "molecular assembler" || m.fieldUpgrades[m.fieldMode].name === "standing wave" || m.fieldUpgrades[m.fieldMode].name === "pilot wave"
+            },
+            requires: "molecular assembler, pilot wave, standing wave",
+            effect() {
+                tech.isMassEnergy = true // used in m.grabPowerUp
+                m.energy += 2
+            },
+            remove() {
+                tech.isMassEnergy = false;
+            }
+        },
+        {
+            name: "electric generator",
+            description: "after <strong>deflecting</strong> mobs<br>molecular assembler generates <strong>+50</strong> <strong class='color-f'>energy</strong>",
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "molecular assembler"
+            },
+            requires: "molecular assembler",
+            effect() {
+                tech.deflectEnergy += 0.5;
+            },
+            remove() {
+                tech.deflectEnergy = 0;
+            }
+        },
+        {
+            name: "tokamak",
+            description: "throwing a <strong class='color-block'>block</strong> converts it into <strong class='color-f'>energy</strong><br>and a pulsed fusion <strong class='color-e'>explosion</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "plasma torch" || m.fieldUpgrades[m.fieldMode].name === "molecular assembler"
+            },
+            requires: "plasma torch, molecular assembler",
+            effect() {
+                tech.isTokamak = true;
+            },
+            remove() {
+                tech.isTokamak = false;
+            }
+        },
+        {
+            name: "degenerate matter",
+            description: "if your <strong class='color-f'>field</strong> is active<br><strong>+75%</strong> <strong class='color-defense'>defense</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "plasma torch" || m.fieldUpgrades[m.fieldMode].name === "molecular assembler" || m.fieldUpgrades[m.fieldMode].name === "perfect diamagnetism" || m.fieldUpgrades[m.fieldMode].name === "pilot wave")
+            },
+            requires: "molecular assembler, plasma torch, perfect diamagnetism, pilot wave",
+            effect() {
+                tech.isHarmReduce = true
+            },
+            remove() {
+                tech.isHarmReduce = false;
+            }
+        },
+        {
+            name: "plasma-bot",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Robot' class="link">plasma-bot</a>`,
+            description: `use ${powerUps.orb.research(2)}to trade your <strong class='color-f'>field</strong><br>for a <strong class='color-bot'>bot</strong> that uses <strong class='color-f'>energy</strong> to emit <strong class='color-plasma'>plasma</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            isBot: true,
+            isBotTech: true,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "plasma torch" && !tech.isPlasmaBall && !tech.isExtruder && (build.isExperimentSelection || powerUps.research.count > 1)
+            },
+            requires: "plasma torch, not extruder, plasma ball",
+            effect() {
+                tech.plasmaBotCount++;
+                b.plasmaBot();
+                if (build.isExperimentSelection) {
+                    document.getElementById("field-" + m.fieldMode).classList.remove("build-field-selected");
+                    document.getElementById("field-0").classList.add("build-field-selected");
+                }
+                m.setField("field emitter")
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                if (this.count > 0) {
+                    tech.plasmaBotCount = 0;
+                    b.clearPermanentBots();
+                    b.respawnBots();
+                    if (m.fieldMode === 0) {
+                        m.setField("plasma torch")
+                        if (build.isExperimentSelection) {
+                            document.getElementById("field-0").classList.remove("build-field-selected");
+                            document.getElementById("field-" + m.fieldMode).classList.add("build-field-selected");
+                        }
+                    }
+                    powerUps.research.changeRerolls(2)
+                }
+            }
+        },
+        {
+            name: "plasma jet",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Plasma_(physics)' class="link">plasma jet</a>`,
+            description: `use ${powerUps.orb.research(2)}<br><strong>+50%</strong> <strong class='color-plasma'>plasma</strong> <strong>torch</strong> range`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (tech.plasmaBotCount || m.fieldUpgrades[m.fieldMode].name === "plasma torch") && (build.isExperimentSelection || powerUps.research.count > 1) && !tech.isPlasmaBall
+            },
+            requires: "plasma torch, not plasma ball",
+            effect() {
+                tech.isPlasmaRange += 0.5;
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.isPlasmaRange = 1;
+                if (this.count > 0) powerUps.research.changeRerolls(this.count * 2)
+            }
+        },
+        {
+            name: "extruder",
+            description: "<strong>extrude</strong> a thin hot wire of <strong class='color-plasma'>plasma</strong><br>increases <strong class='color-d'>damage</strong> and <strong class='color-f'>energy</strong> drain",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "plasma torch" && !tech.isPlasmaBall
+            },
+            requires: "plasma torch, not plasma ball",
+            effect() {
+                tech.isExtruder = true;
+                m.fieldUpgrades[m.fieldMode].set()
+            },
+            remove() {
+                tech.isExtruder = false;
+                if (this.count && m.fieldUpgrades[m.fieldMode].name === "plasma torch") m.fieldUpgrades[m.fieldMode].set()
+            }
+        },
+        {
+            name: "refractory metal",
+            description: "<strong class='color-plasma'>extrude</strong> metals at a higher <strong class='color-plasma'>temperature</strong><br>increases effective <strong>radius</strong> and <strong class='color-d'>damage</strong>",
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "plasma torch" && tech.isExtruder
+            },
+            requires: "extruder",
+            effect() {
+                tech.extruderRange += 55
+            },
+            remove() {
+                tech.extruderRange = 15
+            }
+        },
+        {
+            name: "plasma ball",
+            description: "<strong>grow</strong> an expanding <strong>ball</strong> of <strong class='color-plasma'>plasma</strong><br>increases <strong class='color-d'>damage</strong> and <strong class='color-f'>energy</strong> drain",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "plasma torch" && !tech.isExtruder && tech.isPlasmaRange === 1
+            },
+            requires: "plasma torch, not extruder, plasma jet",
+            effect() {
+                tech.isPlasmaBall = true;
+                m.fieldUpgrades[m.fieldMode].set()
+            },
+            remove() {
+                tech.isPlasmaBall = false;
+                if (this.count && m.fieldUpgrades[m.fieldMode].name === "plasma torch") m.fieldUpgrades[m.fieldMode].set()
+            }
+        },
+        {
+            name: "corona discharge",
+            description: "increase the <strong>range</strong> and <strong>frequency</strong><br>of <strong class='color-plasma'>plasma</strong> ball's <strong>electric arc</strong> ",
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "plasma torch" && tech.isPlasmaBall
+            },
+            requires: "plasma ball",
+            effect() {
+                tech.plasmaDischarge += 0.03
+            },
+            remove() {
+                tech.plasmaDischarge = 0.01 //default chance per cycle of a discharge
+            }
+        },
+        {
+            name: "retrocausality",
+            description: "<strong>time dilation</strong> uses <strong class='color-f'>energy</strong> to <strong>rewind</strong> your<br><strong class='color-h'>health</strong>, <strong>velocity</strong>, and <strong>position</strong> up to <strong>10</strong> seconds",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "time dilation" && !m.isShipMode && !tech.isRewindAvoidDeath && !tech.isTimeSkip
+            },
+            requires: "time dilation, not CPT symmetry",
+            effect() {
+                tech.isRewindField = true;
+                m.fieldUpgrades[m.fieldMode].set()
+                m.wakeCheck();
+            },
+            remove() {
+                tech.isRewindField = false;
+                if (this.count) m.fieldUpgrades[m.fieldMode].set()
+            }
+        },
+        {
+            name: "frame-dragging", //"non-inertial frame",
+            description: "when not <strong>moving</strong> time dilation <strong style='letter-spacing: 2px;'>stops time</strong><br><strong>+33%</strong> <strong class='color-defense'>defense</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 1,
+            frequencyDefault: 1,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "time dilation"
+            },
+            requires: "time dilation",
+            effect() {
+                tech.isTimeStop = true;
+                m.fieldHarmReduction = 0.66; //33% reduction
+            },
+            remove() {
+                tech.isTimeStop = false;
+                if (m.fieldUpgrades[m.fieldMode].name === "time dilation") m.fieldHarmReduction = 1;
+            }
+        },
+        {
+            name: "Lorentz transformation",
+            description: `use ${powerUps.orb.research(3)}<br><strong>+50%</strong> <strong>movement</strong>, <strong>jumping</strong>, and <strong><em>fire rate</em></strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "time dilation") && (build.isExperimentSelection || powerUps.research.count > 2)
+            },
+            requires: "time dilation",
+            effect() {
+                tech.isFastTime = true
+                m.setMovement();
+                b.setFireCD();
+                for (let i = 0; i < 3; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.isFastTime = false
+                m.setMovement();
+                b.setFireCD();
+                if (this.count > 0) powerUps.research.changeRerolls(3)
+            }
+        },
+        {
+            name: "time crystals",
+            description: "<strong>+200%</strong> passive <strong class='color-f'>energy</strong> generation",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return !tech.isGroundState && (m.fieldUpgrades[m.fieldMode].name === "time dilation" || m.fieldUpgrades[m.fieldMode].name === "pilot wave")
+            },
+            requires: "time dilation or pilot wave, not ground state",
+            effect() {
+                tech.isTimeCrystals = true
+                m.setFieldRegen()
+            },
+            remove() {
+                tech.isTimeCrystals = false
+                m.setFieldRegen()
+            }
+        },
+        {
+            name: "no-cloning theorem",
+            // descriptionFunction() { return `<strong>+45%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br>after a mob <strong>dies</strong> <strong>–2%</strong> <strong class='color-dup'>duplication</strong> <em>(${tech.duplicationChance()})</em>` },
+            description: `<strong>+45%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong><br>after a mob <strong>dies</strong> <strong>–2%</strong> <strong class='color-dup'>duplication</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "time dilation" || m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking") && !tech.isQuantumEraser
+            },
+            requires: "cloaking, time dilation, not quantum eraser",
+            effect() {
+                tech.cloakDuplication = 0.45
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+                if (!build.isExperimentSelection && !simulation.isTextLogOpen) simulation.circleFlare(0.4);
+            },
+            remove() {
+                tech.cloakDuplication = 0
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+            }
+        },
+        {
+            name: "quantum eraser",
+            descriptionFunction() { return `<span style = 'font-size:90%;'>for each mob left <strong>alive</strong> after you exit a <strong>level</strong><br><strong>kill</strong> a mob as they spawn at <strong>+${100-1.6*simulation.difficultyMode**2}%</strong> <strong class='color-dup'>duplication</strong></span>` },
+            // description: `<span style = 'font-size:90%;'>for each mob left <strong>alive</strong> after you exit a <strong>level</strong><br><strong>kill</strong> a mob as they spawn at <strong>100%</strong> <strong class='color-dup'>duplication</strong></span>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking" || m.fieldUpgrades[m.fieldMode].name === "time dilation") && !tech.cloakDuplication
+            },
+            requires: "cloaking or time dilation",
+            effect() {
+                tech.quantumEraserCount = 0
+                tech.isQuantumEraserDuplication = 0
+                tech.isQuantumEraser = true
+            },
+            remove() {
+                tech.quantumEraserCount = 0
+                tech.isQuantumEraserDuplication = 0
+                tech.isQuantumEraser = false
+            }
+        },
+        {
+            name: "symbiosis",
+            descriptionFunction() { return `after a <strong>boss</strong> <strong>dies</strong> spawn a <strong class='color-m'>tech</strong>, ${powerUps.orb.ammo(1)}, ${powerUps.orb.research(1)}, and ${powerUps.orb.heal(1)}<br>after a <strong>mob</strong> <strong>dies</strong> <strong>–0.5</strong> maximum ${tech.isEnergyHealth ? "<strong class='color-f'>energy</strong>" : "<strong class='color-h'>health</strong>"}` },
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking" //|| m.fieldUpgrades[m.fieldMode].name === "time dilation"
+            },
+            requires: "cloaking",
+            effect() {
+                tech.isAddRemoveMaxHealth = true
+            },
+            remove() {
+                tech.isAddRemoveMaxHealth = false
+            }
+        },
+        {
+            name: "boson composite",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Boson' class="link">boson composite</a>`,
+            description: "while <strong class='color-cloaked'>cloaked</strong> you are <strong>intangible</strong><br>to <strong class='color-block'>blocks</strong> and mobs, but <strong>mobs</strong> drain <strong class='color-f'>energy</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking"
+            },
+            requires: "metamaterial cloaking",
+            effect() {
+                tech.isIntangible = true;
+            },
+            remove() {
+                if (tech.isIntangible) {
+                    tech.isIntangible = false;
+                    player.collisionFilter.mask = cat.body | cat.map | cat.mob | cat.mobBullet | cat.mobShield //normal collisions
+                }
+            }
+        },
+        {
+            name: "patch",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Patch_(computing)' class="link">patch</a>`,
+            description: "after <strong class='color-cloaked'>cloaking</strong> recover <strong>75%</strong> of your<br>last <strong class='color-h'>health</strong> loss using that much <strong class='color-f'>energy</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking" && !tech.lastHitDamage && !tech.isEnergyHealth
+            },
+            requires: "metamaterial cloaking, not dynamic equilibrium, mass-energy",
+            effect() {
+                tech.isCloakHealLastHit = true;
+            },
+            remove() {
+                tech.isCloakHealLastHit = false;
+            }
+        },
+        {
+            name: "dazzler",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Dazzler_(weapon)' class="link">dazzler</a>`,
+            description: "after <strong class='color-cloaked'>decloaking</strong> <strong>stun</strong> nearby mobs<br>and drain <strong>–15</strong> <strong class='color-f'>energy</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking"
+            },
+            requires: "metamaterial cloaking",
+            effect() {
+                tech.isCloakStun = true;
+            },
+            remove() {
+                tech.isCloakStun = false;
+            }
+        },
+        // {
+        //     name: "ambush",
+        //     description: "metamaterial cloaking field <strong class='color-d'>damage</strong> effect<br>is increased from <span style = 'text-decoration: line-through;'>333%</span> to <strong>555%</strong>",
+        //     isFieldTech: true,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 2,
+        //     frequencyDefault: 2,
+        //     allowed() {
+        //         return m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking"
+        //     },
+        //     requires: "metamaterial cloaking",
+        //     effect() {
+        //         tech.sneakAttackDmg = 6.55 //555% + 100%
+        //     },
+        //     remove() {
+        //         tech.sneakAttackDmg = 4.33 //333% + 100%
+        //     }
+        // },
+        {
+            name: "dynamical systems",
+            description: `use ${powerUps.orb.research(2)}<br><strong>+35%</strong> <strong class='color-d'>damage</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "plasma torch" || m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking" || m.fieldUpgrades[m.fieldMode].name === "pilot wave") && (build.isExperimentSelection || powerUps.research.count > 1)
+            },
+            requires: "cloaking, pilot wave, or plasma torch",
+            damage: 1.35,
+            effect() {
+                tech.damage *= this.damage
+                tech.isCloakingDamage = true
+                for (let i = 0; i < 2; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.isCloakingDamage = false
+                if (this.count > 0) {
+                    tech.damage /= this.damage
+                    powerUps.research.changeRerolls(2)
+                }
+            }
+        },
+        {
+            name: "combinatorial optimization",
+            description: "<strong>+35%</strong> <strong class='color-d'>damage</strong><br><strong>–35%</strong> <strong><em>fire rate</em></strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "plasma torch" || m.fieldUpgrades[m.fieldMode].name === "time dilation" || m.fieldUpgrades[m.fieldMode].name === "metamaterial cloaking" || m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "molecular assembler"
+            },
+            requires: "cloaking, molecular assembler, plasma torch, pilot wave",
+            damage: 1.35,
+            effect() {
+                tech.damage *= this.damage
+                tech.aimDamage = 1.35
+                b.setFireCD();
+            },
+            remove() {
+                if (this.count) tech.damage /= this.damage
+                tech.aimDamage = 1
+                b.setFireCD();
+            }
+        },
+        {
+            name: "WIMPs",
+            description: `at the end of each <strong>level</strong> spawn ${powerUps.orb.research(4)}<br> and a dangerous particle that slowly <strong>chases</strong> you`,
+            isFieldTech: true,
+            maxCount: 9,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "wormhole" || m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "time dilation"
+            },
+            requires: "wormhole, pilot wave, time dilation",
+            effect() {
+                tech.wimpCount++
+                spawn.WIMP()
+                for (let j = 0, len = 4; j < len; j++) powerUps.spawn(level.exit.x + 100 * (Math.random() - 0.5), level.exit.y - 100 + 100 * (Math.random() - 0.5), "research", false)
+            },
+            remove() {
+                tech.wimpCount = 0
+            }
+        },
+        {
+            name: "vacuum fluctuation",
+            description: `use ${powerUps.orb.research(6)}to exploit your <strong class='color-f'>field</strong> for a<br><strong>+11%</strong> chance to <strong class='color-dup'>duplicate</strong> spawned <strong>power ups</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 3,
+            frequencyDefault: 3,
+            allowed() {
+                return (m.fieldUpgrades[m.fieldMode].name === "pilot wave" || m.fieldUpgrades[m.fieldMode].name === "negative mass" || m.fieldUpgrades[m.fieldMode].name === "time dilation" || m.fieldUpgrades[m.fieldMode].name === "wormhole") && (build.isExperimentSelection || powerUps.research.count > 6)
+            },
+            requires: "wormhole, time dilation, negative mass, pilot wave",
+            effect() {
+                tech.fieldDuplicate = 0.11
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+                if (!build.isExperimentSelection && !simulation.isTextLogOpen) simulation.circleFlare(0.13);
+                for (let i = 0; i < 6; i++) {
+                    if (powerUps.research.count > 0) powerUps.research.changeRerolls(-1)
+                }
+            },
+            remove() {
+                tech.fieldDuplicate = 0
+                powerUps.setDupChance(); //needed after adjusting duplication chance
+                if (this.count > 0) powerUps.research.changeRerolls(6)
+            }
+        },
+        // {
+        //     name: "Penrose process",
+        //     description: "after a <strong class='color-block'>block</strong> falls into a <strong class='color-worm'>wormhole</strong><br><strong>+50</strong> <strong class='color-f'>energy</strong>",
+        //     isFieldTech: true,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 2,
+        //     frequencyDefault: 2,
+        //     allowed() {
+        //         return m.fieldUpgrades[m.fieldMode].name === "wormhole"
+        //     },
+        //     requires: "wormhole",
+        //     effect() {
+        //         tech.isWormholeEnergy = true
+        //     },
+        //     remove() {
+        //         tech.isWormholeEnergy = false
+        //     }
+        // },
+        {
+            name: "transdimensional worms",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Dimension' class="link">transdimensional worms</a>`,
+            description: "after <strong class='color-block'>blocks</strong> fall into a <strong class='color-worm'>wormhole</strong><br>spawn a <strong class='color-p' style='letter-spacing: 2px;'>worm</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "wormhole"
+            },
+            requires: "wormhole",
+            effect() {
+                tech.isWormholeWorms = true
+            },
+            remove() {
+                tech.isWormholeWorms = false
+            }
+        },
+        {
+            name: "geodesics",
+            description: `your <strong>bullets</strong> can traverse <strong class='color-worm'>wormholes</strong><br>spawn 2 <strong class='color-g'>guns</strong> and ${powerUps.orb.ammo(4)}`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "wormhole"
+            },
+            requires: "wormhole",
+            effect() {
+                tech.isWormHoleBullets = true
+                for (let i = 0; i < 2; i++) powerUps.spawn(m.pos.x + 200 * (Math.random() - 0.5), m.pos.y + 200 * (Math.random() - 0.5), "gun");
+                for (let i = 0; i < 4; i++) powerUps.spawn(m.pos.x + 200 * (Math.random() - 0.5), m.pos.y + 200 * (Math.random() - 0.5), "ammo");
+            },
+            remove() {
+                if (tech.isWormHoleBullets) {
+                    for (let i = 0; i < 2; i++) {
+                        if (b.inventory.length) b.removeGun(b.guns[b.inventory[b.inventory.length - 1]].name) //remove your last gun
+                    }
+                    tech.isWormHoleBullets = false;
+                }
+            }
+        },
+        {
+            name: "cosmic string",
+            description: "after <strong>tunneling</strong> through mobs with a <strong class='color-worm'>wormhole</strong><br><strong>stun</strong> then and do <strong class='color-p'>radioactive</strong> <strong class='color-d'>damage</strong>",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "wormhole"
+            },
+            requires: "wormhole",
+            effect() {
+                tech.isWormholeDamage = true
+            },
+            remove() {
+                tech.isWormholeDamage = false
+            }
+        },
+        {
+            name: "invariant",
+            description: "while placing your <strong class='color-worm'>wormhole</strong><br>use <strong class='color-f'>energy</strong> to <strong>pause</strong> time",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "wormhole" && !tech.isNoDraftPause
+            },
+            requires: "wormhole, not eternalism",
+            effect() {
+                tech.isWormHolePause = true
+            },
+            remove() {
+                if (tech.isWormHolePause && m.isBodiesAsleep) m.wakeCheck();
+                tech.isWormHolePause = false
+            }
+        },
+        {
+            name: "charmed baryons",
+            description: `<strong>–33%</strong> <strong>movement</strong> and <strong>jumping</strong><br><strong class='color-worm'>wormholes</strong> drain <strong>zero</strong> <strong class='color-f'>energy</strong>`,
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "wormhole" && !tech.isWormholeMapIgnore
+            },
+            requires: "wormhole, not affine connection",
+            effect() {
+                tech.isFreeWormHole = true
+                tech.baseFx *= 0.66
+                tech.baseJumpForce *= 0.66
+                m.setMovement()
+            },
+            //also removed in m.setHoldDefaults() if player switches into a bad field
+            remove() {
+                tech.isFreeWormHole = false
+                if (!tech.isNeutronium) {
+                    tech.baseFx = 0.08
+                    tech.baseJumpForce = 10.5
+                    m.setMovement()
+                }
+            }
+        },
+        {
+            name: "affine connection",
+            description: "<strong class='color-worm'>wormholes</strong> can tunnel through the <strong>map</strong><br>for <strong>+200%</strong> <strong class='color-f'>energy</strong> drain",
+            isFieldTech: true,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name === "wormhole" && !tech.isFreeWormHole
+            },
+            requires: "wormhole, not charmed baryons",
+            effect() {
+                tech.isWormholeMapIgnore = true
+            },
+            remove() {
+                tech.isWormholeMapIgnore = false
+            }
+        },
+        //************************************************** 
+        //************************************************** experimental
+        //************************************************** modes
+        //************************************************** 
+        // {
+        //     name: "-ship-",
+        //     description: "<strong style='color: #f55;'>experiment:</strong> fly around with no legs<br>aim with the keyboard",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isNonRefundable: true,
+        //     isBadRandomOption: true,
+        //     isExperimentalMode: true,
+        //     allowed() {
+        //         return build.isExperimentSelection && !m.isShipMode && m.fieldUpgrades[m.fieldMode].name !== "negative mass"
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         m.shipMode()
+        //     },
+        //     remove() {}
+        // },
+        // {
+        //     name: "-quantum leap-",
+        //     description: "<strong style='color: #f55;'>experiment:</strong> every 20 seconds<br>become an <strong class='alt'>alternate</strong> version of yourself",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isBadRandomOption: true,
+        //     isExperimentalMode: true,
+        //     allowed() {
+        //         return build.isExperimentSelection
+        //     },
+        //     requires: "",
+        //     interval: undefined,
+        //     effect() {
+        //         this.interval = setInterval(() => {
+        //             if (!build.isExperimentSelection) {
+        //                 m.switchWorlds()
+        //                 simulation.trails()
+        //             }
+        //         }, 20000); //every 20 seconds
+
+        //     },
+        //     remove() {
+        //         if (this.count > 0) clearTimeout(this.interval);
+        //     }
+        // },
+        // {
+        //     name: "-shields-",
+        //     description: "<strong style='color: #f55;'>experiment:</strong> every 5 seconds<br>all mobs gain a shield",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isBadRandomOption: true,
+        //     isExperimentalMode: true,
+        //     allowed() {
+        //         return build.isExperimentSelection
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         this.interval = setInterval(() => {
+        //             if (!build.isExperimentSelection) {
+        //                 for (let i = 0; i < mob.length; i++) {
+        //                     if (!mob[i].isShielded && !mob[i].shield && mob[i].isDropPowerUp) spawn.shield(mob[i], mob[i].position.x, mob[i].position.y, 1, true);
+        //                 }
+        //             }
+        //         }, 5000); //every 5 seconds
+        //     },
+        //     interval: undefined,
+        //     remove() {
+        //         if (this.count > 0) clearTimeout(this.interval);
+        //     }
+        // },
+        // {
+        //     name: "-Fourier analysis-",
+        //     description: "<strong style='color: #f55;'>experiment:</strong> your aiming is random",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isBadRandomOption: true,
+        //     isExperimentalMode: true,
+        //     allowed() {
+        //         return build.isExperimentSelection && !m.isShipMode
+        //     },
+        //     requires: "not ship",
+        //     effect() {
+        //         m.look = () => {
+        //             m.angle = 2 * Math.sin(m.cycle * 0.0133) + Math.sin(m.cycle * 0.013) + 0.5 * Math.sin(m.cycle * 0.031) + 0.33 * Math.sin(m.cycle * 0.03)
+        //             const scale = 0.8;
+        //             m.transSmoothX = canvas.width2 - m.pos.x - (simulation.mouse.x - canvas.width2) * scale;
+        //             m.transSmoothY = canvas.height2 - m.pos.y - (simulation.mouse.y - canvas.height2) * scale;
+        //             m.transX += (m.transSmoothX - m.transX) * 0.07;
+        //             m.transY += (m.transSmoothY - m.transY) * 0.07;
+        //         }
+        //     },
+        //     remove() {
+        //         if (this.count > 0) m.look = m.lookDefault()
+        //     }
+        // },
+        // {
+        //     name: "-panopticon-",
+        //     description: "<strong style='color: #f55;'>experiment:</strong> mobs can always see you",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isBadRandomOption: true,
+        //     isExperimentalMode: true,
+        //     allowed() {
+        //         return build.isExperimentSelection
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         this.interval = setInterval(() => {
+        //             if (!build.isExperimentSelection) {
+        //                 for (let i = 0; i < mob.length; i++) {
+        //                     if (!mob[i].shield && mob[i].isDropPowerUp) {
+        //                         mob[i].locatePlayer()
+        //                         mob[i].seePlayer.yes = true;
+        //                     }
+        //                 }
+        //             }
+        //         }, 1000); //every 1 seconds
+        //     },
+        //     interval: undefined,
+        //     remove() {
+        //         if (this.count > 0) clearTimeout(this.interval);
+        //     }
+        // },
+        // {
+        //     name: "-decomposers-",
+        //     description: "<strong style='color: #f55;'>experiment:</strong> after they die<br>mobs leave behind spawns",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isBadRandomOption: true,
+        //     isExperimentalMode: true,
+        //     allowed() {
+        //         return build.isExperimentSelection
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         tech.deathSpawns = 0.2
+        //     },
+        //     remove() {
+        //         tech.deathSpawns = 0
+        //     }
+        // },
+
+
+
+        //************************************************** 
+        //************************************************** JUNK
+        //************************************************** tech
+        //************************************************** 
+        // {
+        //     name: "junk",
+        //     description: "",
+        //     maxCount: 9,
+        //     count: 0,
+        //     frequency: 0,
+        //     isNonRefundable: true,
+        //     isJunk: true,
+        //     allowed() {
+        //         return true
+        //     },
+        //     requires: "",
+        //     effect() {
+
+        //     },
+        //     remove() {}
+        // },
+        {
+            name: "swap meet",
+            description: "normal <strong class='color-m'>tech</strong> become <strong class='color-j'>JUNK</strong><br>and <strong class='color-j'>JUNK</strong> become normal <strong class='color-m'>tech</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed() {
+                return true
+            },
+            requires: "",
+            effect() {
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    tech.tech[i].isJunk = !tech.tech[i].isJunk
+                    if (tech.tech[i].isJunk) {} else {}
+
+                    if (tech.tech[i].frequency > 0) {
+                        tech.tech[i].frequency = 0
+                    } else {
+                        tech.tech[i].frequency = 2
+                    }
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "random",
+            link: `<a target="_blank" href='https://en.wikipedia.org/wiki/Special:Random' class="link">random</a>`,
+            delay: 333,
+            descriptionFunction() {
+                const delay = 333
+                const loop = () => {
+                    if ((simulation.isChoosing) && m.alive && !build.isExperimentSelection) {
+                        const dmg = Math.floor(33 * Math.random()) * 0.01
+                        this.text = `<strong style = "font-family: 'Courier New', monospace;">+${(dmg*100).toFixed(0).padStart(2, '0')}%</strong> <strong class='color-d'>damage</strong>`
+                        this.damage = 1 + dmg
+                        if (document.getElementById(`damage-JUNK-id${this.id}`)) document.getElementById(`damage-JUNK-id${this.id}`).innerHTML = this.text
+                        setTimeout(() => { loop() }, delay);
+                    }
+                }
+                setTimeout(() => { loop() }, delay);
+                this.id++
+                return `<span id = "damage-JUNK-id${this.id}">${this.text}</span>`
+            },
+            maxCount: 3,
+            count: 0,
+            frequency: 1,
+            isJunk: true,
+            allowed() { return !build.isExperimentSelection },
+            requires: "NOT EXPERIMENT MODE",
+            damage: 0,
+            effect() {
+                tech.damage *= this.damage
+            },
+            remove() {
+                if (this.count > 0) tech.damage /= this.damage
+            }
+        },
+        {
+            name: "boost",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed() { return !build.isExperimentSelection },
+            requires: "NOT EXPERIMENT MODE",
+            effect() {
+                powerUps.spawnDelay("boost", this.spawnCount)
+            },
+            remove() {},
+            id: 0,
+            text: "",
+            delay: 100,
+            spawnCount: 0,
+            descriptionFunction() {
+                let count = 9999 * Math.random()
+                const loop = () => {
+                    if ((simulation.isChoosing) && m.alive && !build.isExperimentSelection) { //&& (!simulation.isChoosing || this.count === 0) //simulation.paused ||
+                        count += 4.5
+                        const waves = 2 * Math.sin(count * 0.0133) + Math.sin(count * 0.013) + 0.5 * Math.sin(count * 0.031) + 0.33 * Math.sin(count * 0.03)
+                        this.spawnCount = Math.floor(100 * Math.abs(waves))
+                        this.text = `spawn <strong style = "font-family: 'Courier New', monospace;">${this.spawnCount.toLocaleString(undefined, {minimumIntegerDigits:3})}</strong> ${powerUps.orb.boost(1)}<br>that give <strong>+${(powerUps.boost.damage*100).toFixed(0)}%</strong> <strong class='color-d'>damage</strong> for <strong>${(powerUps.boost.duration/60).toFixed(0)}</strong> seconds</span>`
+                        if (document.getElementById(`boost-JUNK-id${this.id}`)) document.getElementById(`boost-JUNK-id${this.id}`).innerHTML = this.text
+                        setTimeout(() => { loop() }, this.delay);
+                    }
+                }
+                setTimeout(() => { loop() }, this.delay);
+                this.id++
+                return `<span id = "boost-JUNK-id${this.id}">${this.text}</span>`
+            },
+        },
+        {
+            name: "placebo",
+            description: "<strong>+777%</strong> <strong class='color-d'>damage</strong><br><strong>+777%</strong> <strong class='color-defense'>defense</strong><br>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                if (Math.random() < 0.1) tech.damage *= 8.77
+            },
+            remove() {}
+        },
+        {
+            name: "return",
+            description: "return to the introduction level<br>reduce combat <strong>difficulty</strong> by <strong>2 levels</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                level.difficultyDecrease(simulation.difficultyMode * 2)
+                level.onLevel = 0
+                simulation.clearNow = true //end current level
+            },
+            remove() {}
+        },
+        {
+            name: "panpsychism",
+            description: "awaken all <strong class='color-block'>blocks</strong><br><strong class='color-block'>blocks</strong> have a chance to spawn power ups",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    for (let i = body.length - 1; i > -1; i--) {
+                        if (!body[i].isNotHoldable) {
+                            Matter.Composite.remove(engine.world, body[i]);
+                            spawn.blockMob(body[i].position.x, body[i].position.y, body[i], 0);
+                            if (!body[i].isAboutToBeRemoved) mob[mob.length - 1].isDropPowerUp = true
+                            body.splice(i, 1);
+                        }
+                    }
+                }, 6000);
+            },
+            remove() {}
+        },
+        {
+            name: "meteor shower",
+            description: "take a shower, but meteors instead of water",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                setInterval(() => {
+
+                    fireBlock = function(xPos, yPos) {
+                        const index = body.length
+                        spawn.bodyRect(xPos, yPos, 20 + 50 * Math.random(), 20 + 50 * Math.random());
+                        const bodyBullet = body[index]
+                        Matter.Body.setVelocity(bodyBullet, { x: 5 * (Math.random() - 0.5), y: 10 * (Math.random() - 0.5) });
+                        bodyBullet.isAboutToBeRemoved = true
+                        bodyBullet.collisionFilter.category = cat.body;
+                        bodyBullet.collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.mob | cat.mobBullet
+                        bodyBullet.classType = "body";
+                        Composite.add(engine.world, bodyBullet); //add to world
+                        setTimeout(() => { //remove block
+                            for (let i = 0; i < body.length; i++) {
+                                if (body[i] === bodyBullet) {
+                                    Matter.Composite.remove(engine.world, body[i]);
+                                    body.splice(i, 1);
+                                }
+                            }
+                        }, 4000 + Math.floor(9000 * Math.random()));
+                    }
+                    fireBlock(player.position.x + 600 * (Math.random() - 0.5), player.position.y - 500 - 500 * Math.random());
+                    // for (let i = 0, len =  Math.random(); i < len; i++) {
+                    // }
+
+                }, 1000);
+            },
+            remove() {}
+        },
+        {
+            name: "startle response",
+            description: `if a threat is nearby, activate a ${powerUps.orb.boost(1)}<br>and lock your mouse until you press escape`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                // tech.damage *= 1.33
+                setInterval(() => {
+                    if (powerUps.boost.endCycle < m.cycle && !simulation.paused && m.alive) {
+                        for (let i = 0; i < mob.length; i++) {
+                            if (mob[i].distanceToPlayer2() < 400000) { //650
+                                canvas.requestPointerLock();
+                                powerUps.boost.effect();
+                                break
+                            }
+                        }
+                    }
+                }, 2000);
+            },
+            remove() {}
+        },
+        {
+            name: "closed timelike curve",
+            description: "spawn 5 <strong class='color-f'>field</strong> power ups, but every 12 seconds<br>teleport a second into your future or past",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                for (let i = 0; i < 5; i++) powerUps.spawn(m.pos.x + 10 * Math.random(), m.pos.y + 10 * Math.random(), "field");
+
+                function loop() {
+                    if (!simulation.paused && m.alive) {
+                        if (!(simulation.cycle % 720)) {
+                            requestAnimationFrame(() => {
+                                if ((simulation.cycle % 1440) > 720) { //kinda alternate between each option
+                                    m.rewind(60)
+                                    m.energy += 0.4 //to make up for lost energy
+                                } else {
+                                    simulation.timePlayerSkip(60)
+                                }
+                            }); //wrapping in animation frame prevents errors, probably
+                        }
+                    }
+                    requestAnimationFrame(loop);
+                }
+                requestAnimationFrame(loop);
+            },
+            remove() {}
+        },
+        // {
+        //     name: "translate",
+        //     description: "translate n-gon into a random language",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isJunk: true,
+        //     isNonRefundable: true,
+        //     allowed() {
+        //         return true
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         // generate a container 
+        //         const gtElem = document.createElement('div')
+        //         gtElem.id = "gtElem"
+        //         gtElem.style.visibility = 'hidden' // make it invisible
+        //         document.body.append(gtElem)
+
+        //         // generate a script to run after creation
+        //         function initGT() {
+        //             // create a new translate element
+        //             new google.translate.TranslateElement({ pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL }, 'gtElem')
+        //             // ok now since it's loaded perform a funny hack to make it work
+        //             const langSelect = document.getElementsByClassName("goog-te-combo")[0]
+        //             // select a random language. It takes a second for all langauges to load, so wait a second.
+        //             setTimeout(() => {
+        //                 langSelect.selectedIndex = Math.round(langSelect.options.length * Math.random())
+        //                 // simulate a click
+        //                 langSelect.dispatchEvent(new Event('change'))
+        //                 // now make it go away
+        //                 const bar = document.getElementById(':1.container')
+        //                 bar.style.display = 'none'
+        //                 bar.style.visibility = 'hidden'
+        //             }, 1000)
+
+        //         }
+
+        //         // add the google translate script
+        //         const translateScript = document.createElement('script')
+        //         translateScript.src = '//translate.google.com/translate_a/element.js?cb=initGT'
+        //         document.body.append(translateScript)
+        //     },
+        //     remove() {}
+        // },
+        {
+            name: "discount",
+            description: "get 3 random <strong class='color-j'>JUNK</strong><strong class='color-m'>tech</strong> for the price of 1!",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.giveRandomJUNK()
+                tech.giveRandomJUNK()
+                tech.giveRandomJUNK()
+            },
+            remove() {}
+        },
+        // {
+        //     name: "hi",
+        //     description: `spawn to seed <strong>616</strong> `,
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isNonRefundable: true,
+        //     isJunk: true,
+        //     allowed() {
+        //         return true
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         document.getElementById("seed").placeholder = Math.initialSeed = String(616)
+        //         Math.seed = Math.abs(Math.hash(Math.initialSeed)) //update randomizer seed in case the player changed it
+        //     },
+        //     remove() {}
+        // },
+        {
+            name: "Higgs phase transition",
+            description: "instantly spawn 5 <strong class='color-m'>tech</strong>, but add a chance to<br>remove everything with a 5 minute <strong>half-life</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            frequencyDefault: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                powerUps.spawn(m.pos.x, m.pos.y, "tech");
+                powerUps.spawn(m.pos.x + 30, m.pos.y, "tech");
+                powerUps.spawn(m.pos.x + 60, m.pos.y, "tech");
+                powerUps.spawn(m.pos.x, m.pos.y - 30, "tech");
+                powerUps.spawn(m.pos.x + 30, m.pos.y - 60, "tech");
+
+                function loop() {
+                    // (1-X)^cycles = chance to be removed //Math.random() < 0.000019  10 min
+                    if (!simulation.paused && m.alive) {
+                        if (Math.random() < 0.000038) {
+                            // m.death();
+                            simulation.clearMap();
+                            simulation.draw.setPaths();
+                            return
+                        }
+                    }
+                    requestAnimationFrame(loop);
+                }
+                requestAnimationFrame(loop);
+            },
+            remove() {}
+        },
+        {
+            name: "harvest",
+            description: "convert all the mobs on this level into <strong class='color-ammo'>ammo</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            frequencyDefault: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                for (let i = 0, len = mob.length; i < len; i++) {
+                    if (mob[i].isDropPowerUp) {
+                        powerUps.directSpawn(mob[i].position.x, mob[i].position.y, "ammo");
+                        mob[i].death();
+                    }
+                }
+                // for (let i = powerUp.length - 1; i > -1; i--) {
+                //     if (powerUp[i].name !== "ammo") {
+                //         Matter.Composite.remove(engine.world, powerUp[i]);
+                //         powerUp.splice(i, 1);
+                //     }
+                // }
+            },
+            remove() {}
+        },
+        {
+            name: "&nbsp;",
+            description: "",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            frequencyDefault: 0,
+            isJunk: true,
+            allowed: () => true,
+            requires: "",
+            effect() {},
+            remove() {}
+        },
+        {
+            name: "brainstorm",
+            description: "the <strong class='color-m'>tech</strong> choice menu <strong>randomizes</strong><br>every <strong>0.5</strong> seconds for <strong>10</strong> seconds",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            frequencyDefault: 0,
+            isJunk: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                tech.isBrainstorm = true
+                tech.isBrainstormActive = false
+                tech.brainStormDelay = 30
+            },
+            remove() {
+                tech.isBrainstorm = false
+                tech.isBrainstormActive = false
+            }
+        },
+        {
+            name: "catabolysis",
+            description: `set your maximum <strong class='color-h'>health</strong> to <strong>1</strong><br><strong>double</strong> your current <strong class='color-ammo'>ammo</strong> <strong>10</strong> times`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return !tech.isFallingDamage && !tech.isOverHeal && !tech.isEnergyHealth },
+            requires: "not quenching, tungsten carbide, mass-energy",
+            effect() {
+                m.baseHealth = 0.01
+                m.setMaxHealth();
+                for (let i = 0; i < b.guns.length; i++) b.guns[i].ammo = b.guns[i].ammo * Math.pow(2, 10)
+                simulation.updateGunHUD();
+            },
+            remove() {}
+        },
+        {
+            name: "palantír",
+            description: `see far away lands`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            // isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                m.look = () => {
+                    //always on mouse look
+                    m.angle = Math.atan2(
+                        simulation.mouseInGame.y - m.pos.y,
+                        simulation.mouseInGame.x - m.pos.x
+                    );
+                    //smoothed mouse look translations
+                    const scale = 2;
+                    m.transSmoothX = canvas.width2 - m.pos.x - (simulation.mouse.x - canvas.width2) * scale;
+                    m.transSmoothY = canvas.height2 - m.pos.y - (simulation.mouse.y - canvas.height2) * scale;
+                    m.transX += (m.transSmoothX - m.transX) * m.lookSmoothing;
+                    m.transY += (m.transSmoothY - m.transY) * m.lookSmoothing;
+                }
+            },
+            remove() {
+                if (this.count) m.look = m.lookDefault
+            }
+        },
+        {
+            name: "motion sickness",
+            description: `disable camera smoothing`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            // isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                m.look = () => {
+                    //always on mouse look
+                    m.angle = Math.atan2(
+                        simulation.mouseInGame.y - m.pos.y,
+                        simulation.mouseInGame.x - m.pos.x
+                    );
+                    //smoothed mouse look translations
+                    const scale = 1.2;
+                    m.transSmoothX = canvas.width2 - m.pos.x - (simulation.mouse.x - canvas.width2) * scale;
+                    m.transSmoothY = canvas.height2 - m.pos.y - (simulation.mouse.y - canvas.height2) * scale;
+                    m.transX = canvas.width2 - m.pos.x - (simulation.mouse.x - canvas.width2) * scale;
+                    m.transY = canvas.height2 - m.pos.y - (simulation.mouse.y - canvas.height2) * scale;
+                    // m.transX += (m.transSmoothX - m.transX) * m.lookSmoothing;
+                    // m.transY += (m.transSmoothY - m.transY) * m.lookSmoothing;
+                }
+            },
+            remove() {
+                if (this.count) m.look = m.lookDefault
+            }
+        },
+        {
+            name: "facsimile",
+            description: `inserts a copy of your current level into the level list`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                const index = Math.min(level.levels.length - 1, level.onLevel)
+                level.levels.splice(index, 0, level.levels[index]);
+            },
+            remove() {}
+        },
+        {
+            name: "negative friction",
+            description: "when you touch walls you speed up instead of slowing down. It's kinda fun.",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                player.friction = -0.4
+            },
+            remove() {
+                if (this.count) player.friction = 0.002
+            }
+        },
+        {
+            name: "bounce",
+            description: "you bounce off things.  It's annoying, but not that bad.",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                player.restitution = 0.9
+            },
+            remove() {
+                if (this.count) player.restitution = 0
+            }
+        },
+        {
+            name: "mouth",
+            description: "mobs have a non functional mouth",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                mobs.draw = () => {
+                    ctx.lineWidth = 2;
+                    let i = mob.length;
+                    while (i--) {
+                        ctx.beginPath();
+                        const vertices = mob[i].vertices;
+                        ctx.moveTo(vertices[0].x, vertices[0].y);
+                        for (let j = 1, len = vertices.length; j < len; ++j) ctx.lineTo(vertices[j].x, vertices[j].y);
+                        ctx.quadraticCurveTo(mob[i].position.x, mob[i].position.y, vertices[0].x, vertices[0].y);
+                        ctx.fillStyle = mob[i].fill;
+                        ctx.strokeStyle = mob[i].stroke;
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+            },
+            remove() {
+                mobs.draw = () => {
+                    ctx.lineWidth = 2;
+                    let i = mob.length;
+                    while (i--) {
+                        ctx.beginPath();
+                        const vertices = mob[i].vertices;
+                        ctx.moveTo(vertices[0].x, vertices[0].y);
+                        for (let j = 1, len = vertices.length; j < len; ++j) ctx.lineTo(vertices[j].x, vertices[j].y);
+                        ctx.lineTo(vertices[0].x, vertices[0].y);
+                        ctx.fillStyle = mob[i].fill;
+                        ctx.strokeStyle = mob[i].stroke;
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+            }
+        },
+        {
+            name: "all-stars",
+            description: "make all mobs look like stars",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                mobs.draw = () => {
+                    ctx.lineWidth = 2;
+                    let i = mob.length;
+                    while (i--) {
+                        ctx.beginPath();
+                        const vertices = mob[i].vertices;
+                        ctx.moveTo(vertices[0].x, vertices[0].y);
+                        for (let j = 1, len = vertices.length; j < len; ++j) ctx.quadraticCurveTo(mob[i].position.x, mob[i].position.y, vertices[j].x, vertices[j].y);
+                        ctx.quadraticCurveTo(mob[i].position.x, mob[i].position.y, vertices[0].x, vertices[0].y);
+                        ctx.fillStyle = mob[i].fill;
+                        ctx.strokeStyle = mob[i].stroke;
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+            },
+            remove() {
+                mobs.draw = () => {
+                    ctx.lineWidth = 2;
+                    let i = mob.length;
+                    while (i--) {
+                        ctx.beginPath();
+                        const vertices = mob[i].vertices;
+                        ctx.moveTo(vertices[0].x, vertices[0].y);
+                        for (let j = 1, len = vertices.length; j < len; ++j) ctx.lineTo(vertices[j].x, vertices[j].y);
+                        ctx.lineTo(vertices[0].x, vertices[0].y);
+                        ctx.fillStyle = mob[i].fill;
+                        ctx.strokeStyle = mob[i].stroke;
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+            }
+        },
+        // draw() {
+        //     ctx.lineWidth = 2;
+        //     let i = mob.length;
+        //     while (i--) {
+        //         ctx.beginPath();
+        //         const vertices = mob[i].vertices;
+        //         ctx.moveTo(vertices[0].x, vertices[0].y);
+        //         for (let j = 1, len = vertices.length; j < len; ++j) ctx.lineTo(vertices[j].x, vertices[j].y);
+        //         ctx.lineTo(vertices[0].x, vertices[0].y);
+        //         ctx.fillStyle = mob[i].fill;
+        //         ctx.strokeStyle = mob[i].stroke;
+        //         ctx.fill();
+        //         ctx.stroke();
+        //     }
+        // },
+        {
+            name: "true colors",
+            description: `set all power ups to their real world colors`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                // const colors = shuffle(["#f7b", "#0eb", "#467", "#0cf", "hsl(246,100%,77%)", "#26a"])
+                const colors = shuffle([powerUps.research.color, powerUps.heal.color, powerUps.ammo.color, powerUps.ammo.color, powerUps.field.color, powerUps.gun.color])
+                powerUps.research.color = colors[0]
+                powerUps.heal.color = colors[1]
+                powerUps.ammo.color = colors[2]
+                powerUps.field.color = colors[3]
+                powerUps.tech.color = colors[4]
+                powerUps.gun.color = colors[5]
+                for (let i = 0; i < powerUp.length; i++) {
+                    switch (powerUp[i].name) {
+                        case "research":
+                            powerUp[i].color = colors[0]
+                            break;
+                        case "heal":
+                            powerUp[i].color = colors[1]
+                            break;
+                        case "ammo":
+                            powerUp[i].color = colors[2]
+                            break;
+                        case "field":
+                            powerUp[i].color = colors[3]
+                            break;
+                        case "tech":
+                            powerUp[i].color = colors[4]
+                            break;
+                        case "gun":
+                            powerUp[i].color = colors[5]
+                            break;
+                    }
+                }
+            },
+            remove() {
+                // const colors = ["#f7b", "#0eb", "#467", "#0cf", "hsl(246,100%,77%)", "#26a"] //no shuffle
+                // powerUps.research.color = colors[0]
+                // powerUps.heal.color = colors[1]
+                // powerUps.ammo.color = colors[2]
+                // powerUps.field.color = colors[3]
+                // powerUps.tech.color = colors[4]
+                // powerUps.gun.color = colors[5]
+                // for (let i = 0; i < powerUp.length; i++) {
+                //     switch (powerUp[i].name) {
+                //         case "research":
+                //             powerUp[i].color = colors[0]
+                //             break;
+                //         case "heal":
+                //             powerUp[i].color = colors[1]
+                //             break;
+                //         case "ammo":
+                //             powerUp[i].color = colors[2]
+                //             break;
+                //         case "field":
+                //             powerUp[i].color = colors[3]
+                //             break;
+                //         case "tech":
+                //             powerUp[i].color = colors[4]
+                //             break;
+                //         case "gun":
+                //             powerUp[i].color = colors[5]
+                //             break;
+                //     }
+                // }
+            }
+        },
+        {
+            name: "emergency broadcasting",
+            description: "emit 2 sine waveforms at 853 Hz and 960 Hz<br><em>lower your volume</em>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed() { return true },
+            requires: "",
+            effect: () => {
+                //setup audio context
+                function tone(frequency) {
+                    const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                    const oscillator1 = audioCtx.createOscillator();
+                    const gainNode1 = audioCtx.createGain();
+                    gainNode1.gain.value = 0.5; //controls volume
+                    oscillator1.connect(gainNode1);
+                    gainNode1.connect(audioCtx.destination);
+                    oscillator1.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+                    oscillator1.frequency.value = frequency; // value in hertz
+                    oscillator1.start();
+                    return audioCtx
+                }
+                // let sound = tone(1050)
+
+                function EBS() {
+                    const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+
+                    const oscillator1 = audioCtx.createOscillator();
+                    const gainNode1 = audioCtx.createGain();
+                    gainNode1.gain.value = 0.3; //controls volume
+                    oscillator1.connect(gainNode1);
+                    gainNode1.connect(audioCtx.destination);
+                    oscillator1.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+                    oscillator1.frequency.value = 850; // value in hertz
+                    oscillator1.start();
+
+                    const oscillator2 = audioCtx.createOscillator();
+                    const gainNode2 = audioCtx.createGain();
+                    gainNode2.gain.value = 0.3; //controls volume
+                    oscillator2.connect(gainNode2);
+                    gainNode2.connect(audioCtx.destination);
+                    oscillator2.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+                    oscillator2.frequency.value = 957; // value in hertz
+                    oscillator2.start();
+                    return audioCtx
+                }
+                let sound = EBS()
+
+                delay = 1000
+                setTimeout(() => {
+                    sound.suspend()
+                    powerUps.spawn(m.pos.x + 160 * (Math.random() - 0.5), m.pos.y + 160 * (Math.random() - 0.5), "heal");
+                    setTimeout(() => {
+                        sound.resume()
+                        setTimeout(() => {
+                            sound.suspend()
+                            powerUps.spawn(m.pos.x + 160 * (Math.random() - 0.5), m.pos.y + 160 * (Math.random() - 0.5), "heal");
+                            setTimeout(() => {
+                                sound.resume()
+                                setTimeout(() => {
+                                    sound.suspend()
+                                    powerUps.spawn(m.pos.x + 160 * (Math.random() - 0.5), m.pos.y + 160 * (Math.random() - 0.5), "heal");
+                                    setTimeout(() => {
+                                        sound.resume()
+                                        setTimeout(() => {
+                                            sound.suspend()
+                                            powerUps.spawn(m.pos.x + 160 * (Math.random() - 0.5), m.pos.y + 160 * (Math.random() - 0.5), "heal");
+                                            setTimeout(() => {
+                                                sound.resume()
+                                                setTimeout(() => {
+                                                    sound.suspend()
+                                                    powerUps.spawn(m.pos.x + 160 * (Math.random() - 0.5), m.pos.y + 160 * (Math.random() - 0.5), "heal");
+                                                    setTimeout(() => {
+                                                        sound.resume()
+                                                        setTimeout(() => {
+                                                            sound.suspend()
+                                                            sound.close()
+                                                            powerUps.spawn(m.pos.x + 160 * (Math.random() - 0.5), m.pos.y + 160 * (Math.random() - 0.5), "heal");
+                                                        }, delay);
+                                                    }, delay);
+                                                }, delay);
+                                            }, delay);
+                                        }, delay);
+                                    }, delay);
+                                }, delay);
+                            }, delay);
+                        }, delay);
+                    }, delay);
+                }, delay);
+            },
+            remove() {}
+        },
+        {
+            name: "automatic",
+            description: "you can't fire when moving<br>always <strong>fire</strong> when at <strong>rest</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() {
+                return !tech.isFireMoveLock
+            },
+            requires: "not Higgs mechanism",
+            effect() {
+                tech.isAlwaysFire = true;
+                b.setFireMethod();
+            },
+            remove() {
+                if (tech.isAlwaysFire) {
+                    tech.isAlwaysFire = false
+                    b.setFireMethod();
+                }
+            }
+        },
+        {
+            name: "hidden variable",
+            descriptionFunction() {
+                return `spawn ${powerUps.orb.heal(20)}<br>but hide your <strong class='color-h'>health</strong> bar`
+            },
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                document.getElementById("health").style.display = "none"
+                document.getElementById("health-bg").style.display = "none"
+                for (let i = 0; i < 20; i++) powerUps.spawn(m.pos.x + 160 * (Math.random() - 0.5), m.pos.y + 160 * (Math.random() - 0.5), "heal");
+            },
+            remove() {}
+        },
+        {
+            name: "not a bug",
+            description: "initiate a totally safe game crash for 10 seconds",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                const savedfunction = simulation.drawCircle
+                simulation.drawCircle = () => {
+                    const a = mob[Infinity].position //crashed the game in a visually interesting way, because of the ctx.translate command is never reverted in the main game loop
+                }
+                setTimeout(() => {
+                    simulation.drawCircle = savedfunction
+                    canvas.width = canvas.width //clears the canvas // works on chrome at least
+                    powerUps.spawn(m.pos.x, m.pos.y, "tech");
+                }, 10000);
+
+                // for (;;) {} //freezes the tab
+            },
+            remove() {}
+        },
+        {
+            name: "spinor",
+            description: "the direction you aim is determined by your position",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return !m.isShipMode
+            },
+            requires: "",
+            effect() {
+                m.look = function() {
+                    //always on mouse look
+                    m.angle = (((m.pos.x + m.pos.y) / 100 + Math.PI) % Math.PI * 2) - Math.PI
+                    //smoothed mouse look translations
+                    const scale = 0.8;
+                    m.transSmoothX = canvas.width2 - m.pos.x - (simulation.mouse.x - canvas.width2) * scale;
+                    m.transSmoothY = canvas.height2 - m.pos.y - (simulation.mouse.y - canvas.height2) * scale;
+
+                    m.transX += (m.transSmoothX - m.transX) * 0.07;
+                    m.transY += (m.transSmoothY - m.transY) * 0.07;
+                }
+            },
+            remove() {
+                if (this.count) m.look = m.lookDefault
+            }
+        },
+        {
+            name: "decomposers",
+            description: "after they die <strong>mobs</strong> leave behind <strong>spawns</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return tech.deathSpawns === 0
+            },
+            requires: "",
+            effect() {
+                tech.deathSpawns = 0.2
+            },
+            remove() {
+                tech.deathSpawns = 0
+            }
+        },
+        {
+            name: "panopticon",
+            description: "<strong>mobs</strong> can always see you",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    for (let i = 0; i < mob.length; i++) {
+                        if (!mob[i].shield && mob[i].isDropPowerUp) {
+                            mob[i].locatePlayer()
+                            mob[i].seePlayer.yes = true;
+                        }
+                    }
+                }, 1000); //every 1 seconds
+            },
+            remove() {}
+        },
+        // {
+        //     name: "inverted mouse",
+        //     description: "your mouse is scrambled<br>it's fine, just rotate it 90 degrees",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isExperimentHide: true,
+        //     isNonRefundable: true,
+        //     isJunk: true,
+        //     allowed() {
+        //         return !m.isShipMode
+        //     },
+        //     requires: "not ship",
+        //     effect() {
+        //         document.body.addEventListener("mousemove", (e) => {
+        //             const ratio = window.innerWidth / window.innerHeight
+        //             simulation.mouse.x = e.clientY * ratio
+        //             simulation.mouse.y = e.clientX / ratio;
+        //         });
+        //     },
+        //     remove() {
+        //         // m.look = m.lookDefault
+        //     }
+        // },
+        {
+            name: "Fourier analysis",
+            description: "your aiming is now controlled by this equation:<br><span style = 'font-size:80%;'>2sin(0.0133t) + sin(0.013t) + 0.5sin(0.031t)+ 0.33sin(0.03t)</span>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() {
+                return !m.isShipMode
+            },
+            requires: "not ship",
+            effect() {
+                m.look = () => {
+                    m.angle = 2 * Math.sin(m.cycle * 0.0133) + Math.sin(m.cycle * 0.013) + 0.5 * Math.sin(m.cycle * 0.031) + 0.33 * Math.sin(m.cycle * 0.03)
+                    const scale = 0.8;
+                    simulation.mouse.y
+                    m.transSmoothX = canvas.width2 - m.pos.x - (simulation.mouse.x - canvas.width2) * scale;
+                    m.transSmoothY = canvas.height2 - m.pos.y - (simulation.mouse.y - canvas.height2) * scale;
+                    m.transX += (m.transSmoothX - m.transX) * 0.07;
+                    m.transY += (m.transSmoothY - m.transY) * 0.07;
+                }
+            },
+            remove() {
+                if (this.count) m.look = m.lookDefault
+            }
+        },
+        {
+            name: "disintegrated armament",
+            description: "spawn a <strong class='color-g'>gun</strong><br><strong>remove</strong> your active <strong class='color-g'>gun</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return b.inventory.length > 0
+            },
+            requires: "at least 1 gun",
+            effect() {
+                if (b.inventory.length > 0) b.removeGun(b.guns[b.activeGun].name)
+                simulation.makeGunHUD()
+                powerUps.spawn(m.pos.x + 60 * (Math.random() - 0.5), m.pos.y + 60 * (Math.random() - 0.5), "gun");
+            },
+            remove() {}
+        },
+        {
+            name: "probability",
+            description: "increase the <strong class='flicker'>frequency</strong><br>of one random <strong class='color-m'>tech</strong> by <strong>100</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                let options = []; //find what tech I could get
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    if (
+                        tech.tech[i].count < tech.tech[i].maxCount &&
+                        tech.tech[i].allowed() &&
+                        !tech.tech[i].isJunk &&
+                        !tech.tech.isLore
+                    ) {
+                        options.push(i);
+                    }
+                }
+                if (options.length) {
+                    const index = options[Math.floor(Math.random() * options.length)]
+                    tech.tech[index].frequency = 100
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "encryption",
+            description: "secure <strong class='color-m'>tech</strong> information",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                String.prototype.shuffle = function() {
+                    var a = this.split(""),
+                        n = a.length;
+
+                    for (var i = n - 1; i > 0; i--) {
+                        var j = Math.floor(Math.random() * (i + 1));
+                        var tmp = a[i];
+                        a[i] = a[j];
+                        a[j] = tmp;
+                    }
+                    return a.join("");
+                }
+
+                for (let i = 0, len = tech.tech.length; i < len; i++) tech.tech[i].name = tech.tech[i].name.shuffle()
+            },
+            remove() {}
+        },
+        {
+            name: "quantum leap",
+            description: "become an <strong class='alt'>alternate</strong> version of yourself<br>every <strong>20</strong> seconds",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    m.switchWorlds()
+                    simulation.trails()
+                }, 20000); //every 30 seconds
+            },
+            remove() {}
+        },
+        {
+            name: "score",
+            description: "Add a score to n-gon!",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    let score = Math.ceil(1000 * Math.random() * Math.random() * Math.random() * Math.random() * Math.random())
+                    simulation.makeTextLog(`simulation.score <span class='color-symbol'>=</span> ${score.toFixed(0)}`);
+                }, 10000); //every 10 seconds
+            },
+            remove() {}
+        },
+        {
+            name: "pop-ups",
+            description: "sign up to learn endless easy ways to win n-gon<br>that Landgreen doesn't want you to know!!!1!!",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    alert(`The best combo is ${tech.tech[Math.floor(Math.random() * tech.tech.length)].name} with ${tech.tech[Math.floor(Math.random() * tech.tech.length)].name}!`);
+                }, 30000); //every 30 seconds
+            },
+            remove() {}
+        },
+        {
+            name: "music",
+            description: "add music to n-gon",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                window.open('https://www.youtube.com/watch?v=lEbHeSdmS-k&list=PL9Z5wjoBiPKEDhwCW2RN-VZoCpmhIojdn', '_blank')
+            },
+            remove() {}
+        },
+        {
+            name: "performance",
+            description: "display performance stats to n-gon",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                (function() {
+                    var script = document.createElement('script');
+                    script.onload = function() {
+                        var stats = new Stats();
+                        document.body.appendChild(stats.dom);
+                        requestAnimationFrame(function loop() {
+                            stats.update();
+                            requestAnimationFrame(loop)
+                        });
+                    };
+                    script.src = 'https://unpkg.com/stats.js@0.17.0/build/stats.min.js';
+                    document.head.appendChild(script);
+                })()
+                //move health to the right
+                document.getElementById("health").style.left = "86px"
+                document.getElementById("health-bg").style.left = "86px"
+            },
+            remove() {}
+        },
+        {
+            name: "repartitioning",
+            description: "set the <strong class='flicker'>frequency</strong> of finding normal <strong class='color-m'>tech</strong> to <strong>0</strong><br>spawn 5 <strong class='color-m'>tech</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = 0, len = tech.tech.length; i < len; i++) {
+                    if (tech.tech[i].isJunk) {
+                        tech.tech[i].frequency = 2
+                    } else {
+                        tech.tech[i].frequency = 0
+                    }
+                }
+                for (let i = 0; i < 5; i++) powerUps.spawn(m.pos.x, m.pos.y, "tech");
+            },
+            remove() {}
+        },
+        {
+            name: "defragment",
+            description: "set the <strong class='flicker'>frequency</strong> of finding <strong class='color-j'>JUNK</strong><strong class='color-m'>tech</strong> to zero",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = tech.tech.length - 1; i > 0; i--) {
+                    if (tech.tech[i].isJunk) tech.tech[i].frequency = 0
+                }
+            },
+            remove() {}
+        },
+        // {
+        //     name: "lubrication",
+        //     description: "reduce block density and friction for this level",
+        //     maxCount: 9,
+        //     count: 0,
+        //     frequency: 0,
+        //     isNonRefundable: true,
+        //     isExperimentHide: true,
+        //     isJunk: true,
+        //     allowed() {
+        //         return true
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         for (let i = 0; i < body.length; i++) {
+        //             Matter.Body.setDensity(body[i], 0.0001) // 0.001 is normal
+        //             body[i].friction = 0.01
+        //         }
+        //     },
+        //     remove() {}
+        // },
+        {
+            name: "pitch",
+            description: "oscillate the pitch of your world",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => { if (!simulation.paused) ctx.rotate(0.001 * Math.sin(simulation.cycle * 0.01)) }, 16);
+            },
+            remove() {}
+        },
+        {
+            name: "umbra",
+            description: "produce a blue glow around everything<br>and probably some simulation lag",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                ctx.shadowColor = '#06f';
+                ctx.shadowBlur = 25;
+            },
+            remove() {}
+        },
+        {
+            name: "lighter",
+            description: `ctx.globalCompositeOperation = "lighter"`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return m.fieldUpgrades[m.fieldMode].name !== "negative mass"
+            },
+            requires: "",
+            effect() {
+                ctx.globalCompositeOperation = "lighter";
+            },
+            remove() {}
+        },
+        {
+            name: "rewind",
+            description: "every 10 seconds <strong class='color-rewind'>rewind</strong> <strong>2</strong> seconds",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    m.rewind(120)
+                    m.energy += 0.4
+                }, 10000);
+                // for (let i = 0; i < 24; i++) {
+                //     setTimeout(() => { m.rewind(120) }, i * 5000);
+                // }
+            },
+            remove() {}
+        },
+        {
+            name: "undo",
+            description: "every 4 seconds <strong class='color-rewind'>rewind</strong> <strong>1/2</strong> a second",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    m.rewind(30)
+                    m.energy += 0.2
+                }, 4000);
+            },
+            remove() {}
+        },
+        {
+            name: "energy to mass conversion",
+            description: "convert your <strong class='color-f'>energy</strong> into <strong class='color-block'>blocks</strong>",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = 0, len = 40; i < len; i++) {
+                    setTimeout(() => {
+                        m.energy -= 1 / len
+                        const index = body.length
+                        where = Vector.add(m.pos, { x: 400 * (Math.random() - 0.5), y: 400 * (Math.random() - 0.5) })
+                        spawn.bodyRect(where.x, where.y, Math.floor(15 + 100 * Math.random()), Math.floor(15 + 100 * Math.random()));
+                        body[index].collisionFilter.category = cat.body;
+                        body[index].collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.mob | cat.mobBullet
+                        body[index].classType = "body";
+                        Composite.add(engine.world, body[index]); //add to world
+                    }, i * 100);
+                }
+
+            },
+            remove() {}
+        },
+        {
+            name: "level.nextLevel()",
+            description: "advance to the next level",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                level.nextLevel();
+            },
+            remove() {}
+        },
+        {
+            name: "reincarnation",
+            description: "kill all mobs and spawn new ones<br>(also spawn a few extra mobs for fun)",
+            maxCount: 3,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                spawn.setSpawnList();
+                spawn.setSpawnList();
+                for (let i = 0, len = mob.length; i < len; i++) {
+                    if (mob[i].alive && !mob[i].shield && !mob[i].isBadTarget) {
+                        const pick = spawn.pickList[Math.floor(Math.random() * spawn.pickList.length)];
+                        spawn[pick](mob[i].position.x, mob[i].position.y);
+                        if (Math.random() < 0.5) spawn[pick](mob[i].position.x, mob[i].position.y);
+                        mob[i].death();
+                    }
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "expert system",
+            description: "spawn a <strong class='color-m'>tech</strong> power up<br><strong>+64%</strong> <strong class='color-j'>JUNK</strong> to <strong class='color-m'>tech</strong> pool",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                powerUps.spawn(m.pos.x, m.pos.y, "tech");
+                tech.addJunkTechToPool(0.64)
+            },
+            remove() {}
+        },
+        {
+            name: "energy investment",
+            description: "every 10 seconds drain your <strong class='color-f'>energy</strong><br>return it doubled 5 seconds later",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    if (!simulation.paused) {
+                        const energy = m.energy
+                        m.energy = 0
+                        setTimeout(() => { //return energy
+                            m.energy += 2 * energy
+                        }, 5000);
+                    }
+                }, 10000);
+            },
+            remove() {}
+        },
+        {
+            name: "missile launching system",
+            description: "fire missiles for the next 120 seconds",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = 0; i < 120; i++) {
+                    setTimeout(() => {
+                        const where = {
+                            x: m.pos.x,
+                            y: m.pos.y - 40
+                        }
+                        b.missile(where, -Math.PI / 2 + 0.2 * (Math.random() - 0.5) * Math.sqrt(tech.missileCount), -2)
+                    }, i * 1000);
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "grenade production",
+            description: "drop a grenade every 2 seconds",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    if (!simulation.paused && document.visibilityState !== "hidden") {
+                        b.grenade(Vector.add(m.pos, { x: 10 * (Math.random() - 0.5), y: 10 * (Math.random() - 0.5) }), -Math.PI / 2) //fire different angles for each grenade
+                        const who = bullet[bullet.length - 1]
+                        Matter.Body.setVelocity(who, {
+                            x: who.velocity.x * 0.1,
+                            y: who.velocity.y * 0.1
+                        });
+                    }
+                }, 2000);
+            },
+            remove() {}
+        },
+        // {
+        //     name: "inverted input",
+        //     description: "left input becomes right and up input becomes down",
+        //     maxCount: 9,
+        //     count: 0,
+        //     frequency: 0,
+        //     isNonRefundable: true,
+        //     isExperimentHide: true,
+        //     isJunk: true,
+        //     allowed() {
+        //         return true
+        //     },
+        //     requires: "",
+        //     effect() {
+        //         const left = input.key.left
+        //         input.key.left = input.key.right
+        //         input.key.right = left
+
+        //         const up = input.key.up
+        //         input.key.up = input.key.down
+        //         input.key.down = up
+        //     },
+        //     remove() {}
+        // },
+        {
+            name: "Sleipnir",
+            description: "grow more legs",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return !m.isShipMode },
+            requires: "",
+            effect() {
+                m.draw = function() {
+                    ctx.fillStyle = m.fillColor;
+                    m.walk_cycle += m.flipLegs * m.Vx;
+
+                    //draw body
+                    ctx.save();
+                    ctx.globalAlpha = (m.immuneCycle < m.cycle) ? 1 : 0.5
+                    ctx.translate(m.pos.x, m.pos.y);
+                    for (let i = 0; i < 16; i++) {
+                        m.calcLeg(Math.PI * i / 8, -3 * i / 16)
+                        m.drawLeg("#444")
+                    }
+                    ctx.rotate(m.angle);
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 30, 0, 2 * Math.PI);
+                    ctx.fillStyle = m.bodyGradient
+                    ctx.fill();
+                    ctx.arc(15, 0, 4, 0, 2 * Math.PI);
+                    ctx.strokeStyle = "#333";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    // ctx.beginPath();
+                    // ctx.arc(15, 0, 3, 0, 2 * Math.PI);
+                    // ctx.fillStyle = '#0cf';
+                    // ctx.fill()
+                    ctx.restore();
+                    m.yOff = m.yOff * 0.85 + m.yOffGoal * 0.15; //smoothly move leg height towards height goal
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "diegesis",
+            description: "indicate fire cooldown</strong><br>through a rotation of your head",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return !m.isShipMode },
+            requires: "",
+            effect() {
+                m.draw = function() {
+                    ctx.fillStyle = m.fillColor;
+                    m.walk_cycle += m.flipLegs * m.Vx;
+
+                    ctx.save();
+                    ctx.globalAlpha = (m.immuneCycle < m.cycle) ? 1 : 0.5
+                    ctx.translate(m.pos.x, m.pos.y);
+                    m.calcLeg(Math.PI, -3);
+                    m.drawLeg("#4a4a4a");
+                    m.calcLeg(0, 0);
+                    m.drawLeg("#333");
+                    ctx.rotate(m.angle - (m.fireCDcycle != Infinity ? m.flipLegs * 0.25 * Math.pow(Math.max(m.fireCDcycle - m.cycle, 0), 0.5) : 0));
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 30, 0, 2 * Math.PI);
+                    ctx.fillStyle = m.bodyGradient
+                    ctx.fill();
+                    ctx.arc(15, 0, 4, 0, 2 * Math.PI);
+                    ctx.strokeStyle = "#333";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.restore();
+                    m.yOff = m.yOff * 0.85 + m.yOffGoal * 0.15; //smoothly move leg height towards height goal
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "🐱",
+            description: "🐈",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return !m.isShipMode
+            },
+            requires: "",
+            effect() {
+                m.draw = function() {
+                    ctx.fillStyle = m.fillColor;
+                    m.walk_cycle += m.flipLegs * m.Vx;
+                    ctx.save();
+                    ctx.globalAlpha = (m.immuneCycle < m.cycle) ? 1 : 0.5
+                    ctx.translate(m.pos.x, m.pos.y);
+                    m.calcLeg(Math.PI, -3);
+                    m.drawLeg("#4a4a4a");
+
+
+                    if (!(m.angle > -Math.PI / 2 && m.angle < Math.PI / 2)) {
+                        ctx.scale(1, -1);
+                        ctx.rotate(Math.PI);
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(-30, 0);
+                    ctx.bezierCurveTo(-65, -75,
+                        -5, 150 + (5 * Math.sin(simulation.cycle / 10)),
+                        -70 + (10 * Math.sin(simulation.cycle / 10)), 0 + (10 * Math.sin(simulation.cycle / 10)));
+                    ctx.strokeStyle = "#333";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+
+                    if (!(m.angle > -Math.PI / 2 && m.angle < Math.PI / 2)) {
+                        ctx.scale(1, -1);
+                        ctx.rotate(0 - Math.PI);
+                    }
+                    m.calcLeg(0, 0);
+                    m.drawLeg("#333");
+
+                    ctx.rotate(m.angle);
+                    if (!(m.angle > -Math.PI / 2 && m.angle < Math.PI / 2)) ctx.scale(1, -1);
+                    ctx.beginPath();
+                    ctx.moveTo(5, -30);
+                    ctx.lineTo(20, -40);
+                    ctx.lineTo(20, -20);
+                    ctx.lineWidth = 2;
+                    ctx.fillStyle = "#f3f";
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 30, 0, 2 * Math.PI);
+                    ctx.fillStyle = m.bodyGradient
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.moveTo(19, 0);
+                    ctx.arc(15, 0, 4, Math.PI, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(24.3, 6, 5, Math.PI * 2, Math.PI);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(30, 6);
+                    ctx.lineTo(32, 0);
+                    ctx.lineTo(26, 0);
+                    ctx.lineTo(30, 6);
+                    ctx.fillStyle = "#f3f";
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.restore();
+                    m.yOff = m.yOff * 0.85 + m.yOffGoal * 0.15; //smoothly move leg height towards height goal
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "transparency",
+            description: "become invisible to yourself<br><em>mobs can still see you</em>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                m.draw = () => {}
+            },
+            remove() {}
+        },
+        {
+            name: "posture",
+            description: "stand a bit taller",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isJunk: true,
+            allowed() {
+                return !m.isShipMode
+            },
+            requires: "",
+            effect() {
+                m.yOffWhen.stand = 70
+            },
+            remove() {
+                m.yOffWhen.stand = 49
+            }
+        },
+        {
+            name: "rhythm",
+            description: "you oscillate up and down",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed() {
+                return !m.isShipMode
+            },
+            requires: "",
+            effect() {
+                setInterval(() => {
+                    m.yOffWhen.stand = 53 + 28 * Math.sin(simulation.cycle * 0.2)
+                    if (m.onGround && !m.crouch) m.yOffGoal = m.yOffWhen.stand
+                }, 100);
+            },
+            remove() {}
+        },
+        {
+            name: "pareidolia",
+            description: "don't",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return !m.isShipMode
+            },
+            requires: "",
+            effect() {
+                m.draw = function() {
+                    ctx.fillStyle = m.fillColor;
+                    m.walk_cycle += m.flipLegs * m.Vx;
+                    ctx.save();
+                    ctx.globalAlpha = (m.immuneCycle < m.cycle) ? 1 : 0.7
+                    ctx.translate(m.pos.x, m.pos.y);
+                    m.calcLeg(Math.PI, -3);
+                    m.drawLeg("#4a4a4a");
+                    m.calcLeg(0, 0);
+                    m.drawLeg("#333");
+                    ctx.rotate(m.angle);
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 30, 0, 2 * Math.PI);
+                    ctx.fillStyle = m.bodyGradient
+                    ctx.fill();
+                    ctx.strokeStyle = "#333";
+                    ctx.lineWidth = 2;
+                    if (!(m.angle > -Math.PI / 2 && m.angle < Math.PI / 2)) ctx.scale(1, -1); //here is the flip
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(2, -6, 7, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(25, -6, 7, 0.25 * Math.PI, 1.6 * Math.PI);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(2, -10, 9, 1.25 * Math.PI, 1.75 * Math.PI);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(25, -10, 9, 1.25 * Math.PI, 1.4 * Math.PI);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(18, 13, 10, 0, 2 * Math.PI);
+                    ctx.fillStyle = m.bodyGradient;
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(18, 13, 6, 0, 2 * Math.PI);
+                    ctx.fillStyle = "#555";
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(3, -6, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(26, -6, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                    m.yOff = m.yOff * 0.85 + m.yOffGoal * 0.15;
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "prism",
+            description: "you cycle through different <strong>colors</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isSkin: true,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                m.color = {
+                    hue: 0,
+                    sat: 100,
+                    light: 50
+                }
+                setInterval(function() {
+                    m.color.hue++
+                    m.setFillColors()
+                }, 10);
+            },
+            remove() {}
+        },
+        {
+            name: "microtransactions",
+            description: `when you choose a <strong class='color-m'>tech</strong> you can<br>use ${powerUps.orb.research(1)} to buy a free in game <strong>skin</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                tech.isMicroTransactions = true
+            },
+            remove() {
+                tech.isMicroTransactions = false
+            }
+        },
+        {
+            name: "ship",
+            description: "fly around with no legs<br>reduce combat <strong>difficulty</strong> by <strong>1 level</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return !m.isShipMode && m.fieldUpgrades[m.fieldMode].name !== "negative mass"
+            },
+            requires: "",
+            effect() {
+                m.shipMode()
+                level.difficultyDecrease(simulation.difficultyMode)
+                //unlock relativistic rotation
+                for (let i = 0; i < tech.tech.length; i++) {
+                    if (tech.tech[i].name === "relativistic rotation") tech.tech[i].frequency = 10
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "circular symmetry",
+            description: "turning the ship rotates the universe instead<br><strong>+200%</strong> <strong class='color-d'>damage</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return m.isShipMode },
+            requires: "",
+            effect() {
+                tech.damage *= 3
+
+                m.look = () => {
+                    // const scale = 0;
+                    m.transSmoothX = canvas.width2 - m.pos.x // - (simulation.mouse.x - canvas.width2) * scale;
+                    m.transSmoothY = canvas.height2 - m.pos.y // - (simulation.mouse.y - canvas.height2) * scale;
+                    m.transX += (m.transSmoothX - m.transX) * m.lookSmoothing;
+                    m.transY += (m.transSmoothY - m.transY) * m.lookSmoothing;
+                    ctx.restore();
+                    ctx.save();
+                    ctx.translate(canvas.width2, canvas.height2); //center
+                    ctx.rotate(-m.angle)
+                    ctx.translate(-canvas.width2, -canvas.height2); //center
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "assimilation",
+            description: "all your <strong class='color-bot'>bots</strong> are converted to the <strong>same</strong> random model",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isBotTech: true,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return b.totalBots() > 2
+            },
+            requires: "at least 3 bots",
+            effect() {
+                const total = b.totalBots();
+                tech.dynamoBotCount = 0;
+                tech.nailBotCount = 0;
+                tech.laserBotCount = 0;
+                tech.orbitBotCount = 0;
+                tech.foamBotCount = 0;
+                tech.boomBotCount = 0;
+                tech.plasmaBotCount = 0;
+                tech.missileBotCount = 0;
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType) bullet[i].endCycle = 0
+                }
+
+                const bots = [
+                    () => {
+                        b.nailBot();
+                        tech.nailBotCount++;
+                    },
+                    () => {
+                        b.foamBot();
+                        tech.foamBotCount++;
+                    },
+                    () => {
+                        b.boomBot();
+                        tech.boomBotCount++;
+                    },
+                    () => {
+                        b.laserBot();
+                        tech.laserBotCount++;
+                    },
+                    () => {
+                        b.orbitBot();
+                        tech.orbitBotCount++
+                    },
+                    () => {
+                        b.dynamoBot();
+                        tech.dynamoBotCount++
+                    }
+                ]
+                const index = Math.floor(Math.random() * bots.length)
+                for (let i = 0; i < total; i++) bots[index]()
+            },
+            remove() {}
+        },
+        {
+            name: "growth hacking",
+            description: "increase combat <strong>difficulty</strong> by <strong>1 level</strong>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                level.difficultyIncrease(simulation.difficultyMode)
+            },
+            remove() {}
+        },
+        {
+            name: "stun",
+            description: "<strong>stun</strong> all mobs for up to <strong>8</strong> seconds",
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = 0; i < mob.length; i++) mobs.statusStun(mob[i], 480)
+            },
+            remove() {}
+        },
+        {
+            name: "translucent",
+            description: "remove your <strong class='color-g'>guns</strong> and <strong>spawn</strong> new ones<br>your <strong class='color-g'>bullets</strong> and bots are transparent",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                for (let i = 0; i < b.inventory.length; i++) powerUps.spawn(m.pos.x + 60 * (Math.random() - 0.5), m.pos.y + 60 * (Math.random() - 0.5), "gun");
+
+                //removes guns and ammo  
+                b.inventory = [];
+                b.activeGun = null;
+                b.inventoryGun = 0;
+                for (let i = 0, len = b.guns.length; i < len; ++i) {
+                    b.guns[i].have = false;
+                    if (b.guns[i].ammo !== Infinity) b.guns[i].ammo = 0;
+                }
+                simulation.makeGunHUD(); //update gun HUD
+                b.bulletDraw = () => {};
+            },
+            remove() {}
+        },
+        {
+            name: "re-research",
+            description: `<strong>eject</strong> all your ${powerUps.orb.research(1)}`,
+            maxCount: 9,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return powerUps.research.count > 3
+            },
+            requires: "at least 4 research",
+            effect() {
+                powerUps.spawnDelay("research", powerUps.research.count);
+                powerUps.research.count = 0
+            },
+            remove() {}
+        },
+        {
+            name: "black hole",
+            description: `use your <strong class='color-f'>energy</strong> and ${powerUps.orb.research(4)} to <strong>spawn</strong><br>inside the event horizon of a huge <strong>black hole</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() {
+                return powerUps.research.count > 3
+            },
+            requires: "at least 4 research",
+            effect() {
+                m.energy = 0
+                spawn.suckerBoss(m.pos.x, m.pos.y - 700)
+                powerUps.research.changeRerolls(-4)
+                simulation.makeTextLog(`<span class='color-var'>m</span>.<span class='color-r'>research</span> <span class='color-symbol'>--</span><br>${powerUps.research.count}`)
+            },
+            remove() {}
+        },
+        {
+            name: "black hole cluster",
+            description: `spawn <strong>30</strong> nearby <strong>black holes</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                const unit = { x: 1, y: 0 }
+                for (let i = 0; i < 30; i++) {
+                    const where = Vector.add(m.pos, Vector.mult(Vector.rotate(unit, Math.random() * 2 * Math.PI), 2000 + 1200 * Math.random()))
+                    spawn.sucker(where.x, where.y, 140)
+                    const who = mob[mob.length - 1]
+                    who.locatePlayer()
+                    // who.damageReduction = 0.2
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "rule 30",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() { return !build.isExperimentSelection },
+            requires: "NOT EXPERIMENT MODE",
+            effect() {},
+            remove() {},
+            state: [
+                [false, false, false, Math.random() > 0.8, false, false, false, Math.random() > 0.8, false, false, false, false, false, false, false, false, false, true, false, false, false, Math.random() > 0.8, false, false, false, Math.random() > 0.8, false, false, false, false, Math.random() > 0.8, false, Math.random() > 0.8, false, false, false, Math.random() > 0.8, false, false, false, false, false, false, false, false, false]
+            ],
+            rule(state, a, b, c) {
+                //30
+                if (state[a] && state[b] && state[c]) return false; // TTT => F
+                if (state[a] && state[b] && !state[c]) return false; // TTF => F
+                if (state[a] && !state[b] && state[c]) return false; //TFT => F 
+                if (state[a] && !state[b] && !state[c]) return true; //TFF => T
+                if (!state[a] && state[b] && state[c]) return true; //FTT => T
+                if (!state[a] && state[b] && !state[c]) return true; //FTF => T
+                if (!state[a] && !state[b] && state[c]) return true; //FFT => T
+                if (!state[a] && !state[b] && !state[c]) return false; //FFF => F
+            },
+            id: 0,
+            researchSpawned: 0,
+            descriptionFunction() {
+                const loop = () => {
+                    if ((simulation.paused || simulation.isChoosing) && m.alive && !build.isExperimentSelection) { //&& (!simulation.isChoosing || this.count === 0)
+                        let b = []; //produce next row
+                        b.push(this.rule(this.state[this.state.length - 1], this.state[this.state.length - 1].length - 1, 0, 1)); //left edge wrap around
+                        for (let i = 1; i < this.state[this.state.length - 1].length - 1; i++) { //apply rule to the rest of the array
+                            b.push(this.rule(this.state[this.state.length - 1], i - 1, i, i + 1));
+                        }
+                        b.push(this.rule(this.state[this.state.length - 1], this.state[this.state.length - 1].length - 2, this.state[this.state.length - 1].length - 1, 0)); //right edge wrap around
+                        this.state.push(b)
+                        if (document.getElementById(`cellular-rule-id${this.id}`)) document.getElementById(`cellular-rule-id${this.id}`).innerHTML = this.outputText() //convert to squares and send HTML
+                        if (this.count && this.researchSpawned < 12 && !(this.state.length % 10)) {
+                            this.researchSpawned++
+                            powerUps.spawn(m.pos.x - 50 + 100 * (Math.random() - 0.5), m.pos.y + 100 * (Math.random() - 0.5), "research");
+                        }
+                        setTimeout(() => { loop() }, 300);
+                    }
+                }
+                setTimeout(() => { loop() }, 300);
+                this.id++
+                return `<span id = "cellular-rule-id${this.id}" style = "letter-spacing: -0.5px;font-size: 100%;line-height: normal;font-family: 'Courier New', monospace;">${this.outputText()}</span>`
+            },
+            outputText() {
+                let text = "<pre>"
+                for (let j = 0; j < this.state.length; j++) {
+                    // text += "<p style = 'margin-bottom: -12px;'>"
+                    text += "<p style = 'margin-top: -7px;margin-bottom: -7px;'>"
+                    for (let i = 0; i < this.state[j].length; i++) {
+                        if (this.state[j][i]) {
+                            text += "■" //"☻" //"⬛" //"█" //"■"
+                        } else {
+                            text += " " //"□" //"☺" //"⬜" //"&nbsp;&nbsp;&nbsp;&nbsp;" //"□"
+                        }
+                    }
+                    text += "</p>"
+                }
+                text += "</pre>"
+                return text
+            },
+        },
+        {
+            name: "rule 90",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            allowed() { return !build.isExperimentSelection },
+            requires: "NOT EXPERIMENT MODE",
+            effect() {},
+            remove() {},
+            state: [
+                [false, false, false, Math.random() > 0.8, false, false, false, Math.random() > 0.8, false, false, false, false, false, false, false, false, false, true, true, false, false, false, Math.random() > 0.8, false, false, false, Math.random() > 0.8, false, false, false, false, Math.random() > 0.8, false, Math.random() > 0.8, false, false, false, Math.random() > 0.8, false, false, false, false, false, false, false, false]
+            ],
+            rule(state, a, b, c) { //90
+                if (state[a] && state[b] && state[c]) return false; // TTT => F
+                if (state[a] && state[b] && !state[c]) return true; // TTF => T
+                if (state[a] && !state[b] && state[c]) return false; //TFT => F 
+                if (state[a] && !state[b] && !state[c]) return true; //TFF => T
+                if (!state[a] && state[b] && state[c]) return true; //FTT => T
+                if (!state[a] && state[b] && !state[c]) return false; //FTF => F
+                if (!state[a] && !state[b] && state[c]) return true; //FFT => T
+                if (!state[a] && !state[b] && !state[c]) return false; //FFF => F
+            },
+            id: 90,
+            researchSpawned: 0,
+            descriptionFunction() {
+                const loop = () => {
+                    if ((simulation.paused || simulation.isChoosing) && m.alive && !build.isExperimentSelection) { //&& (!simulation.isChoosing || this.count === 0)
+                        let b = []; //produce next row
+                        b.push(this.rule(this.state[this.state.length - 1], this.state[this.state.length - 1].length - 1, 0, 1)); //left edge wrap around
+                        for (let i = 1; i < this.state[this.state.length - 1].length - 1; i++) { //apply rule to the rest of the array
+                            b.push(this.rule(this.state[this.state.length - 1], i - 1, i, i + 1));
+                        }
+                        b.push(this.rule(this.state[this.state.length - 1], this.state[this.state.length - 1].length - 2, this.state[this.state.length - 1].length - 1, 0)); //right edge wrap around
+                        this.state.push(b)
+                        if (document.getElementById(`cellular-rule-id${this.id}`)) document.getElementById(`cellular-rule-id${this.id}`).innerHTML = this.outputText() //convert to squares and send HTML
+                        if (this.count && this.researchSpawned < 12 && !(this.state.length % 10)) {
+                            this.researchSpawned++
+                            powerUps.spawn(m.pos.x - 50 + 100 * (Math.random() - 0.5), m.pos.y + 100 * (Math.random() - 0.5), "research");
+                        }
+                        setTimeout(() => { loop() }, 300);
+                    }
+                }
+                setTimeout(() => { loop() }, 300);
+                this.id++
+                return `<span id = "cellular-rule-id${this.id}" style = "letter-spacing: -0.5px;font-size: 100%;line-height: normal;font-family: 'Courier New', monospace;">${this.outputText()}</span>`
+            },
+            outputText() {
+                let text = "<pre>"
+                for (let j = 0; j < this.state.length; j++) {
+                    // text += "<p style = 'margin-bottom: -12px;'>"
+                    text += "<p style = 'margin-top: -7px;margin-bottom: -7px;'>"
+                    for (let i = 0; i < this.state[j].length; i++) {
+                        if (this.state[j][i]) {
+                            text += "■" //"☻" //"⬛" //"█" //"■"
+                        } else {
+                            text += " " //"□" //"☺" //"⬜" //"&nbsp;&nbsp;&nbsp;&nbsp;" //"□"
+                        }
+                    }
+                    text += "</p>"
+                }
+                text += "</pre>"
+                return text
+            },
+        },
+        {
+            name: "cosmogonic myth",
+            description: `<span style = "opacity: 9%;">open a portal to a primordial version of reality<br>in 5 minutes close the portal, spawn 1 of each power up</span>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                const urls = ["https://scratch.mit.edu/projects/14005697/fullscreen/", "https://scratch.mit.edu/projects/22573757/fullscreen/", "https://scratch.mit.edu/projects/41429974/fullscreen/", "https://scratch.mit.edu/projects/43690666/fullscreen/", "https://codepen.io/lilgreenland/full/ozXNWZ", "https://codepen.io/lilgreenland/full/wzARJY", "classic/7-1-2017/", "classic/4-15-2018/", "classic/7-11-2019/", "classic/9-8-2019/", "classic/7-15-2020/", "classic/6-1-2021/"]
+                const choose = urls[Math.floor(Math.random() * urls.length)]
+                console.log(`opening new tab" ${choose}`)
+                let tab = window.open(choose, "_blank");
+                setTimeout(() => {
+                    tab.close();
+                    powerUps.spawn(m.pos.x, m.pos.y, "gun");
+                    setTimeout(() => { powerUps.spawn(m.pos.x, m.pos.y - 50, "ammo") }, 250);
+                    setTimeout(() => { powerUps.spawn(m.pos.x + 50, m.pos.y, "field"); }, 500);
+                    setTimeout(() => { powerUps.spawn(m.pos.x + 50, m.pos.y - 50, "heal"); }, 750);
+                    setTimeout(() => { powerUps.spawn(m.pos.x - 50, m.pos.y, "tech"); }, 1000);
+                    setTimeout(() => { powerUps.spawn(m.pos.x - 50, m.pos.y - 50, "research"); }, 1250);
+                }, 1000 * 5 * 60);
+            },
+            remove() {}
+        },
+        {
+            name: "planetesimals",
+            description: `play <strong>planetesimals</strong> <em style = 'font-size:80%;'>(an asteroids-like game)</em><br>clear <strong>levels</strong> in <strong>planetesimals</strong> to spawn <strong class='color-m'>tech</strong><br>if you <strong style="color:red;">die</strong> in <strong>planetesimals</strong> you <strong style="color:red;">die</strong> in <strong>n-gon</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isNonRefundable: true,
+            isJunk: true,
+            allowed() { return true },
+            requires: "",
+            effect() {
+                window.open('../../planetesimals/index.html', '_blank')
+                // powerUps.spawn(m.pos.x, m.pos.y, "tech");
+
+                // for communicating to other tabs, like planetesimals
+                // Connection to a broadcast channel
+                const bc = new BroadcastChannel('planetesimals');
+                bc.activated = false
+
+                bc.onmessage = function(ev) {
+                    if (ev.data === 'tech') powerUps.directSpawn(m.pos.x, m.pos.y, "tech");
+                    if (ev.data === 'death') {
+                        m.death()
+                        bc.close(); //end session
+                    }
+                    if (ev.data === 'ready' && !bc.activated) {
+                        bc.activated = true //prevents n-gon from activating multiple copies of planetesimals
+                        bc.postMessage("activate");
+                    }
+                }
+            },
+            remove() {}
+        },
+        {
+            name: "tinker",
+            description: "<strong>permanently</strong> unlock <strong class='color-j'>JUNK</strong><strong class='color-m'>tech</strong> in experiment mode<br><em>this effect is stored for future visits</em>",
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            frequencyDefault: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed() {
+                return !localSettings.isJunkExperiment
+            },
+            requires: "",
+            effect() {
+                localSettings.isJunkExperiment = true
+                if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+            },
+            remove() {}
+        },
+        {
+            name: "NFT",
+            descriptionFunction() { return `buy your current game seed: <strong style = 'font-size:120%;'>${Math.initialSeed}</strong><br><em>no one is allowed to use your seeds<br>if they use them they are gonna get in trouble</em><br>your seeds: <span style = 'font-size:80%;'>${localSettings.personalSeeds.join(", ")}</span>` },
+            maxCount: 1,
+            count: 0,
+            frequency: 0,
+            isJunk: true,
+            isNonRefundable: true,
+            allowed: () => true,
+            requires: "",
+            effect() {
+                localSettings.personalSeeds.push(Math.initialSeed)
+                if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+            },
+            remove() {}
+        },
+        // {
+        //     name: "rule 90",
+        //     maxCount: 1,
+        //     count: 0,
+        //     frequency: 0,
+        //     isJunk: true,
+        //     allowed() {
+        //         return true
+        //     },
+        //     requires: "",
+        //     effect() {},
+        //     remove() {},
+        //     state: [
+        //         [false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false]
+        //     ],
+        //     rule(state, a, b, c) {
+        //         if (state[a] && state[b] && state[c]) return false; // TTT => F
+        //         if (state[a] && state[b] && !state[c]) return true; // TTF => T
+        //         if (state[a] && !state[b] && state[c]) return false; //TFT => F 
+        //         if (state[a] && !state[b] && !state[c]) return true; //TFF => T
+        //         if (!state[a] && state[b] && state[c]) return true; //FTT => T
+        //         if (!state[a] && state[b] && !state[c]) return false; //FTF => F
+        //         if (!state[a] && !state[b] && state[c]) return true; //FFT => T
+        //         if (!state[a] && !state[b] && !state[c]) return false; //FFF => F
+        //     },
+        //     id: 0,
+        //     descriptionFunction() {
+        //         const loop = () => {
+        //             if ((simulation.paused || simulation.isChoosing) && m.alive && !build.isExperimentSelection) { //&& (!simulation.isChoosing || this.count === 0)
+        //                 let b = []; //produce next row
+        //                 b.push(this.rule(this.state[this.state.length - 1], this.state[this.state.length - 1].length - 1, 0, 1)); //left edge wrap around
+        //                 for (let i = 1; i < this.state[this.state.length - 1].length - 1; i++) { //apply rule to the rest of the array
+        //                     b.push(this.rule(this.state[this.state.length - 1], i - 1, i, i + 1));
+        //                 }
+        //                 b.push(this.rule(this.state[this.state.length - 1], this.state[this.state.length - 1].length - 2, this.state[this.state.length - 1].length - 1, 0)); //right edge wrap around
+        //                 this.state.push(b)
+        //                 if (document.getElementById(`cellular-rule-id${this.id}`)) document.getElementById(`cellular-rule-id${this.id}`).innerHTML = this.outputText() //convert to squares and send HTML
+        //                 if (this.count && this.state.length < 120 && !(this.state.length % 10)) powerUps.spawn(m.pos.x - 50 + 100 * (Math.random() - 0.5), m.pos.y + 100 * (Math.random() - 0.5), "research");
+        //                 setTimeout(() => { loop() }, 400);
+        //             }
+        //         }
+        //         setTimeout(() => { loop() }, 400);
+        //         // if (this.id === 0) {
+        //         //     for (let i = 0; i < 29; i++) this.state[0][i] = Math.random() < 0.5 //randomize seed
+        //         // }
+        //         this.id++
+        //         return `<span id = "cellular-rule-id${this.id}" style = "letter-spacing: 0px;font-size: 50%;line-height: normal;">${this.outputText()}</span>`
+        //     },
+        //     outputText() {
+        //         let text = ""
+        //         for (let j = 0; j < this.state.length; j++) {
+        //             text += "<p style = 'margin-bottom: -11px;'>"
+        //             for (let i = 0; i < this.state[j].length; i++) {
+        //                 if (this.state[j][i]) {
+        //                     text += "⬛" //"█" //"■"
+        //                 } else {
+        //                     text += "⬜" //"&nbsp;&nbsp;&nbsp;&nbsp;" //"□"
+        //                 }
+        //             }
+        //             text += "</p>"
+        //         }
+        //         return text
+        //     },
+        // },
+
+        //************************************************** 
+        //************************************************** undefined / lore
+        //************************************************** tech
+        //************************************************** 
+        {
+            name: `undefined`,
+            description: `<strong class="lore-text">this</strong>`,
+            maxCount: 1,
+            count: 0,
+            frequency: 2,
+            frequencyDefault: 2,
+            isLore: true,
+            // isExperimentHide: true,
+            allowed() { return !build.isExperimentSelection },
+            requires: "NOT EXPERIMENT MODE",
+            effect() {
+                if (localSettings.loreCount > lore.conversation.length - 1) { //reward for people done with lore chapters (or on the final chapter)
+                    for (let i = mob.length - 1; i > -1; i--) { //replace mobs with starters
+                        if (!mob[i].isBoss && mob[i].isDropPowerUp && mob[i].alive) {
+                            spawn.starter(mob[i].position.x, mob[i].position.y)
+                            mob[i].leaveBody = false
+                            mob[i].isDropPowerUp = false
+                            mob[i].death()
+
+                            //spawn a random power up
+                            // if (Math.random() < 1 / 5) {
+                            //     powerUps.spawn(mob[i].position.x, mob[i].position.y, "research")
+                            // } else 
+                            if (Math.random() < 1 / 4) {
+                                powerUps.spawn(mob[i].position.x, mob[i].position.y, "ammo")
+                            } else if (Math.random() < 1 / 3) {
+                                powerUps.spawn(mob[i].position.x, mob[i].position.y, "heal")
+                            } else if (Math.random() < 1 / 2) {
+                                powerUps.spawn(mob[i].position.x, mob[i].position.y, "boost")
+                            } else {
+                                powerUps.spawn(mob[i].position.x, mob[i].position.y, "coupling")
+                            }
+                        }
+                    }
+                }
+
+                setTimeout(() => { //a short delay, I can't remember why
+                    lore.techCount++
+                    if (lore.techCount === lore.techGoal) {
+                        // tech.removeLoreTechFromPool();
+                        this.frequency = 0;
+                        this.description = `<strong class="lore-text">null</strong> is open at level.final()`
+                    } else {
+                        this.frequency += lore.techGoal * 2
+                        // for (let i = 0; i < tech.tech.length; i++) { //set name for all unchosen copies of this tech
+                        //     if (tech.tech[i].isLore && tech.tech[i].count === 0) tech.tech[i].description = `${lore.techCount+1}/${lore.techGoal}<br><em>add copies of <strong class="lore-text">this</strong> to the potential <strong class='color-m'>tech</strong> pool</em>`
+                        // }
+                        // for (let i = 0, len = 10; i < len; i++) tech.addLoreTechToPool()
+                        this.description = `<em>uncaught error:</em><br><strong>${Math.max(0, lore.techGoal - lore.techCount)}</strong> more required for access to <strong class="lore-text">null</strong>`
+                    }
+                }, 1);
+            },
+            remove() {
+                lore.techCount = 0;
+                this.maxCount = lore.techGoal;
+                this.description = `<strong class="lore-text">this</strong>`
+            }
+        }
+    ],
+    // addLoreTechToPool() { //adds lore tech to tech pool
+    //     if (!simulation.isCheating) {
+    //         tech.tech.push({
+    //             name: `undefined`,
+    //             description: `${lore.techCount+1}/${lore.techGoal}<br><em>add copies of <strong class="lore-text">this</strong> to the potential <strong class='color-m'>tech</strong> pool</em>`,
+    //             maxCount: 1,
+    //             count: 0,
+    //             frequency: 2,
+    //             isLore: true,
+    //             isNonRefundable: true,
+    //             isExperimentHide: true,
+    //             allowed() {
+    //                 return true
+    //             },
+    //             requires: "",
+    //             effect() {
+    //                 setTimeout(() => { //a short delay, I can't remember why
+    //                     lore.techCount++
+    //                     if (lore.techCount > lore.techGoal - 1) {
+    //                         // tech.removeLoreTechFromPool();
+    //                         for (let i = tech.tech.length - 1; i > 0; i--) {
+    //                             if (tech.tech[i].isLore && tech.tech[i].count === 0) tech.tech.splice(i, 1)
+    //                         }
+    //                     } else {
+    //                         for (let i = 0; i < tech.tech.length; i++) { //set name for all unchosen copies of this tech
+    //                             if (tech.tech[i].isLore && tech.tech[i].count === 0) tech.tech[i].description = `${lore.techCount+1}/${lore.techGoal}<br><em>add copies of <strong class="lore-text">this</strong> to the potential <strong class='color-m'>tech</strong> pool</em>`
+    //                         }
+    //                         for (let i = 0, len = 10; i < len; i++) tech.addLoreTechToPool()
+    //                     }
+    //                 }, 1);
+    //             },
+    //             remove() {}
+    //         })
+    //     }
+    // },
+    // junk: [
+
+    // ],
+    //variables use for gun tech upgrades
+    fireRate: null,
+    bulletSize: null,
+    energySiphon: null,
+    healthDrain: null,
+    crouchAmmoCount: null,
+    isBulletsLastLonger: null,
+    isImmortal: null,
+    sporesOnDeath: null,
+    isImmuneExplosion: null,
+    isExplodeMob: null,
+    isDroneOnDamage: null,
+    isAcidDmg: null,
+    isAnnihilation: null,
+    largerHeals: null,
+    squirrelFx: null,
+    isCrit: null,
+    isLowHealthDmg: null,
+    isLowHealthDefense: null,
+    isLowHealthFireRate: null,
+    isFarAwayDmg: null,
+    isFirstDer: null,
+    isMassEnergy: null,
+    extraChoices: null,
+    laserBotCount: null,
+    dynamoBotCount: null,
+    nailBotCount: null,
+    foamBotCount: null,
+    boomBotCount: null,
+    plasmaBotCount: null,
+    missileBotCount: null,
+    orbitBotCount: null,
+    blockDmg: null,
+    isBlockRadiation: null,
+    isPiezo: null,
+    isFastDrones: null,
+    oneSuperBall: null,
+    laserReflections: null,
+    laserDamage: null,
+    isAmmoFromHealth: null,
+    mobSpawnWithHealth: null,
+    isEnergyRecovery: null,
+    isHealthRecovery: null,
+    isEnergyLoss: null,
+    isDeathAvoid: null,
+    isDeathAvoidedThisLevel: null,
+    isPlasmaRange: null,
+    isFreezeMobs: null,
+    isIceCrystals: null,
+    blockDamage: null,
+    isBlockStun: null,
+    isStunField: null,
+    isHarmDamage: null,
+    energyRegen: null,
+    isVacuumBomb: null,
+    renormalization: null,
+    fragments: null,
+    isEnergyDamage: null,
+    botSpawner: null,
+    isBotSpawnerReset: null,
+    isSporeFollow: null,
+    isNailRadiation: null,
+    isEnergyHealth: null,
+    isStun: null,
+    restDamage: null,
+    isRPG: null,
+    missileCount: null,
+    isDeterminism: null,
+    isSuperDeterminism: null,
+    isHarmReduce: null,
+    nailsDeathMob: null,
+    isSlowFPS: null,
+    isNeutronStun: null,
+    isAnsatz: null,
+    isDamageFromBulletCount: null,
+    laserDrain: null,
+    isNailShot: null,
+    slowFire: null,
+    fastTime: null,
+    squirrelJump: null,
+    isFastRadiation: null,
+    isExtraMaxEnergy: null,
+    isAmmoForGun: null,
+    isRapidPulse: null,
+    isPulseAim: null,
+    isSporeFreeze: null,
+    isShotgunRecoil: null,
+    isHealLowHealth: null,
+    isAoESlow: null,
+    isHarmArmor: null,
+    isTurret: null,
+    isRerollDamage: null,
+    isHarmFreeze: null,
+    isBotArmor: null,
+    isRerollHaste: null,
+    researchHaste: null,
+    isMineDrop: null,
+    isRerollBots: null,
+    isNailBotUpgrade: null,
+    isFoamBotUpgrade: null,
+    isLaserBotUpgrade: null,
+    isBoomBotUpgrade: null,
+    isOrbitBotUpgrade: null,
+    isDroneGrab: null,
+    isOneGun: null,
+    isDamageForGuns: null,
+    isGunCycle: null,
+    isFastFoam: null,
+    isSporeGrowth: null,
+    isStimulatedEmission: null,
+    nailGun: null,
+    nailInstantFireRate: null,
+    isCapacitor: null,
+    isEnergyNoAmmo: null,
+    // isFreezeHarmImmune: null,
+    isSmallExplosion: null,
+    isExplosionHarm: null,
+    extraMaxHealth: null,
+    // bonusHealth: null,
+    isIntangible: null,
+    isCloakStun: null,
+    bonusEnergy: null,
+    // healGiveMaxEnergy: null,
+    healMaxEnergyBonus: 0, //not null
+    aimDamage: null,
+    isNoFireDefense: null,
+    isNoFireDamage: null,
+    duplicateChance: null,
+    beamSplitter: null,
+    iceEnergy: null,
+    isPerfectBrake: null,
+    explosiveRadius: null,
+    // isWormholeEnergy: null,
+    isWormholeDamage: null,
+    isNailCrit: null,
+    isFlechetteExplode: null,
+    isWormholeWorms: null,
+    isWormHoleBullets: null,
+    isWideLaser: null,
+    wideLaser: null,
+    isPulseLaser: null,
+    isRadioactive: null,
+    radioactiveDamage: null,
+    isRailEnergy: null,
+    isMineSentry: null,
+    isIncendiary: null,
+    overfillDrain: null,
+    isNeutronSlow: null,
+    // isRailAreaDamage: null,
+    historyLaser: null,
+    isSpeedHarm: null,
+    isSpeedDamage: null,
+    isTimeSkip: null,
+    isCancelDuplication: null,
+    cancelCount: null,
+    isCancelRerolls: null,
+    isCancelTech: null,
+    isBotDamage: null,
+    isBanish: null,
+    isMaxEnergyTech: null,
+    isLowEnergyDamage: null,
+    isRewindBot: null,
+    isRewindGrenade: null,
+    isExtruder: null,
+    isEndLevelPowerUp: null,
+    isMissileBig: null,
+    isMissileBiggest: null,
+    isLaserMine: null,
+    isFoamMine: null,
+    isAmmoFoamSize: null,
+    isIceIX: null,
+    isDupDamage: null,
+    isFireRateForGuns: null,
+    cyclicImmunity: null,
+    isTechDamage: null,
+    isRestHarm: null,
+    isFireMoveLock: null,
+    isRivets: null,
+    isNeedles: null,
+    isExplodeRadio: null,
+    isPauseSwitchField: null,
+    isPauseEjectTech: null,
+    isShieldPierce: null,
+    isDuplicateBoss: null,
+    is100Duplicate: null,
+    isDynamoBotUpgrade: null,
+    isBlockPowerUps: null,
+    isDamageAfterKillNoRegen: null,
+    isHarmReduceNoKill: null,
+    isSwitchReality: null,
+    isResearchReality: null,
+    isAnthropicDamage: null,
+    isFlipFlop: null,
+    isFlipFlopHarm: null,
+    isFlipFlopOn: null,
+    // isFlipFlopLevelReset: null,
+    isFlipFlopDamage: null,
+    isFlipFlopEnergy: null,
+    isFlipFlopChoices: null,
+    isRelay: null,
+    relayIce: null,
+    isMetaAnalysis: null,
+    isFoamAttract: null,
+    droneCycleReduction: null,
+    droneEnergyReduction: null,
+    isHalfHeals: null,
+    isAlwaysFire: null,
+    isDroneRespawn: null,
+    deathSpawns: null,
+    isMobBlockFling: null,
+    // blockingIce: null,
+    isPhaseVelocity: null,
+    waveBeamSpeed: null,
+    wavePacketAmplitude: null,
+    isCollisionRealitySwitch: null,
+    iceIXOnDeath: null,
+    wimpCount: null,
+    isAddBlockMass: null,
+    isMACHO: null,
+    isHarmMACHO: null,
+    isSneakAttack: null,
+    isFallingDamage: null,
+    harmonics: null,
+    isStandingWaveExpand: null,
+    isTokamak: null,
+    deflectEnergy: null,
+    superBallDelay: null,
+    isBlockExplode: null,
+    isOverHeal: null,
+    isDroneRadioactive: null,
+    droneRadioDamage: null,
+    isDroneTeleport: null,
+    isDroneFastLook: null,
+    isBulletTeleport: null,
+    isResearchBoss: null,
+    isJunkResearch: null,
+    junkResearchNumber: null,
+    laserColor: null,
+    laserColorAlpha: null,
+    isLongitudinal: null,
+    is360Longitudinal: null,
+    isShotgunReversed: null,
+    fieldDuplicate: null,
+    isCloakingDamage: null,
+    harmonicEnergy: null,
+    isFieldHarmReduction: null,
+    isFastTime: null,
+    isAnthropicTech: null,
+    isSporeWorm: null,
+    isSporeFlea: null,
+    isFoamShot: null,
+    isIceShot: null,
+    isBlockRestitution: null,
+    isZeno: null,
+    isFieldFree: null,
+    isExtraGunField: null,
+    isBigField: null,
+    isSmartRadius: null,
+    isFilament: null,
+    isLargeHarpoon: null,
+    extraHarpoons: null,
+    ammoCap: null,
+    isHarpoonPowerUp: null,
+    harpoonDensity: null,
+    isAddRemoveMaxHealth: null,
+    isSpawnExitTech: null,
+    cloakDuplication: null,
+    extruderRange: null,
+    isForeverDrones: null,
+    nailRecoil: null,
+    baseJumpForce: null,
+    baseFx: null,
+    isNeutronium: null,
+    isFreeWormHole: null,
+    isRewindField: null,
+    isCrouchRegen: null,
+    // OccamDamage: null,
+    isAxion: null,
+    isWormholeMapIgnore: null,
+    isLessDamageReduction: null,
+    // bulletSize: null,
+    needleTunnel: null,
+    isBrainstorm: null,
+    isBrainstormActive: null,
+    brainStormDelay: null,
+    wormSize: null,
+    extraSuperBalls: null,
+    isTimeCrystals: null,
+    isGroundState: null,
+    isRailGun: null,
+    isGrapple: null,
+    isImmuneGrapple: null,
+    isDronesTravel: null,
+    isTechDebt: null,
+    isPlasmaBall: null,
+    plasmaDischarge: null,
+    isFlipFlopHealth: null,
+    isRelayEnergy: null,
+    coyoteTime: null,
+    missileFireCD: null,
+    isBotField: null,
+    isFoamBall: null,
+    isNoDraftPause: null,
+    isFoamPressure: null,
+    foamDamage: null,
+    isClusterExplode: null,
+    isCircleExplode: null,
+    isPetalsExplode: null,
+    deathSkipTime: null,
+    isIceMaxHealthLoss: null,
+    isIceKill: null,
+    isCritKill: null,
+    isQuantumEraser: null,
+    isQuantumEraserDuplication: null,
+    quantumEraserCount: null,
+    isPhononBlock: null,
+    isPhononWave: null,
+    isMicroTransactions: null,
+    isLaserLens: null,
+    laserCrit: null,
+    isSporeColony: null,
+    isExtraBotOption: null,
+    isLastHitDamage: null,
+    isCloakHealLastHit: null,
+    isRicochet: null,
+    isCancelCouple: null,
+    isCouplingPowerUps: null,
+    isBoostPowerUps: null,
+    isBoostReplaceAmmo: null,
+    isFlipFlopCoupling: null,
+    infiniteWaveAmmo: null,
+    isJunkDNA: null,
+    buffedGun: 0,
+    isGunChoice: null,
+    railChargeRate: null,
+}
