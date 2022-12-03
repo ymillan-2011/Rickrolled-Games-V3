@@ -17,6 +17,9 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Dec, 3
++ Added Eaglercraft 1.8
+------------------------------------------------------------
 Dec, 2
 + Added Sushi unRoll
 + Added Slope 2
