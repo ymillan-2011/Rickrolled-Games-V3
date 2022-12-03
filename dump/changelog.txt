@@ -18,6 +18,7 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Dec, 3
++ Added Age of Conflict
 + Added Slime Rush TD
 + Added Jetpack Joyride
 + Added Eaglercraft 1.8
