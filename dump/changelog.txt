@@ -18,6 +18,13 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Dec, 3
++ Added Riddle School 1
++ Added Riddle School 2
++ Added Riddle School 3
++ Added Riddle School 4
++ Added Riddle School 5
++ Added Riddle School Transfer 1
++ Added Riddle School Transfer 2
 + Added Age of Conflict
 + Added Slime Rush TD
 + Added Jetpack Joyride
