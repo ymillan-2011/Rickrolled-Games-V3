@@ -15,9 +15,9 @@ let isTouchDevice = 'ontouchstart' in window;
 let muted = false;
 
 function preload() {
-  rat = loadModel('/assets/rat/rat.obj',true);
-  ratUV = loadImage('/assets/rat/rat.jpg');
-  ratTunes = loadSound(['/assets/tunes/tunes.ogg', '/assets/tunes/tunes.mp3']);
+  rat = loadModel('assets/rat/rat.obj',true);
+  ratUV = loadImage('assets/rat/rat.jpg');
+  ratTunes = loadSound(['assets/tunes/tunes.ogg', 'assets/tunes/tunes.mp3']);
 }
 
 function setup() {
