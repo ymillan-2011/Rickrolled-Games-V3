@@ -116,7 +116,6 @@ function processPress() {
     isSpinning = true
     document.getElementById("start-instruction").style.display = 'none'
     document.getElementById("view-counter").innerHTML = 'Look at that rat go!'
-    updateLiveViewers()
     startViewTimeCounter()
   }
 
@@ -152,31 +151,6 @@ function mouseClicked() {
   if (!isTouchDevice) return
   processPress()
 }
-
-const updateLiveViewers = ()=>{
-  if (!isSpinning) { return }
-  fetch('https://presence.twotwelve.uk/ping').then(
-    response => response.json()
-  ).then(json => {
-    let viewerCount = json.live_pings ? json.live_pings : 1
-    document.getElementById("view-counter").innerHTML = `
-      ${viewerCount} ${viewerCount > 1 ? 'people are' : 'person is'}
-      watching the
-      ${dailyMaxViewerCount >= 100 ? 'rats' : 'rat'}
-      right now.
-      <br/>
-    `
-    dailyMaxViewerCount = json.max_pings ? json.max_pings : 1
-    document.getElementById("highscore").innerHTML = `
-      Daily highscore: ${json.max_pings} | Higher score = faster rat
-    `
-  }).catch(
-    err => {
-      console.log(err)
-    }
-  )
-}
-setInterval(updateLiveViewers, 5000)
 
 lastViewTimeUpdate = Date.now()
 const updateViewTime = ()=> {
