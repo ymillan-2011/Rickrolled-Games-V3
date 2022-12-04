@@ -1,32 +1,45 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-    <title>Drive Mad | 3kh0</title>
-    <link href="favicon.ico" rel="icon">
-    <link href="favicon.ico" rel="shortcut icon">
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-      }
-
-      #fancade {
-        border: 0;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        right: 0px;
-        bottom: 0px;
-      }
-    </style>
-  </head>
-  <body>
-    <iframe id="fancade" src="https://play.fancade.com/5F084A0BCE06B710?max_w=2800&max_h=2800" frameborder="0" height="100%" width="100%" title="Drive Mad"></iframe>
+    <title>Drive Mad | 3kh0</title>
+    <script type="text/javascript" src="Jump_Gamemonetize.js"></script>
     <script src="/js/main.js"></script>
+    <meta name="description" content="" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="webapp/fancade.css" />
+    <link rel="icon" href="webapp/cover.jpg" />
+  </head>
+  <body id="body">
+    <div id="modal_parent">
+      <div id="modal_content">
+        <span id="modal_close_button">&times;</span>
+        <div id="store_link_modal_content" class="modal_inner"></div>
+        <div id="share_file_modal_content" class="modal_inner"></div>
+      </div>
+    </div>
+    <div id="canvas_border" class="emscripten_border">
+      <div id="play_content" class="middle center">
+        <div class="edge">
+          <div class="box">
+            <div class="black">
+              <img src="webapp/cover.jpg" class="cover" />
+              <p class="title">Drive Mad</p>
+              <p class="author">Martin Magni</p>
+            </div>
+          </div>
+        </div>
+        <div id="progress_or_play"><progress id="progress" class="loading" value="0" max="100"></progress></div>
+        <p class="description"></p>
+      </div>
+      <canvas class="emscripten" id="canvas" tabindex="-1"></canvas>
+      <div id="gradient"></div>
+      <div id="webview_content"></div>
+    </div>
+    <script type="text/javascript" src="webapp/source_min.js"></script>
+    <script type="text/javascript" src="webapp/index.js"></script>
   </body>
 </html>
+<!-- Thanks EvilMonke#0263! -->
