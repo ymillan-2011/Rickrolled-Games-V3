@@ -96,7 +96,7 @@ or if you have GitHub CLI
 gh repo clone 3kh0/3kh0.github.io
 ```
 
-Since this project does not require a backend, for the best experience I suggest using [XAMPP](https://www.apachefriends.org/), cloning the repo into the Apache Server directory at `C:\xampp\htdocs` (for windows), setting the port to something like 8080, opening up a browser and going to [`localhost:8080`](http://localhost:8080)
+Since this project does not require a backend, for the best experience I suggest using [XAMPP](https://www.apachefriends.org/), cloning the repo into the Apache Server directory at `C:\xampp\htdocs` (for windows) or `/opt/lampp/htdocs` (for linux), setting the port to something like 8080, opening up a browser and going to [`localhost:8080`](http://localhost:8080)
 
 > **Warning**
 > Please make your you know what you are doing, you could delete your entire drive if you are not careful!
