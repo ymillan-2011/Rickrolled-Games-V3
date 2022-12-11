@@ -17,10 +17,12 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Dec, 11
++ Added Eel Slap
+------------------------------------------------------------
 Dec, 9
 ^ Added more reviews
 ^ Fixed Zombs Royale (hopefully)
-+ Add Eel Slap
 ------------------------------------------------------------
 Dec, 8
 ^ Added more reviews
