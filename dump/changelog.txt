@@ -18,6 +18,10 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Dec, 11
++ Added Soccer Skills Euro Cup
+^ Updated stats on homepage
+------------------------------------------------------------
+Dec, 10
 + Added Eel Slap
 ------------------------------------------------------------
 Dec, 9
