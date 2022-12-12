@@ -20,6 +20,7 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 Dec, 11
 + Added Amidst the sky
 + Added Soccer Skills Euro Cup
+^ Updated Retro Bowl from v1.4.9.3 to v1.5.5.7
 ^ Updated stats on homepage
 ------------------------------------------------------------
 Dec, 10
