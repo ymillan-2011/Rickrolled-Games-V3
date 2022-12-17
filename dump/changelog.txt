@@ -18,6 +18,7 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Dec, 17
++ Added Google Feud
 + Added Ballistic Chickens
 ^ Moved our Discord intergration with Widget Bot from Beta to Public!
 ------------------------------------------------------------
