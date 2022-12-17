@@ -17,6 +17,9 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Dec, 17
+^ Moved our Discord intergration with Widget Bot from Beta to Public! Come chat with us!
+------------------------------------------------------------
 Dec, 12
 + Added Bob the Robber 2
 + Added Win the Whitehouse
