@@ -4,393 +4,430 @@ function changeSub(num) {
   document.getElementById("subtitle").innerText = say[num];
 }
 
-
-var say = [];
-say[0] = "Welcome.";
-say[1] = "Hello!";
-say[2] = "Does this even work?";
-say[3] = "Welcome to my rad website";
-say[4] = "Made with HTML!";
-say[5] = "Now with buggy games!";
-say[6] = "You get a cookie!";
-say[7] = "Remember your manners!";
-say[8] = "Dogs are cute";
-say[9] = "Ok, and I know your address now!";
-say[10] = "Beep boop! Are you a robot?";
-say[11] = "Did you know I have a discord server?";
-say[12] = "How many sides does a circle have?";
-say[13] = "1 + 1 = 3";
-say[14] = "You can read btw";
-say[15] = "Made you look!";
-say[16] = "Never gonna give you up, Never gonna let you down...";
-say[17] = "Redbull gives you wings...";
-say[18] = "What is your highscore on Swerve?";
-say[19] = "Since 2018!";
-say[20] = "Now with 2X more bugs!";
-say[21] = "12345 is not a good password";
-say[22] = "This took to long to make";
-say[23] = "69 hehe funny number";
-say[24] = "Ahhhhhhhhh";
-say[25] = "Awesome!";
-say[26] = "As seen on TV!";
-say[27] = "doot doot";
-say[28] = "100% Fresh!";
-say[29] = "LOL";
-say[30] = "Cold as ice!";
-say[31] = "Why are you looking at me?";
-say[32] = "Made in the US!";
-say[33] = "Made by 3kh0!";
-say[34] = "Reload the page NOW!";
-say[35] = "Downloading your passwords...";
-say[36] = "Running 3kh0.exe";
-say[37] = "WARNING: You may lose braincells if you proceed!";
-say[38] = "Please go away. Thx";
-say[39] = "Made with GitHub!";
-say[40] = "Made with VS code!";
-say[41] = "This is a splash text!";
-say[42] = "100% Orgainic!";
-say[43] = "Now with Pac-Man!";
-say[44] = "Now with Polybranch!";
-say[45] = "Now with JavaScript!";
-say[46] = "Do you bite your ice cream?";
-say[47] = "Reddit: u/3kh0_reddit";
-say[48] = "Discord: https://discord.gg/wv6huJAwEv";
-say[49] = "This was not ment to be seen. :o";
-say[50] = "Does anyone know how to stand up?";
-say[51] = "69420";
-say[52] = "Me too bro.";
-say[53] = "#Relatable";
-say[54] = "2 + 2 is 4 - 1 is 3 Quick mafs";
-say[55] = "Feels bad man.";
-say[56] = "Now with games that are unblocked?";
-say[57] = "Now with great games!";
-say[58] = "How do you play tic-tac-toe?";
-say[59] = "Fortnite is cringe";
-say[60] = "You got games on your phone?";
-say[61] = "I am not gonna say anything.";
-say[62] = "Now with Minecraft!";
-say[63] = "Welcome to v3.0!";
-say[64] = "Your momma jokes are cringe";
-say[65] = "Now with a new splash!";
-say[66] = "You just dont get it do you?";
-say[67] = "Powered by hamsters!";
-say[68] = "*insert cool explosion*";
-say[69] = "Efficiency is key";
-say[70] = "New update???";
-say[71] = "We have answers!";
-say[72] = "aaaaaaaaaaaaaaaaaaa";
-say[73] = "Yooooooooooooooooooooo";
-say[74] = "Your ip is 69.420.69.420";
-say[75] = "he on x-games mode";
-say[76] = "Got to go fast!";
-say[77] = "GAS GAS GAS GOTTA STEP ON THE GAS!";
-say[78] = "3kh0.github.io would like to view your browser history";
-say[79] = "For legal reasons, that's a joke!";
-say[80] = "It has been 84 years...";
-say[81] = "Made by Gucci, selling for $69420";
-say[82] = "There is someone looking over your shoulder";
-say[83] = "Electric!";
-say[84] = "How many different ones are there?!?!";
-say[85] = "NERDDDDDDDDDDDDDDDDDD";
-say[86] = "My iPad passcode is 563543 btw";
-say[87] = "Get out of my room, I'm not going to let you in!";
-say[88] = "I'm not a robot!";
-say[89] = "I'm not a human!";
-say[90] = "Sponsered by RAID SHADOW LEGENDS!";
-say[91] = "Sponsored by Honey!";
-say[92] = "Sponsored by 3kh0!";
-say[93] = "Sponsored by your mom!";
-say[94] = "Sponsored by your dad!";
-say[95] = "Sponsored by your mom's dad!";
-say[96] = "Sponsored by your dad's mom!";
-say[97] = "Sponsored by your mom's dad's mom!";
-say[98] = "Sponsored by your dad's mom's dad!";
-say[99] = "Sponsored by your mom's dad's mom's dad!";
-say[100] = "Sponsored by your dad's mom's dad's mom!";
-say[101] = "Sponsored by your mom's dad's mom's dad's mom!";
-say[102] = "Sponsored by your dad's mom's dad's mom's dad!";
-say[103] = "Sponsored by your mom's dad's mom's dad's mom's dad!";
-say[104] = "Sponsored by your dad's mom's dad's mom's dad's mom!";
-say[105] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom!";
-say[106] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad!";
-say[107] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad!";
-say[108] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom!";
-say[109] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom!";
-say[110] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad!";
-say[111] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!";
-say[112] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!";
-say[113] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!";
-say[114] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!";
-say[116] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!";
-say[117] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!";
-say[118] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!";
-say[119] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!";
-say[120] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!";
-say[121] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!";
-say[122] = "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!";
-say[123] = "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!";
-say[124] = "Piplup is cute";
-say[125] = "3kh0 is a bozo";
-say[126] = "Nothing has been said yet!";
-say[127] = "I'm not a bird!";
-say[128] = "I'm not a fish!";
-say[129] = "I'm not a cat!";
-say[130] = "I'm not a dog!";
-say[131] = "I'm not a horse!";
-say[132] = "I'm not a cow!";
-say[133] = "I'm not a sheep!";
-say[134] = "I'm not a goat!";
-say[135] = "I'm not a chicken!";
-say[136] = "I'm not a pig!";
-say[137] = "I'm not a Piplup!";
-say[138] = "I'm not a 3kh0!";
-say[139] = "Powered by 128 Gigs of RAM!";
-say[140] = "Powered by 1 Gig of RAM!";
-say[141] = "I want to bite you!";
-say[142] = "I want to eat you!";
-say[143] = "I want to drink you!";
-say[144] = "I want to devour you!";
-say[145] = "I'm Slim Shady, yes, I'm the real Shady!";
-say[146] = "I'm not a real Shady!";
-say[147] = "I'll wear your granddad's clothes";
-say[148] = "gooooooooooodbye";
-say[149] = "You're a real jerk!";
-say[150] = "w h a t";
-say[151] = "what the dog doin?";
-say[152] = "what are you doing?";
-say[153] = "Math is kinda boring";
-say[154] = "XD";
-say[155] = "I'm gonna pop some tags";
-say[156] = "Ka-ching!";
-say[157] = "Kablam!";
-say[158] = "Shoutout to 4chan!";
-say[159] = "Shoutout to 4chan's mods! Wait, there are not any!";
-say[160] = "thx stackoverflow!";
-say[161] = "are you a gaemer?";
-say[162] = "mom get out of my room i am playing minecraft!";
-say[163] = "This is a test message!";
-say[164] = "It is time to get funky!";
-say[165] = "people like to barn fish?";
-say[166] = "Why is the sky blue?";
-say[167] = "Can you please burp?";
-say[168] = "Some things are better left unspoken.";
-say[169] = "What is your favorite color?";
-say[170] = "What is your favorite animal?";
-say[171] = "What is your favorite food?";
-say[172] = "What is your favorite drink?";
-say[173] = "What is your favorite band?";
-say[174] = "What is your favorite song?";
-say[175] = "What is your favorite movie?";
-say[176] = "What is your favorite book?";
-say[177] = "What is your favorite sport?";
-say[178] = "What is your favorite game?";
-say[179] = "What is your favorite TV show?";
-say[180] = "What is your favorite TV character?";
-say[181] = "SOMEONE PLEASE HELP ME!";
-say[182] = "I'm a little teapot.";
-say[183] = "I'm a little teapot, short and stout.";
-say[184] = "We didn't start the fire! It was always burning, since the world's been turning!";
-say[185] = "Don't worry, I'm not a firetruck.";
-say[186] = "Don't ask questions if you can't handle the answers!";
-say[187] = "I'm not a firetruck, I'm a firetruck.";
-say[188] = "If you're not careful, you'll burn your house down.";
-say[189] = "If you are using a computer, you are a computer.";
-say[190] = "If you are using Microsoft Edge, you need some help.";
-say[191] = "Living in space is like living in a hotel.";
-say[192] = "Living in Spain without the S";
-say[193] = "Living in Spain without the S is a bad idea.";
-say[194] = "Shoutout to Piplup!";
-say[195] = "Shoutout to 3kh0!";
-say[196] = "Woo! /g/";
-say[197] = "youtube.com/watch?v=dQw4w9WgXcQ";
-say[198] = "youtube.com/c/shadrYT";
-say[199] = '"Pretend inferiority and encourage his arrogance." －Sun Tzu';
-say[200] = "Help im locked in a data center!";
-say[201] = "5261796D6F6E6420486F6C74";
-say[202] = "gif bezos";
-say[203] = "God i just hate reality";
-say[204] = "Please stop posting furry images.";
-say[205] = "i wanted free vbucks :(";
-say[206] = "i want to be a cat";
-say[207] = "i want to be a dog";
-say[208] = "i want to be a horse";
-say[209] = "i want to be a cow";
-say[210] = "i want to be a sheep";
-say[211] = "i want to be a goat";
-say[212] = "i want to be a chicken";
-say[213] = "i want to be a pig";
-say[214] = "i want to be a piplup";
-say[215] = "i want to be a 3kh0";
-say[216] = "i want to be a bozo";
-say[217] = "i want to be a gaemer";
-say[218] = "Is this the United Airlines costumer service center?";
-say[219] = "we will steal your china and sell it to ip";
-say[220] = "Never half-ass two things. Whole-ass one thing.";
-say[221] = "bottem text";
-say[222] = "top text";
-say[223] = "Why do they call it oven if you oven the cold food of out hot eat the food";
-say[224] = "furryegirl";
-say[225] = "No fun allowed";
-say[226] = "Your toes will be pulled tonight";
-say[227] = "Someone was too lazy to give it a title";
-say[228] = "i do love buying birth certificates from the black market! - Piplup"
-say[229] = "'If you are trash go cry to Fortnite you loser' - Sun Tzu, Art of war"
-say[230] = "undefined"
-say[231] = "i wanted free vbucks :("
-say[232] = "Avocados \ud83e\udd51 from Mexico \ud83c\uddf2\ud83c\uddfd"
-say[233] = "i realised i haven't blinked in like half an hour and now blinking feels uncomfortable";
-say[234] = "reload for another message";
-say[235] = "Boost the discord server for a very cool role!";
-say[236] = "Why does the discord server exist";
-say[237] = "I purchased a baby clown from the Russian terrorist black market.";
-say[238] = "He stomped on his fruit loops and thus became a cereal killer.";
-say[239] = "Technoblade never dies!";
-say[240] = "And just to think I knew him before he was famous!";
-say[241] = "Trust me, I did not copy Minecraft with this!";
-say[242] = "It is everyday bro!";
-say[243] = "That proves you are unusual";
-say[244] = "What's my age again?";
-say[245] = "If you think you are dumb, it is true";
-say[256] = "This is the 5th time this week, and it's only Monday!";
-say[257] = "You bum";
-say[258] = "Roblox? Cringe!";
-say[259] = "Toss the Turtle is pretty fun";
-say[260] = "Mission failed, we will get them next time!";
-say[261] = "NUKE INCOMING!";
-say[262] = "I spent too much time making these";
-say[263] = "Too cool for school!";
-say[264] = "Pringles";
-say[265] = "Oh heck nah!";
-say[266] = "Hoo hoo hoo!";
-say[267] = "Light mode eww!";
-say[268] = "pretzels";
-say[269] = "Please game responsibly";
-say[270] = "burbur";
-say[271] = "Apple bottom jeans!";
-say[272] = "We out here!";
-say[273] = "what a gaemer";
-say[274] = "Please enjoy responsibly";
-say[275] = "Can you really buy land on the moon?";
-say[276] = "Breaking news! Your computer will blow up in 3...";
-say[277] = "Gaming since 2020!";
-say[278] = "Hacker man!";
-say[279] = "Your fortune is...";
-say[280] = "Let's just hope you dont get caught doing this...";
-say[281] = "Site shutting down in 2 days...jk";
-say[282] = "This is not the first time you did this...";
-say[283] = "baba booey";
-say[284] = "Can't stop me now!";
-say[285] = "beans";
-say[286] = "OwO";
-say[287] = "UwU";
-say[288] = "._.";
-say[289] = "null";
-say[290] = "It's over 100!";
-say[291] = "Get to work!"
-say[292] = "Cats or Dogs?";
-say[293] = "[error] var braincells is to low";
-say[294] = "DM Echo if you want to see your name here!";
-say[295] = "shadrYT on top!"
-say[296] = "Sub to shadrYT!"
-say[297] = "Free robux! Wait who even plays that game eww";
-say[298] = "Did you know that there are other JAWS movies, yeah they are bad!";
-say[299] = "This is the 300th splash text!";
-say[300] = "Extra credit be like";
-say[301] = "Blue's Potatos are superior";
-say[302] = "Have you ever had a dream that you, um, you had, your, you- you could, youll do, you- you wants, you, you could do so, you- youll do, you could- you, you want, you want them to do you so much you could do anything?";
-say[303] = "[object Object]";
-say[304] = "Error 404, Games not found";
-say[305] = "To the person who invented zero, thanks for nothing";
-say[306] = "Piplup gets no b*****s haha (-piplup's sister)";
-say[307] = "mogus";
-say[308] = "Toto, I've a feeling we're not in Kansas anymore";
-say[309] = "You keep using that word. I do not think it means what you think it means.";
-say[310] = "c h a o s";
-say[310] = "a- amogu- *gets shot with laser*";
-say[311] = "potato";
-say[312] = "Ping: 87654ms";
-say[313] = "Ping: 1ms";
-say[314] = "69 x 21 + 420 + 911 - 760 = 2020";
-say[315] = "Aspaceman is n o i c e";
-say[316] = "With great power comes great need to take a nap. Wake me up later.";
-say[317] = "I’m going to defeat you with the power of friendship! ... And this knife I found.";
-say[318] = "If you can’t beat them, dress better than them";
-say[319] = "Died and came back as a cowboy, I call that reintarnation.";
-say[320] = "So what’s for dinner?";
-say[321] = "#VoteForJude";
-say[322] = "0.0";
-say[323] = "Searching for nearby sushi restaraunts...";
-say[324] = "The square root of 27 is 5.196152423.";
-say[325] = "TikTok was just removed from existance!";
-say[326] = "Ordered 420 pizzas from Pizza Hut!";
-say[327] = "Did you know, not breathing means that you are not breathing!";
-say[328] = "Sorry, I do not know what you are trying to do!";
-say[329] = "Launching intercontinental ballistic missile. Target: Northwest Syria";
-say[330] = "You can buy a flying bicycle, would you like to do so?";
-say[331] = "You do want to invade Poland?";
-say[332] = "If you microwave your phone it will become faster!";
-say[333] = "There was a Roomba once that followed me around everwhere.";
-say[334] = "For this emotion, I prescribe will chocolate.";
-say[335] = "Did you know, you have over 50 assignments due by tomorrow that you have not started on.";
-say[336] = "The meaning of life is in fact, chocolate.";
-say[337] = "Ford F150. Holden Ute. GMC Sierra 3500. Lorry.";
-say[338] = "Buying $GME Stock...";
-say[339] = "Preordering tickets to Disney's 2021 Cruella";
-say[340] = "Search results show you may have the black plague.";
-say[341] = "amogus";
-say[342] = "Funyuns are the greatest";
-say[343] = "What the burger!";
-say[344] = "1 in 4 Big Macs are lonely, you can fix this by downloading tinder";
-say[345] = "Dominos > Pizza hut";
-say[346] = "RagerYT";
-say[347] = "Shad, Parrot will never notice you.";
-say[348] = "HEEEEEEEEEEY";
-say[349] = "HOOOOOOOOOOO";
-say[350] = "ඞ";
-say[351] = "real?";
-say[352] = "ඞ amongus";
-say[353] = "Now with over 200 games!";
-say[354] = "Hello mario";
-say[355] = "furryeboy";
-say[356] = "Pin this if you love your fans";
-say[357] = "use abnumality.github.io";
-say[358] = "Graphic design is my passion.";
-say[359] = "YOU'RE CRINGE!";
-say[360] = "Spongebob, Spongebob, Patrick, Patrick, Squidward, Squidward, Sandy, Sandy";
-say[361] = "Come join us, we murder and kidnapp people";
-say[362] = "Save 50% off pizza when ordering online at dominos!!!";
-say[363] = "There is no one in the basement!";
-say[364] = "3kh0... 3kh0...   3kh0...   I think there's an echo in here";
-say[365] = "No Introduction Needed";
-say[366] = "I pledge allegiance, to the logo of the server of the communist states of 3kh0, into the communism, for which it stands, one nation, under 3kh0, indivisible, with communism and justice for some";
-say[367] = "What's this do?";
-say[368] = "E";
-say[369] = "3kh0.github.io:  The best place for illegal activities";
-say[370] = "Your voice sounds good when your not talking";
-say[371] = "peanut";
-say[372] = "Think fast chuckle nuts!";
-say[373] = "its too late";
-say[373] = "IIIII got the feeling in my bones";
-say[374] = "Yugi: I destroy the moon";
-say[375] = "Splash texts brought to you by the EchoDev Discord!";
-say[376] = "Flippy flop flips go flip flop; floppy flip flops go flop flip";
-say[377] = "Josh is the bean man";
-say[378] = "Internet enabled!";
-say[379] = "90% bug free!";
-say[380] = "Technically good!";
-say[381] = "5x more bugs!";
-say[382] = "James, you are not the real echo";
-say[383] = "Mike is murderous";
-say[384] = "we will rule the world!";
-say[385] = "your local gamestop";
-say[386] = "bruh moment";
-say[387] = "can you help me find my son?";
-say[388] = "why.. just why?";
-say[389] = "The Duolingo Owl is coming for you!";
-say[390] = "I like your outfit";
-say[391] = "Baby Shark doo doo doo";
-say[392] = "YEAHHHHHHHHHHH!!!";
-
+var say = [
+  "Welcome.",
+  "Hello!",
+  "Does this even work?",
+  "Welcome to my rad website",
+  "Made with HTML!",
+  "Now with buggy games!",
+  "You get a cookie!",
+  "Remember your manners!",
+  "Dogs are cute",
+  "Ok, and I know your address now!",
+  "Beep boop! Are you a robot?",
+  "Did you know I have a discord server?",
+  "How many sides does a circle have?",
+  "1 + 1 = 3",
+  "You can read btw",
+  "Made you look!",
+  "Never gonna give you up, Never gonna let you down...",
+  "Redbull gives you wings...",
+  "What is your highscore on Swerve?",
+  "Since 2018!",
+  "Now with 2X more bugs!",
+  "12345 is not a good password",
+  "This took to long to make",
+  "69 hehe funny number",
+  "Ahhhhhhhhh",
+  "Awesome!",
+  "As seen on TV!",
+  "doot doot",
+  "100% Fresh!",
+  "LOL",
+  "Cold as ice!",
+  "Why are you looking at me?",
+  "Made in the US!",
+  "Made by 3kh0!",
+  "Reload the page NOW!",
+  "Downloading your passwords...",
+  "Running 3kh0.exe",
+  "WARNING: You may lose braincells if you proceed!",
+  "Please go away. Thx",
+  "Made with GitHub!",
+  "Made with VS code!",
+  "This is a splash text!",
+  "100% Orgainic!",
+  "Now with Pac-Man!",
+  "Now with Polybranch!",
+  "Now with JavaScript!",
+  "Do you bite your ice cream?",
+  "Reddit: u/3kh0_reddit",
+  "Discord: https://discord.gg/3kh0",
+  "This was not ment to be seen. :o",
+  "Does anyone know how to stand up?",
+  "69420",
+  "Me too bro.",
+  "#Relatable",
+  "2 + 2 is 4 - 1 is 3 Quick mafs",
+  "Feels bad man.",
+  "Now with games that are unblocked?",
+  "Now with great games!",
+  "How do you play tic-tac-toe?",
+  "Fortnite is cringe",
+  "You got games on your phone?",
+  "I am not gonna say anything.",
+  "Now with Minecraft!",
+  "Welcome to v3.0!",
+  "Your momma jokes are cringe",
+  "Now with a new splash!",
+  "You just dont get it do you?",
+  "Powered by hamsters!",
+  "*insert cool explosion*",
+  "Efficiency is key",
+  "New update???",
+  "We have answers!",
+  "aaaaaaaaaaaaaaaaaaa",
+  "Yooooooooooooooooooooo",
+  "Your ip is 69.420.69.420",
+  "he on x-games mode",
+  "Got to go fast!",
+  "GAS GAS GAS GOTTA STEP ON THE GAS!",
+  "3kh0.github.io would like to view your browser history",
+  "For legal reasons, that's a joke!",
+  "It has been 84 years...",
+  "Made by Gucci, selling for $69420",
+  "There is someone looking over your shoulder",
+  "Electric!",
+  "How many different ones are there?!?!",
+  "NERDDDDDDDDDDDDDDDDDD",
+  "My iPad passcode is 563543 btw",
+  "Get out of my room, I'm not going to let you in!",
+  "I'm not a robot!",
+  "I'm not a human!",
+  "Sponsered by RAID SHADOW LEGENDS!",
+  "Sponsored by Honey!",
+  "Sponsored by 3kh0!",
+  "Sponsored by your mom!",
+  "Sponsored by your dad!",
+  "Sponsored by your mom's dad!",
+  "Sponsored by your dad's mom!",
+  "Sponsored by your mom's dad's mom!",
+  "Sponsored by your dad's mom's dad!",
+  "Sponsored by your mom's dad's mom's dad!",
+  "Sponsored by your dad's mom's dad's mom!",
+  "Sponsored by your mom's dad's mom's dad's mom!",
+  "Sponsored by your dad's mom's dad's mom's dad!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad!",
+  "Sponsored by your mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom's dad's mom!",
+  "Piplup is cute",
+  "3kh0 is a bozo",
+  "Nothing has been said yet!",
+  "I'm not a bird!",
+  "I'm not a fish!",
+  "I'm not a cat!",
+  "I'm not a dog!",
+  "I'm not a horse!",
+  "I'm not a cow!",
+  "I'm not a sheep!",
+  "I'm not a goat!",
+  "I'm not a chicken!",
+  "I'm not a pig!",
+  "I'm not a Piplup!",
+  "I'm not a 3kh0!",
+  "Powered by 128 Gigs of RAM!",
+  "Powered by 1 Gig of RAM!",
+  "I want to bite you!",
+  "I want to eat you!",
+  "I want to drink you!",
+  "I want to devour you!",
+  "I'm Slim Shady, yes, I'm the real Shady!",
+  "I'm not a real Shady!",
+  "I'll wear your granddad's clothes",
+  "gooooooooooodbye",
+  "You're a real jerk!",
+  "w h a t",
+  "what the dog doin?",
+  "what are you doing?",
+  "Math is kinda boring",
+  "XD",
+  "I'm gonna pop some tags",
+  "Ka-ching!",
+  "Kablam!",
+  "Shoutout to 4chan!",
+  "Shoutout to 4chan's mods! Wait, there are not any!",
+  "thx stackoverflow!",
+  "are you a gaemer?",
+  "mom get out of my room i am playing minecraft!",
+  "This is a test message!",
+  "It is time to get funky!",
+  "people like to barn fish?",
+  "Why is the sky blue?",
+  "Can you please burp?",
+  "Some things are better left unspoken.",
+  "What is your favorite color?",
+  "What is your favorite animal?",
+  "What is your favorite food?",
+  "What is your favorite drink?",
+  "What is your favorite band?",
+  "What is your favorite song?",
+  "What is your favorite movie?",
+  "What is your favorite book?",
+  "What is your favorite sport?",
+  "What is your favorite game?",
+  "What is your favorite TV show?",
+  "What is your favorite TV character?",
+  "SOMEONE PLEASE HELP ME!",
+  "I'm a little teapot.",
+  "I'm a little teapot, short and stout.",
+  "We didn't start the fire! It was always burning, since the world's been turning!",
+  "Don't worry, I'm not a firetruck.",
+  "Don't ask questions if you can't handle the answers!",
+  "I'm not a firetruck, I'm a firetruck.",
+  "If you're not careful, you'll burn your house down.",
+  "If you are using a computer, you are a computer.",
+  "If you are using Microsoft Edge, you need some help.",
+  "Living in space is like living in a hotel.",
+  "Living in Spain without the S",
+  "Living in Spain without the S is a bad idea.",
+  "Shoutout to Piplup!",
+  "Shoutout to 3kh0!",
+  "Woo! /g/",
+  "youtube.com/watch?v=dQw4w9WgXcQ",
+  "youtube.com/c/shadrYT",
+  '"Pretend inferiority and encourage his arrogance." －Sun Tzu',
+  "Help im locked in a data center!",
+  "5261796D6F6E6420486F6C74",
+  "gif bezos",
+  "God i just hate reality",
+  "Please stop posting furry images.",
+  "i wanted free vbucks :(",
+  "i want to be a cat",
+  "i want to be a dog",
+  "i want to be a horse",
+  "i want to be a cow",
+  "i want to be a sheep",
+  "i want to be a goat",
+  "i want to be a chicken",
+  "i want to be a pig",
+  "i want to be a piplup",
+  "i want to be a 3kh0",
+  "i want to be a bozo",
+  "i want to be a gaemer",
+  "Is this the United Airlines costumer service center?",
+  "we will steal your china and sell it to ip",
+  "Never half-ass two things. Whole-ass one thing.",
+  "bottem text",
+  "top text",
+  "Why do they call it oven if you oven the cold food of out hot eat the food",
+  "furryegirl",
+  "No fun allowed",
+  "Your toes will be pulled tonight",
+  "Someone was too lazy to give it a title",
+  "i do love buying birth certificates from the black market! - Piplup",
+  "'If you are trash go cry to Fortnite you loser' - Sun Tzu, Art of war",
+  "undefined",
+  "i wanted free vbucks :(",
+  "Avocados \ud83e\udd51 from Mexico \ud83c\uddf2\ud83c\uddfd",
+  "i realised i haven't blinked in like half an hour and now blinking feels uncomfortable",
+  "reload for another message",
+  "Boost the discord server for a very cool role!",
+  "Why does the discord server exist",
+  "I purchased a baby clown from the Russian terrorist black market.",
+  "He stomped on his fruit loops and thus became a cereal killer.",
+  "Technoblade never dies!",
+  "And just to think I knew him before he was famous!",
+  "Trust me, I did not copy Minecraft with this!",
+  "It is everyday bro!",
+  "That proves you are unusual",
+  "What's my age again?",
+  "If you think you are dumb, it is true",
+  "This is the 5th time this week, and it's only Monday!",
+  "You bum",
+  "Roblox? Cringe!",
+  "Toss the Turtle is pretty fun",
+  "Mission failed, we will get them next time!",
+  "NUKE INCOMING!",
+  "I spent too much time making these",
+  "Too cool for school!",
+  "Pringles",
+  "Oh heck nah!",
+  "Hoo hoo hoo!",
+  "Light mode eww!",
+  "pretzels",
+  "Please game responsibly",
+  "burbur",
+  "Apple bottom jeans!",
+  "We out here!",
+  "what a gaemer",
+  "Please enjoy responsibly",
+  "Can you really buy land on the moon?",
+  "Breaking news! Your computer will blow up in 3...",
+  "Gaming since 2020!",
+  "Hacker man!",
+  "Your fortune is...",
+  "Let's just hope you dont get caught doing this...",
+  "Site shutting down in  days...jk",
+  "This is not the first time you did this...",
+  "baba booey",
+  "Can't stop me now!",
+  "beans",
+  "OwO",
+  "UwU",
+  "._.",
+  "null",
+  "It's over 100!",
+  "Get to work!",
+  "Cats or Dogs?",
+  "[error] var braincells is to low",
+  "DM Echo if you want to see your name here!",
+  "shadrYT on top!",
+  "Sub to shadrYT!",
+  "Free robux! Wait who even plays that game eww",
+  "Did you know that there are other JAWS movies, yeah they are bad!",
+  "This is the 300th splash text!",
+  "Extra credit be like",
+  "Blue's Potatos are superior",
+  "Have you ever had a dream that you, um, you had, your, you- you could, youll do, you- you wants, you, you could do so, you- youll do, you could- you, you want, you want them to do you so much you could do anything?",
+  "[object Object]",
+  "Error 404, Games not found",
+  "To the person who invented zero, thanks for nothing",
+  "Piplup gets no b*****s haha (-piplup's sister)",
+  "mogus",
+  "Toto, I've a feeling we're not in Kansas anymore",
+  "You keep using that word. I do not think it means what you think it means.",
+  "c h a o s",
+  "a- amogu- *gets shot with laser*",
+  "potato",
+  "Ping: 87654ms",
+  "Ping: 1ms",
+  "69 x 21 + 420 + 911 - 760 = 2020",
+  "Aspaceman is n o i c e",
+  "With great power comes great need to take a nap. Wake me up later.",
+  "I’m going to defeat you with the power of friendship! ... And this knife I found.",
+  "If you can’t beat them, dress better than them",
+  "Died and came back as a cowboy, I call that reintarnation.",
+  "So what’s for dinner?",
+  "#VoteForJude",
+  "0.0",
+  "Searching for nearby sushi restaraunts...",
+  "The square root of 27 is 5.196152423.",
+  "TikTok was just removed from existance!",
+  "Ordered 420 pizzas from Pizza Hut!",
+  "Did you know, not breathing means that you are not breathing!",
+  "Sorry, I do not know what you are trying to do!",
+  "Launching intercontinental ballistic missile. Target: Northwest Syria",
+  "You can buy a flying bicycle, would you like to do so?",
+  "You do want to invade Poland?",
+  "If you microwave your phone it will become faster!",
+  "There was a Roomba once that followed me around everwhere.",
+  "For this emotion, I prescribe will chocolate.",
+  "Did you know, you have over 50 assignments due by tomorrow that you have not started on.",
+  "The meaning of life is in fact, chocolate.",
+  "Ford F150. Holden Ute. GMC Sierra 3500. Lorry.",
+  "Buying $GME Stock...",
+  "Preordering tickets to Disney's 2021 Cruella",
+  "Search results show you may have the black plague.",
+  "amogus",
+  "Funyuns are the greatest",
+  "What the burger!",
+  "1 in 4 Big Macs are lonely, you can fix this by downloading tinder",
+  "Dominos > Pizza hut",
+  "RagerYT",
+  "Shad, Parrot will never notice you.",
+  "HEEEEEEEEEEY",
+  "HOOOOOOOOOOO",
+  "ඞ",
+  "real?",
+  "ඞ amongus",
+  "Now with over 200 games!",
+  "Hello mario",
+  "furryeboy",
+  "Pin this if you love your fans",
+  "use abnumality.github.io",
+  "Graphic design is my passion.",
+  "YOU'RE CRINGE!",
+  "Spongebob, Spongebob, Patrick, Patrick, Squidward, Squidward, Sandy, Sandy",
+  "Come join us, we murder and kidnapp people",
+  "Save 50% off pizza when ordering online at dominos!!!",
+  "There is no one in the basement!",
+  "3kh0... 3kh0...   3kh0...   I think there's an echo in here",
+  "No Introduction Needed",
+  "I pledge allegiance, to the logo of the server of the communist states of 3kh0, into the communism, for which it stands, one nation, under 3kh0, indivisible, with communism and justice for some",
+  "What's this do?",
+  "E",
+  "3kh0.github.io:  The best place for illegal activities",
+  "Your voice sounds good when your not talking",
+  "peanut",
+  "Think fast chuckle nuts!",
+  "its too late",
+  "IIIII got the feeling in my bones",
+  "Yugi: I destroy the moon",
+  "Splash texts brought to you by the EchoDev Discord!",
+  "Flippy flop flips go flip flop, floppy flip flops go flop flip",
+  "Josh is the bean man",
+  "Internet enabled!",
+  "90% bug free!",
+  "Technically good!",
+  "5x more bugs!",
+  "James, you are not the real echo",
+  "Mike is murderous",
+  "we will rule the world!",
+  "your local gamestop",
+  "bruh moment",
+  "can you help me find my son?",
+  "why.. just why?",
+  "The Duolingo Owl is coming for you!",
+  "I like your outfit",
+  "Baby Shark doo doo doo",
+  "YEAHHHHHHHHHHH!!!",
+  "Why was the math book sad? Because it had too many problems.",
+  "Why couldn't the bicycle stand up by itself? Because it was two-tired.",
+  "Why did the tomato turn red? Because it saw the salad dressing!",
+  "Why was the computer cold? Because it left its Windows open.",
+  "Why did the cookie go to the doctor? Because it was feeling crumbly.",
+  "Why did the scarecrow win an award? Because he was outstanding in his field.",
+  "Why did the bee get in trouble at school? Because it had a buzzer on its test.",
+  "Why couldn't the leopard play hide and seek? Because he was always spotted.",
+  "Why was the math book sad? Because it had too many problems.",
+  "Why did the banana go to the doctor? Because it wasn't peeling well.",
+  "Written by ChatGPT!",
+  "Welcome to our website! We hope you have a splashtastic time here.",
+  "Get ready for an exciting adventure on our website. Buckle up and let's go!",
+  "Thanks for stopping by! Our website is full of fun and interesting content just for you.",
+  "We're glad you're here! Take a look around and discover all that our website has to offer.",
+  "Come on in and make yourself at home! We have everything you need for a great online experience.",
+  "We've been waiting for you! Take a look around and see what our website has in store for you.",
+  "It's time to have some fun! Our website is full of exciting games.",
+  "Welcome to the party! Our website is the place to be for all kinds of entertainment and information.",
+  "Get ready for an unforgettable experience on our website. It's going to be a blast!",
+  "Thanks for visiting! We have all sorts of goodies waiting for you on our website. Enjoy!",
+  "That's it! I am taking your neck!",
+  "ChatGPT knows...",
+  "discord.gg/3kh0",
+  "3kh0 on top!",
+  "Wenomechainsama",
+  "Tumajarbisaun",
+  "Wifenlooof",
+  "Eselifterbraun",
+  "Zǎoshang hǎo zhōngguó",
+  "Zǎoshang hǎo zhōngguó xiànzài wǒ yǒu BING CHILLING 🥶🍦",
+  "What's up guys! It's Quandale Dingle here!",
+  "RUUEHEHEHEHEHEEHE",
+  "My name is Walter Hartwell White. I live at 308 Negra Aroya Lane, Albuquerque, New Mexico, 87104.",
+  "I’m doing my first Official Donald J. Trump NFT collection right here and right now.",
+  "Can you believe it guys? Christmas, just a week away. Christmas is in a week! Woohoo! I am so happy about this information. Christmas! Just a week away, oh wow. Can you believe it? Christmas! Just in a week! It got here so fast!",
+  "I would like to nominate this award to my reformed orthodox rabbi, Bill Clinton.",
+  "I am living in your walls.",
+];
 // pick a random greeting
 var howmany = say.length;
 var bRand = 0;

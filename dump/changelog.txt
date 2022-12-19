@@ -20,6 +20,7 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 Dec, 18
 + Added Subway Surfers New York
 + Added AlienHub banner
+^ Re-did splash text array
 ------------------------------------------------------------
 Dec, 17
 + Added Google Feud
