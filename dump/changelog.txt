@@ -18,9 +18,7 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Dec, 19
-+ Added Basketbros from basketbros.io
-------------------------------------------------------------
-Dec, 19
++ Added Basketbros
 + Added a update checker
 ^ Added more reviews
 ------------------------------------------------------------
