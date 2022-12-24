@@ -22,8 +22,12 @@ fetch("https://api.github.com/repos/3kh0/3kh0.github.io/releases/latest")
         if (apiReleaseVersion === jsonVersion) {
           console.log("The versions are the same.");
         } else {
-          console.log("The versions are different.");
-          showMessage("snackbar");
+          console.warn("The versions are different! This could be a API error or the site is out of date.");
+          if (!window.location.host == "3kh0.github.io") {
+            showMessage("snackbar");
+          } else {
+            console.log("The versions are different, but this is because the site has not finished building yet!");
+          }
         }
       });
   });
