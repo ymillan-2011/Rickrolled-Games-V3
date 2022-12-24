@@ -17,6 +17,11 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ^ Means something was upgraded or changed
 - Means something was removed
 ------------------------------------------------------------
+Dec, 24
+^ Added lazy loading to the review images
+^ Added more reviews
+^ Added more splash texts
+------------------------------------------------------------
 Dec, 23
 + Added Tiny Fishing
 ^ Fixed a error with the main site saying it is out of date
