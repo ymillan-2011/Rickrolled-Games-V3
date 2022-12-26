@@ -459,6 +459,10 @@ var say = [
   "all the while people are laughing harder than they ever did",
   "people who aren't killed die from laughter",
   "literally the funniest joke in the world",
+  "grunk",
+  "im gonna break your jaw",
+  "if there is a burger king, where is the burger queen",
+  "braed",
 ];
 console.log("[INFO] " + say.length + " splash texts were loaded!")
 // pick a random greeting
