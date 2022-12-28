@@ -19,6 +19,7 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 ------------------------------------------------------------
 Dec, 28
 + Added Boxing Random
+^ Added more reviews
 ------------------------------------------------------------
 Dec, 27
 + Added Stick Duel Battle
