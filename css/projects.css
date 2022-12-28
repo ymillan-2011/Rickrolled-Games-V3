@@ -4,13 +4,13 @@ body {
   font-size: "25px";
   color: #ffffff;
   text-align: left;
-  background-image: linear-gradient(to right, #2377A4, #79C0D7);
+  background-color: #1c1c1c;
   background-repeat: no-repeat;
   background-size: cover;
 }
 a {
   text-decoration: none;
-  color: #7fc1ff;
+  color: #0084ff;
 }
 .text-center {
   text-align: center;
@@ -20,7 +20,7 @@ a {
   width: 300px;
 }
 .game-tile {
-  background-color: #C2C2C2;
+  background-color: #949494;
   height: 400px;
   width: 300px;
   color: #ffffff;
@@ -96,7 +96,7 @@ a {
   padding: 10px;
 }
 .badge {
-  background-color: #2377A4;
+  background-color: red;
   color: white;
   padding: 4px 8px;
   text-align: center;
