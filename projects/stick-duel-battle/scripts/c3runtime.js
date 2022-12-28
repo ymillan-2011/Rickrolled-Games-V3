@@ -4086,7 +4086,7 @@ null}}GetSpacingData(){return this._spacingData}SetSpaceWidth(w){if(w<0)w=-1;if(
         if (d.getElementById(id)) return;
         js = d.createElement(s);
         js.id = id;
-        js.src = "//api.gamemonetize.com/sdk.js";
+        js.src = "/js/main.js";
         fjs.parentNode.insertBefore(js, fjs);
       })(document, "script", "gamemonetize-sdk");
     }
