@@ -18,6 +18,8 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Dec, 30
++ Added Surviv.io
++ Added Starve.io
 + Added Shellshockers
 ------------------------------------------------------------
 Dec, 29
