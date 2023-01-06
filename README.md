@@ -1,17 +1,14 @@
 # 3kh0.github.io
 
 ![3kh0.github.io](https://socialify.git.ci/3kh0/3kh0.github.io/image?description=1&descriptionEditable=This%20is%203kh0.github.io%20v3%20the%20better%20unblocked%20games%20website!&font=Source%20Code%20Pro&forks=1&issues=1&language=1&logo=https%3A%2F%2F3kh0.github.io%2Ffavicon.ico&name=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark)
-
-Welcome to 3kh0.github.io, your best option for unblocked games on the internet. This is the GitHub repo which is used to host the website. If you want to use the games on here on your website, please message me on discord and we can talk! `3kh0_#1791`
+![GitHub repo size](https://img.shields.io/github/repo-size/3kho/3kho.github.io)![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/3kho/3kho.github.io)![GitHub commit activity](https://img.shields.io/github/commit-activity/m/3kho/3kho.github.io)![GitHub deployments](https://img.shields.io/github/deployments/3kho/3kho.github.io/github-pages?label=website%20deployment)![GitHub](https://img.shields.io/github/license/3kho/3kho.github.io)![GitHub language count](https://img.shields.io/github/languages/count/3kho/3kho.github.io)![GitHub last commit](https://img.shields.io/github/last-commit/3kho/3kho.github.io)![pizza](https://img.shields.io/badge/mom%20made-pizza%20rolls-important)
+<br>
+Welcome to 3kh0.github.io, your best option for unblocked games on the internet. This is the GitHub repo which is used to host the website. If you want to use the games on here on your website, please message me on discord at `3kh0_#1791` and we can talk! If you're looking for the link, click [here.](https://3kh0.github.io)
 
 [![Join us on Discord](https://invidget.switchblade.xyz/wv6huJAwEv?theme=dark)](https://discord.gg/wv6huJAwEv)
 
 > **Note**
 > **If you do fork this repo, please give the orginal repo a star! It helps out alot and only 30% of people who fork give me a star.**
-
-[![Vulnerability](https://github.com/3kh0/3kh0.github.io/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/3kh0/3kh0.github.io/actions/workflows/codeql-analysis.yml) [![pages-build-deployment](https://github.com/3kh0/3kh0.github.io/actions/workflows/pages/pages-build-deployment/badge.svg?branch=main)](https://github.com/3kh0/3kh0.github.io/actions/workflows/pages/pages-build-deployment)
-
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/3kh0/3kh0.github.io?color=gree&label=Latest%20version&logo=github&logoColor=white)
 
 ## Features
 
@@ -23,17 +20,12 @@ Welcome to 3kh0.github.io, your best option for unblocked games on the internet.
 - Light on host resources
 - And so much more!
 
-
-## Live deployment
-
-You can access this project using the link below
-
-[https://3kh0.github.io](https://3kh0.github.io)
-
+> **Note**
+> If you have any problems please open an issue, so we can fix it ASAP!
 
 ## Host the website
 
-Below are some of the options you can use to deploy your own copy of the site. **If you do not know what you are doing, it is suggested that you use a link someone is currently hosting!**
+Below, you can host this on any of your favorite cloud hosting solutions. If you're unsure what this does, find one someone else has made. <br>
 
 [![Deploy to Heroku](https://binbashbanana.github.io/deploy-buttons/buttons/remade/heroku.svg)](https://heroku.com/deploy/?template=https://github.com/3kh0/3kh0.github.io)
 [![Run on Replit](https://binbashbanana.github.io/deploy-buttons/buttons/remade/replit.svg)](https://github.com/3kh0/3kh0.github.io-replit)
@@ -47,10 +39,7 @@ Below are some of the options you can use to deploy your own copy of the site. *
 [![Deploy to Render](https://binbashbanana.github.io/deploy-buttons/buttons/remade/render.svg)](https://render.com/deploy?repo=https://github.com/3kh0/3kh0.github.io)
 [![Deploy to Cyclic](https://binbashbanana.github.io/deploy-buttons/buttons/remade/cyclic.svg)](https://app.cyclic.sh/api/app/deploy/3kh0/3kh0.github.io)
 
-> **Note**
-> If you have any problems please open a issue!
-
-## Contributers
+## Contributors
 
 Thank you to all of these amazing people for helping work on this project!
 
@@ -73,15 +62,6 @@ See [`contributing.md`](https://github.com/3kh0/3kh0.github.io/blob/main/.github
 Please adhere to this project's [`code of conduct`](https://github.com/3kh0/3kh0.github.io/blob/main/.github/CODE_OF_CONDUCT.md).
 
 
-## Badges
-
-![GitHub issues](https://img.shields.io/github/issues/3kh0/3kh0.github.io?logo=github&style=flat-square) 
-![GitHub pull requests](https://img.shields.io/github/issues-pr/3kh0/3kh0.github.io?label=Pull%20requests&logo=github&style=flat-square) 
-![GitHub](https://img.shields.io/github/license/3kh0/3kh0.github.io?label=Licence&logo=github&style=flat-square) 
-![GitHub forks](https://img.shields.io/github/forks/3kh0/3kh0.github.io?label=Forks&logo=github&style=flat-square) 
-![GitHub Repo stars](https://img.shields.io/github/stars/3kh0/3kh0.github.io?color=yellow&label=Stars&logo=github&style=flat-square) 
-![GitHub repo size](https://img.shields.io/github/repo-size/3kh0/3kh0.github.io?label=Repo%20size&logo=github&style=flat-square) 
-
 ## Run Locally
 
 First clone the project using command line
@@ -99,14 +79,14 @@ gh repo clone 3kh0/3kh0.github.io
 Since this project does not require a backend, for the best experience I suggest using [XAMPP](https://www.apachefriends.org/), cloning the repo into the Apache Server directory at `C:\xampp\htdocs` (for windows) or `/opt/lampp/htdocs` (for linux), setting the port to something like 8080, opening up a browser and going to [`localhost:8080`](http://localhost:8080)
 
 > **Warning**
-> Please make your you know what you are doing, you could delete your entire drive if you are not careful!
+> Cloning a repository with Git removes everything in the folder you do it in. If you're not careful, you can delete your hard drive, so please do not do this unless you know what you're doing.
 
 ## License
 
 
 © Echo, 2022. Unauthorized use and/or duplication of this material without permission from Echo is strictly prohibited. Excerpts and links may be used, provided that clear credit is given with a link to the original content.
 
-This code is licensed under the **GNU General Public License v3.0**. I ask you that you do not copy the code in the repo what-so-ever; I take time to build this and I do not need someone just yoinking all of my games for ones site. If you have any questions please open a issue!
+This code is licensed under the **GNU GPL 3**. I ask you that you do not copy the code in the repo whatsoever; I took a lot of time to build this and I do not need someone just yoinking all of my games for a different site. If you would like to use some code, please open an issue or contact me on Discord.
 
 > **Note**
 > You can view the full license [here](https://github.com/3kh0/3kh0.github.io/blob/main/LICENSE)!
