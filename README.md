@@ -24,7 +24,7 @@ Welcome to 3kh0.github.io, your best option for unblocked games on the internet.
 
 ## Host the website
 
-Below, you can host this on any of your favorite cloud hosting solutions. If you're unsure what this does, find one someone else has made. <br>
+You can host our website on a cloud hosting solution like Replit or Heroku here. If you're unsure on what this does, use our own site, or find one someone else is hosting. <br>
 
 [![Deploy to Heroku](https://binbashbanana.github.io/deploy-buttons/buttons/remade/heroku.svg)](https://heroku.com/deploy/?template=https://github.com/3kh0/3kh0.github.io)
 [![Run on Replit](https://binbashbanana.github.io/deploy-buttons/buttons/remade/replit.svg)](https://github.com/3kh0/3kh0.github.io-replit)
@@ -58,7 +58,7 @@ Contributions are always welcome!
 
 See [`contributing.md`](https://github.com/3kh0/3kh0.github.io/blob/main/.github/CONTRIBUTING.md) for ways to get started.
 
-Please adhere to this project's [`code of conduct`](https://github.com/3kh0/3kh0.github.io/blob/main/.github/CODE_OF_CONDUCT.md).
+Please adhere to this project's [Code of Conduct](https://github.com/3kh0/3kh0.github.io/blob/main/.github/CODE_OF_CONDUCT.md).
 
 
 ## Run Locally
