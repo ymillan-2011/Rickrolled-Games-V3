@@ -18,6 +18,7 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 - Means something was removed
 ------------------------------------------------------------
 Jan, 5
++ Added Santy is Home
 + Added WebGL Fluid Sim
 ^ Added more reviews
 ------------------------------------------------------------
@@ -25,10 +26,6 @@ Jan, 4, 2023
 It is now 2023! Woohoo!
 + Added documentation to scripts with ChatGPT
 ^ Added the site script to all games
-------------------------------------------------------------
-Dec, 31
-Happy New Year!!!
-+ Added WebGL Fluid Simulator
 ------------------------------------------------------------
 Dec, 31
 Happy New Year's Eve!!!
