@@ -1,11 +1,10 @@
 # 3kh0.github.io
 
 ![3kh0.github.io](https://socialify.git.ci/3kh0/3kh0.github.io/image?description=1&descriptionEditable=This%20is%203kh0.github.io%20v3%20the%20better%20unblocked%20games%20website!&font=Source%20Code%20Pro&forks=1&issues=1&language=1&logo=https%3A%2F%2F3kh0.github.io%2Ffavicon.ico&name=1&owner=1&pattern=Circuit%20Board&pulls=1&stargazers=1&theme=Dark)
-![GitHub repo size](https://img.shields.io/github/repo-size/3kho/3kho.github.io)![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/3kho/3kho.github.io)![GitHub commit activity](https://img.shields.io/github/commit-activity/m/3kho/3kho.github.io)![GitHub deployments](https://img.shields.io/github/deployments/3kho/3kho.github.io/github-pages?label=website%20deployment)![GitHub](https://img.shields.io/github/license/3kho/3kho.github.io)![GitHub language count](https://img.shields.io/github/languages/count/3kho/3kho.github.io)![GitHub last commit](https://img.shields.io/github/last-commit/3kho/3kho.github.io)![pizza](https://img.shields.io/badge/mom%20made-pizza%20rolls-important)
-<br>
+![GitHub repo size](https://img.shields.io/github/repo-size/3kho/3kho.github.io)![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/3kho/3kho.github.io)![GitHub commit activity](https://img.shields.io/github/commit-activity/m/3kho/3kho.github.io)![GitHub deployments](https://img.shields.io/github/deployments/3kho/3kho.github.io/github-pages?label=website%20deployment)![GitHub](https://img.shields.io/github/license/3kho/3kho.github.io)![GitHub language count](https://img.shields.io/github/languages/count/3kho/3kho.github.io)![GitHub last commit](https://img.shields.io/github/last-commit/3kho/3kho.github.io) <br>
 Welcome to 3kh0.github.io, your best option for unblocked games on the internet. This is the GitHub repo which is used to host the website. If you want to use the games on here on your website, please message me on discord at `3kh0_#1791` and we can talk! If you're looking for the link, click [here.](https://3kh0.github.io)
 
-[![Join us on Discord](https://invidget.switchblade.xyz/wv6huJAwEv?theme=dark)](https://discord.gg/wv6huJAwEv)
+<p align="center"><img src="https://invidget.switchblade.xyz/wv6huJAwEv?theme=dark)](https://discord.gg/wv6huJAwEv" alt="discord"></img></p>
 
 > **Note**
 > **If you do fork this repo, please give the orginal repo a star! It helps out alot and only 30% of people who fork give me a star.**
