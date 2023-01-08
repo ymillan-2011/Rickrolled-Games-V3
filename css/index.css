@@ -42,6 +42,9 @@ body {
   text-align: center;
   background-color: honeydew;
 }
+.greyed-out-removed {
+  color: darkgray;
+}
 .card-wrapper {
   padding-top: 20px;
 }
