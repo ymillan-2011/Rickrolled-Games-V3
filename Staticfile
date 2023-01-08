@@ -1,3 +1,4 @@
 status_codes:
   404: 404.html
   500: 500.html
+  502: 502.html
