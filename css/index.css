@@ -7,10 +7,10 @@ body {
   font-size: 48px;
   color: #c9c9c9;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
-  padding-top: 25%;
+  padding-top: 10px;
 }
 #subtitle {
   font-size: 24px;
@@ -40,7 +40,8 @@ body {
 }
 .text-center-highlight {
   text-align: center;
-  background-color: honeydew;
+  background-color: #1c1c1d;
+  color: #c9c9c9;
 }
 .greyed-out-removed {
   color: darkgray;

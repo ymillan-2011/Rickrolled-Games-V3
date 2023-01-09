@@ -1,7 +1,7 @@
 body {
   font-family: sans-serif;
   color: #fff;
-  background-color: #3b3b3b;
+  background-color: rgb(39, 39, 39);
 }
 a {
   color: #6079e6;
@@ -20,6 +20,6 @@ a {
   text-align: center;
 }
 #header {
-  padding-top:  25%;
-  padding-bottom: 20px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
