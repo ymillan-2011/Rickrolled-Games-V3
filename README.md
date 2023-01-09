@@ -56,7 +56,7 @@ And the people who worked on v1!
 
 Contributions are always welcome!
 
-See [`contributing.md`](https://github.com/3kh0/3kh0.github.io/blob/main/.github/CONTRIBUTING.md) for ways to get started.
+See [`contributing.md`](https://github.com/3kh0/3kh0.github.io/blob/main/CONTRIBUTING.md) for ways to get started.
 
 Please adhere to this project's [Code of Conduct](https://github.com/3kh0/3kh0.github.io/blob/main/.github/CODE_OF_CONDUCT.md).
 
