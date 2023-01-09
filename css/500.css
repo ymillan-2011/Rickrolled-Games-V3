@@ -1,6 +1,6 @@
 body {
-    font-family: sans-serif;
-    color: rgb(255, 255, 255);
-    background-color: #000000;
-  }
-  
+  font-family: sans-serif;
+  color: rgb(255, 255, 255);
+  background-color: rgb(16,16,16);
+  text-align: center;
+}
