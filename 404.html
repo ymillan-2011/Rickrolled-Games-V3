@@ -8,10 +8,11 @@
     <title>404 Error | 3kh0</title>
     <style>
       /* Backup in case style sheet does not load */
+      /* Look, if the style sheet doesn't load, we've got bigger problems -Kurbus */
       body {
         font-family: sans-serif;
         color: #fff;
-        background-color: #3b3b3b;
+        background-color:rgb(39, 39, 39);
       }
       a {
         color: #6079e6;
@@ -30,17 +31,19 @@
         text-align: center;
       }
       #header {
-        padding-top: 25%;
-        padding-bottom: 20px;
+        padding-top: 10%;
+        padding-bottom: 10px;
       }
     </style>
   </head>
   <body>
     <h1 id="header">404 Error</h1>
+    <hr>
+    <br>
     <p id="detail">
-      That requested URL or file was not found. This might be on you or it is just my bad coding, most likely my bad coding.<br />
-      Help us out and <a href="https://github.com/3kh0/3kh0.github.io/issues">open a issue</a> so we know this happened!<br />
-      If you do open a issue on the github, please click on that little "More info" button and take a screenshot of it.<br />
+      Hey, look at that! You've found a page that doesn't exist. If you think you shouldn't have gotten this error, help us out by
+      <a href="https://github.com/3kh0/3kh0.github.io/issues">opening an issue.</a> <br />
+      Be sure to include what you did when this happened. If you do open a issue on GitHub, please click on that little "More info" button and take a screenshot of it.<br />
     </p>
     <button id="sfnButton" onclick="statsForNerds()">More info</button>
     <div id="sfn" style="display: none;">
@@ -94,5 +97,5 @@
     <script src="/js/main.js"></script>
   </body>
 </html>
-
+<!-- What's this doing here???-->
 <script src="https://unframed.netlify.app/latest.js"></script>
