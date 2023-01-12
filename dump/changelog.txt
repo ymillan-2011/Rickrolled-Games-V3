@@ -16,8 +16,14 @@ NOTE: Make sure you refresh the page! Sometimes you will not get the lastest upd
 + Means something was added
 ^ Means something was upgraded or changed
 - Means something was removed
+
 ------------------------------------------------------------
 Jan, 12
++ Added Fair Squares
++ Added Shot in the Dark
++ Added Neon Square Resurgence
++ Cartoon Network Table Tennis Ultimate
++ Added Big Neon Tower Tiny Square
 ^ Small UI improvements
 ------------------------------------------------------------
 Jan, 11
