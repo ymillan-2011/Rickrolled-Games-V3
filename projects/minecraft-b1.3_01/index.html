@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head>
+    <title>Minecraft Beta 1.3_01</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Play Minecraft Beta 1.3_01 in your browser! This is Eaglercraft, created by LAX1DUDE and ayunami2000">
+    <meta name="keywords" content="minecraft, applet, singleplayer, chromebook, lax1dude, games, eaglercraft, ealgercraft singleplayer, eagler">
+    <meta name="author" content="LAX1DUDE">
+    <meta property="og:title" content="Eaglercraft Beta 1.3_01">
+    <meta property="og:locale" content="en-US">
+    <meta property="og:type" content="website">
+    <link type="image/png" rel="shortcut icon" href="images/favicon.png">
+    <meta property="og:image" content="images/screenshot_medium.png">
+    <meta property="og:description" content="Play Minecraft Beta 1.3_01 in your browser! This is Eaglercraft, created by LAX1DUDE and ayunami2000">
+    <!-- Change this: <meta property="og:url" content="https://g.eags.us/eaglercraft/" /> -->
+    <script type="text/javascript" src="js/code.js"></script>
+    <script type="text/javascript">
+    if(document.location.href.startsWith("file:")) {
+    alert("You're not supposed to 'open' this file in your browser. Please upload this folder to your HTTP(s) server and access it via the internet. This is not a bug, please read the documentation");
+    }else {
+    window.addEventListener("load", function(){
+    window.minecraftOpts = ["game_frame","assets.epk","wss://25565-ymillan-server-o2o9f861ory.ws-us110.gitpod.io"];
+    (function(){
+    var q = window.location.search;
+    if(typeof q === 'string' && q.startsWith("?")) {
+        q = new URLSearchParams(q);
+        var s = q.get("server");
+        if(s) window.minecraftOpts.push(s);
+    }
+    })();
+    main();
+    });}
+    </script>
+    </head>
+    <body style="margin:0px;width:100vw;height:100vh;" id="game_frame">
+    
+    </body></html>
