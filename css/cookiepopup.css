@@ -35,7 +35,7 @@
 .cookiePopupBoxContainer .cookieButton a {
 	display: inline-block;
 	font-family: OpenSans, arial, "sans-serif";
-	color: #FFFFFF;
+	color: #b7b7b7;
 	font-size: 14px;
 	font-weight: bold;
 	margin-top: 14px;
@@ -47,7 +47,7 @@
 }
 .cookiePopupBoxContainer .cookieButton a:hover { 
 	cursor: pointer;
-	background: #1ac21f;
+	background: #8d0000;
 }
 
 @media (max-width: 980px) {
