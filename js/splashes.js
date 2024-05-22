@@ -40,7 +40,7 @@ var say = [
   "100% Fresh!",
   "LOL",
   "Cold as ice!",
-  "Why are you looking at me?",
+  "Reutter Rams!",
   "Made in the US!",
   "Made by dev_!",
   "Reload the page NOW!",
