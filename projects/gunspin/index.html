@@ -1,20 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+<ModulePrefs title="GunSpin" />
+<Content type="html"><![CDATA[
+
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+  <head>                
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Gunspin</title>
-    <link rel="shortcut icon" href="style/favicon.ico">
-    <link rel="stylesheet" href="style/style.css">
-	<script src="UnityLoader.js"></script>
-    <script src="UnityProgress.js"></script>
+	<style>
+body {
+  overflow: hidden;
+}
+</style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sidharthkiscool/monkeygg2.github.io@762aa28c099959eb0d64028560f0d61b195b02da/games/gunspin/TemplateData/style.css">
+    <script src="https://cdn.jsdelivr.net/gh/sidharthkiscool/monkeygg2.github.io@762aa28c099959eb0d64028560f0d61b195b02da/games/gunspin/TemplateData/UnityProgress.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/sidharthkiscool/monkeygg2.github.io@762aa28c099959eb0d64028560f0d61b195b02da/games/gunspin/Build/UnityLoader.js"></script>
     <script>
-      var gameInstance = UnityLoader.instantiate("gameContainer", "build.json", {onProgress: UnityProgress});
+	  window.gameInstance = UnityLoader.instantiate("unityContainer", "https://cdn.jsdelivr.net/gh/RobiFet/workflow@99ef84fd04d7997590ab93310e15720466e6d7e1/composer/gs.json");
     </script>
   </head>
   <body>
     <div class="webgl-content">
-      <div id="gameContainer" style="width: 800px; height: 533px;"></div>
+      <div id="unityContainer" style="width: 100vw; height: 100vh"></div>
     </div>
+	<script src="scr.js"></script>
   </body>
 </html>
+
+]]></Content>
+</Module>
