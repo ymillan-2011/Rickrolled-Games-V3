@@ -1,0 +1,33 @@
+<svg width="1280" height="671" viewBox="0 0 1280 671" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_648_24027)">
+<rect width="1280" height="671" fill="url(#paint0_linear_648_24027)"/>
+<g style="mix-blend-mode:soft-light" opacity="0.2" clip-path="url(#clip1_648_24027)">
+<rect x="-71" y="189.752" width="287.04" height="58.2605" rx="29.1302" transform="rotate(-45.222 -71 189.752)" fill="white"/>
+<rect x="580" y="500.752" width="287.04" height="58.2605" rx="29.1302" transform="rotate(-45.222 580 500.752)" fill="white"/>
+<rect x="949" y="138.752" width="287.04" height="58.2605" rx="29.1302" transform="rotate(-45.222 949 138.752)" fill="white"/>
+<rect x="273" y="766.752" width="287.04" height="58.2605" rx="29.1302" transform="rotate(-45.222 273 766.752)" fill="white"/>
+<rect x="232" y="170.752" width="287.04" height="58.2605" rx="29.1302" transform="rotate(-45.222 232 170.752)" fill="white"/>
+<rect x="883" y="481.752" width="287.04" height="58.2605" rx="29.1302" transform="rotate(-45.222 883 481.752)" fill="white"/>
+<rect x="1252" y="119.752" width="287.04" height="58.2605" rx="29.1302" transform="rotate(-45.222 1252 119.752)" fill="white"/>
+<rect x="387" y="445.238" width="98.9501" height="98.5583" rx="49.2791" transform="rotate(-45.222 387 445.238)" fill="white"/>
+<rect x="81" y="190.238" width="98.9501" height="98.5583" rx="49.2791" transform="rotate(-45.222 81 190.238)" fill="white"/>
+<rect x="732" y="501.238" width="98.9501" height="98.5583" rx="49.2791" transform="rotate(-45.222 732 501.238)" fill="white"/>
+<rect x="1101" y="139.238" width="98.9501" height="98.5583" rx="49.2791" transform="rotate(-45.222 1101 139.238)" fill="white"/>
+<rect x="54.9648" y="541.08" width="415.698" height="54.9971" rx="27.4985" transform="rotate(-45.222 54.9648 541.08)" fill="white"/>
+<rect x="705.969" y="852.08" width="415.698" height="54.9971" rx="27.4985" transform="rotate(-45.222 705.969 852.08)" fill="white"/>
+<rect x="1074.97" y="490.08" width="415.698" height="54.9971" rx="27.4985" transform="rotate(-45.222 1074.97 490.08)" fill="white"/>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_648_24027" x1="640" y1="0" x2="640" y2="671" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFC9FF"/>
+<stop offset="1" stop-color="#EF67FF"/>
+</linearGradient>
+<clipPath id="clip0_648_24027">
+<rect width="1280" height="671" fill="white"/>
+</clipPath>
+<clipPath id="clip1_648_24027">
+<rect width="1280" height="793" fill="white"/>
+</clipPath>
+</defs>
+</svg>
