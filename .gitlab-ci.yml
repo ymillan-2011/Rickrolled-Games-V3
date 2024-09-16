@@ -1,10 +1,5 @@
-image: ruby:2.7
-
-pages:
-  script:
-    - gem install bundler
-    - bundle install
-    - bundle exec jekyll build -d public
-  artifacts:
-    paths:
-      - public
+# The Docker image that will be used to build your app
+image: node:lts
+# Functions that should be executed before the build script is run
+before_script:
+  - npm ci
