@@ -31,7 +31,7 @@ var say = [
   "Since 2022!",
   "Now with 2X more bugs!",
   "12345 is not a good password!",
-  "This took to0 long to make...",
+  "This took too long to make...",
   "69 hehe funny number",
   "Juan is the G.O.A.T!",
   "Awesome!",
