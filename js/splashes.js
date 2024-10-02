@@ -72,7 +72,7 @@ var say = [
   "You got games on your phone?",
   "I am not gonna say anything.",
   "Now with Minecraft!",
-  "Welcome to v2.0!",
+  "Welcome to v3.0!",
   "Your momma jokes are cringe",
   "Now with a new splash!",
   "You just dont get it do you?",
