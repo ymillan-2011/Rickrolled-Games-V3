@@ -1,4 +1,3 @@
-
 'use strict';self.dispatchPort=null;self.outputPort=null;self.workerNumber=-1;self.activeJobId=null;self.sentBlobs=new Map;self.sentBuffers=new Map;self.JobHandlers={};
 function FlipImageData(data,width,height){const stride=width*4;const tempRow=new Uint8Array(stride);const imageBuffer=data.buffer;for(let topY=0,len=Math.floor(height/2);topY<len;++topY){const bottomY=height-topY-1;const topRow=new Uint8Array(imageBuffer,topY*stride,stride);const bottomRow=new Uint8Array(imageBuffer,bottomY*stride,stride);tempRow.set(topRow);topRow.set(bottomRow);bottomRow.set(tempRow)}}
 function UnpremultiplyImageData(data){for(let ptr=0,len=data.length;ptr<len;ptr+=4){const a=data[ptr+3];if(a===255)continue;const scale=255/a;data[ptr]*=scale;data[ptr+1]*=scale;data[ptr+2]*=scale}}
