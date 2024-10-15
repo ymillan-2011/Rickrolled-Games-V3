@@ -1,8 +1,8 @@
 Controls:
-Movement: Arrow Keys <br>
-A: X <br>
-B: C <br>
-R: Q <br>
-Z: Space <br>
-Start: Enter <br>
-C-stick: WASD
+Movement: WASD <br>
+A: L <br>
+B: , <br>
+R: E <br>
+Z: K <br>
+Start: Space <br>
+C-stick: Arrow Keys
