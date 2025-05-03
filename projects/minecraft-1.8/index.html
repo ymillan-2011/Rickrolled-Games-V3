@@ -13,6 +13,8 @@
 	<meta property="og:description"
 		content="An online version of EaglercraftX. Play Minecraft 1.8.8 on a Chromebook!" />
 	<link type="image/ico" rel="shortcut icon" href="https://eaglercraft.q13x.com/favicon.ico" />
+	<html style="height:40%;transform-origin: top left; width: 40%; transform: scale(2.5); background-color:black; image-rendering:pixelated;">
+	<head>
 	<html data-darkreader-mode="dynamic" data-darkreader-scheme="dark"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style class="darkreader darkreader--fallback" media="screen"></style><style class="darkreader darkreader--text" media="screen"></style><style class="darkreader darkreader--invert" media="screen">.jfk-bubble.gtx-bubble, .captcheck_answer_label > input + img, span#closed_text > img[src^="https://www.gstatic.com/images/branding/"], span[data-href^="https://www.hcaptcha.com/"] > #icon, #bit-notification-bar-iframe, ::-webkit-calendar-picker-indicator {
 		filter: invert(100%) hue-rotate(180deg) contrast(90%) !important;
 	}</style><style class="darkreader darkreader--inline" media="screen">[data-darkreader-inline-bgcolor] {
@@ -136,7 +138,7 @@
 						assetsURI: epk,
 						localesURI: "lang/",
 						worldsDB: "worlds",
-						...(await (await fetch("https://eaglercraft.q13x.com/list.json")).json())
+						...(await (await fetch("/list.json")).json())
 					};
 					params.relays[Math.round(Math.random() * (params.relays.length - 1))].primary = true;
 					parseParams(params);
@@ -166,7 +168,7 @@
 			<h2 id="context-block">(this may take a while)</h2>
 			<div style="border:2px solid rgb(158, 158, 158);width:100%;height:15px;padding:1px;margin-bottom:20vh;font-family: Arial, sans-serif;font-weight: bold;"
 				hidden="" id="progress-bar-container">
-				<div id="progress-bar" style="background-color:#a60000;width:0%;height:100%;top:0;"></div>
+				<div id="progress-bar" style="background-color:#bf1010;width:0%;height:100%;top:0;"></div>
 			</div>
 		</div>
 	</div>
