@@ -1,13 +1,46 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		
+		
+		<script>
+			window.dataLayer = window.dataLayer || [];
+	
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag('js', new Date());
+			gtag('config', 'G-WX5VS54ZDW');
+		</script>
+		<base href="https://rawcdn.githack.com/genizy/cc3d-mobile/main/">
+		       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5521219086088837"
+     crossorigin="anonymous"></script>
+     
 		<meta charset="utf-8">
+		<style>
+  html, body {
+    margin: 0;
+    overflow: hidden;
+    touch-action: none;
+  }
+</style>
+
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-		<title>Crazy Cattle 3D</title>
+		<title>CrazyCattle3D</title>
 		<style>
 html, body, #canvas {
 	margin: 0;
 	padding: 0;
 	border: 0;
 }
+
+body {
+	color: white;
+	background-color: black;
+	overflow: hidden;
+	touch-action: none;
+}
+
 #canvas {
 	display: block;
 }
@@ -79,64 +112,11 @@ html, body, #canvas {
 	text-align: center;
 	z-index: 1;
 }
-
-/* Popup styles */
-.popup-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  cursor: move;
-  background: rgba(255, 255, 255, 0.0);
-  border: 2px solid rgba(51, 51, 51, 0.0);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.0);
-  overflow: visible;
-  width: 300px;
-}
-
-.popup-header {
-  position: relative;
-  padding: 0;
-  border-bottom: none;
-}
-
-.popup-title {
-  display: none;
-}
-
-.popup-close {
-  position: absolute;
-  top: 60px;
-  right: 9px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  color: #000;
-  z-index: 1001;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
-  text-align: center;
-  /* background-color: rgba(0, 0, 0, 0.7); */
-  border-radius: 50%;
-  padding: 0;
-  display: block;
-}
-
-.popup-content {
-  padding: 0;
-  position: relative;
-}
-
-.popup-image {
-  width: 100%;
-  display: block;
-  cursor: pointer;
-}
 		</style>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="CrazyCattle3D.icon.png" />
+<link rel="apple-touch-icon" href="CrazyCattle3D.apple-touch-icon.png"/>
+<link rel="manifest" href="CrazyCattle3D.manifest.json">
+
 	</head>
 	<body>
 		<canvas id="canvas">
@@ -148,23 +128,15 @@ html, body, #canvas {
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="images/index.png" alt="">
+			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="CrazyCattle3D.png" alt="">
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
 		</div>
 
-
+		<script src="CrazyCattle3D.js"></script>
 		<script>
-if (!window.SharedArrayBuffer) {
-	document.getElementById('status').style.display = 'none';
-	setTimeout(() => document.getElementById('status').style.display = '', 1500);
-}
-</script>
-<script src="js/coi-serviceworker.min.js"></script>
-<script src="js/index.js"></script>
-		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":39414368,"index.wasm":1650612},"focusCanvas":true,"gdextensionLibs":[]};
-const GODOT_THREADS_ENABLED = true;
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"CrazyCattle3D","experimentalVK":false,"fileSizes":{"CrazyCattle3D.pck":28642672,"CrazyCattle3D.wasm":43444261},"focusCanvas":true,"gdextensionLibs":[],"serviceWorker":"CrazyCattle3D.service.worker.js"};
+const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
 (function () {
@@ -266,43 +238,25 @@ const engine = new Engine(GODOT_CONFIG);
 		}, displayFailureNotice);
 	}
 }());
-
-// Popup functionality
-function closePopup() {
-  document.getElementById('popup').style.display = 'none';
-}
-
-// Make the popup draggable
-document.addEventListener('DOMContentLoaded', function() {
-  const popup = document.getElementById('popup');
-  const header = popup.querySelector('.popup-header');
-  
-  let isDragging = false;
-  let offsetX, offsetY;
-
-  header.addEventListener('mousedown', function(e) {
-    isDragging = true;
-    offsetX = e.clientX - popup.getBoundingClientRect().left;
-    offsetY = e.clientY - popup.getBoundingClientRect().top;
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!isDragging) return;
-    
-    popup.style.left = (e.clientX - offsetX) + 'px';
-    popup.style.top = (e.clientY - offsetY) + 'px';
-  });
-
-  document.addEventListener('mouseup', function() {
-    isDragging = false;
-  });
-});
 		</script>
-		<script src="js/socket.io.js"></script>
-        <script>window.CHAT_SERVER_URL = 'https://cattle-chat.onrender.com';</script>
-        <script src="js/chat-overlay-bundled.js"></script>
-        <script defer="" src="js/script.js" data-website-id="89d4a4ff-d4cc-4a21-b175-2f6d53a297fc"></script>
-	
+		<script>
+  document.addEventListener("touchstart", function(e) {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
 
+  document.addEventListener("gesturestart", function(e) {
+    e.preventDefault();
+  });
 
-</body></html>
+  window.addEventListener("touchmove", function(e) {
+    if (e.touches[0].clientY < 50) e.preventDefault();
+  }, { passive: false });
+
+  window.addEventListener("beforeunload", function (e) {
+    e.preventDefault();
+    e.returnValue = '';
+  });
+</script>
+
+	</body>
+</html>
