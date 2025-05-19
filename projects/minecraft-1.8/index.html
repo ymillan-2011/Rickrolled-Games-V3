@@ -138,7 +138,7 @@
 						assetsURI: epk,
 						localesURI: "lang/",
 						worldsDB: "worlds",
-						...(await (await fetch("/list.json")).json())
+						...(await (await fetch("https://eaglercraft.q13x.com/list.json")).json())
 					};
 					params.relays[Math.round(Math.random() * (params.relays.length - 1))].primary = true;
 					parseParams(params);
