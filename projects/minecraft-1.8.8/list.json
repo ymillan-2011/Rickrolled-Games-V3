@@ -1,12 +1,12 @@
 {
     "servers": [
-      { "addr": "wss://eagler-test.onrender.com", "name": "Rickrolled Games Server (not always up)" },
-      { "addr": "vanilla+online://mc.hypixel.net", "name": "Hypixel (Proxied)" },
+      { "addr": "wss://sus.shhnowisnottheti.me", "name": "ayunboom" },
+      { "addr": "wss://eag.hyper-network.net", "name": "Hyper Network" },
       { "addr": "wss://mc.arch.lol", "name": "ArchMC" }
     ],
     "relays": [
-      { "addr": "wss://eaglerrelay.glitch.me/", "comment": "public relay" },
+      { "addr": "ws://relay.rickrolledgames.gleeze.com", "comment": "rickrolled games relay" },
       { "addr": "wss://relay.shhnowisnottheti.me/", "comment": "ayunami relay #1" },
-      { "addr": "wss://reading-relay.q13x.com/", "comment": "q13x's eaglercraft relay" }
+      { "addr": "wss://relay.deev.is/", "comment": "lax's relay #1" }
     ]
   }
