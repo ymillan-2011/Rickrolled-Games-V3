@@ -1,7 +1,7 @@
 {
     "name": "rickrolled games",
     "description": "Rickrolled Games V3",
-    "repository": "https://gitlab.com/rickrolled-devolopment-team/rickrolledgames-v-3",
+    "repository": "https://github.com/ymillan-2011/Rickrolled-Games-V3/",
     "logo": "https://github.com/fluidicon.png",
     "keywords": ["unblocked games", "y_millan"],
     "buildpacks": [{"url": "https://github.com/heroku/heroku-buildpack-static"}]
